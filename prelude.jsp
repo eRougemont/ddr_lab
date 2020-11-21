@@ -29,6 +29,7 @@
 <%@ page import="org.apache.lucene.util.BitSet" %>
 <%@ page import="alix.web.Jsp" %>
 <%@ page import="alix.web.Mime" %>
+<%@ page import="alix.web.WordClass" %>
 <%@ page import="alix.lucene.Alix" %>
 <%@ page import="alix.lucene.Alix.FSDirectoryType" %>
 <%@ page import="alix.lucene.DocType" %>

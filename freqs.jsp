@@ -156,13 +156,13 @@ int count = tools.getInt("count", -1);
 if (count < 1 || count > 2000) count = 500;
 
 
-final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
-WordClass cat = (WordClass)tools.getEnum("cat", WordClass.NOSTOP, Cookies.wordClass);
+// final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
+WordClass cat = (WordClass)tools.getEnum("cat", WordClass.NOSTOP);
 
-int left = tools.getInt("left", 5, Cookies.coocLeft);
+int left = tools.getInt("left", 5);
 if (left < 0) left = 0;
 else if (left > 10) left = 10;
-int right = tools.getInt("right", 5, Cookies.coocRight);
+int right = tools.getInt("right", 5);
 if (right < 0) right = 0;
 else if (right > 10) right = 10;
 
@@ -170,8 +170,11 @@ else if (right > 10) right = 10;
 final String field = TEXT; // the field to process
 TopTerms dic; // the dictionary to extracz
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
+Corpus corpus = null;
+/*
 Corpus corpus = (Corpus)session.getAttribute(corpusKey);
 if (corpus != null) filter = corpus.bits();
+*/
 
 if (q == null) {
   Freqs freqs = alix.freqs(field);
@@ -186,7 +189,7 @@ else {
 }
 
 String format = tools.getString("format", null);
-if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
+// if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
 Mime mime;
 try { mime = Mime.valueOf(format); }
 catch(Exception e) { mime = Mime.html; }
@@ -201,7 +204,7 @@ if (Mime.json.equals(mime)) {
 }
 else if (Mime.csv.equals(mime)) {
   response.setContentType(Mime.csv.type);
-  StringBuffer sb = new StringBuffer().append(base);
+  StringBuffer sb = new StringBuffer().append(baseName);
   if (corpus != null) {
     sb.append('-').append(corpus.name());
   }
@@ -230,7 +233,7 @@ else {
     <link href="../static/obvie.css" rel="stylesheet"/>
   </head>
   <body>
-    <a class="reset" href="freqs.csv?q=<%=Jsp.escape(q)%>&amp;left=<%= left %>&amp;right=<%= right %>&amp;cat=<%= cat %>&amp;sort=<%= sort %>">csv 🡵</a>
+    <a class="reset" href="freqs.csv?q=<%=Jsp.escape(q)%>&amp;left=<%= left %>&amp;right=<%= right %>&amp;cat=<%= cat %>&amp;sort=<%= "" %>">csv 🡵</a>
     <table class="sortable" style="float:left;">
       <caption>
         <form id="sortForm">
