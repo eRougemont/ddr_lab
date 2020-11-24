@@ -1,8 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="prelude.jsp" %>
-<%@ page import="java.text.DecimalFormat" %>
-<%@ page import="java.text.DecimalFormatSymbols" %>
-<%@ page import="java.util.Locale" %>
 <%@ page import="org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter" %>
 <%@ page import="alix.fr.Tag" %>
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsAtt" %>
@@ -12,9 +9,8 @@
 <%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.lucene.util.Cooc" %>
 <%@ page import="alix.util.Char" %>
-<%!final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
-final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
-static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
+<%!
+
 private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
 private static final int OUT_JSON = 2;
@@ -148,7 +144,9 @@ static private void jsonLine(StringBuilder sb, final TopTerms dic, final Tag tag
   sb.append(Tag.label(tag.group()));
   sb.append("\"}");
   sb.append("}");
-}%>
+}
+
+%>
 <%
   //parameters
 final String q = tools.getString("q", null);

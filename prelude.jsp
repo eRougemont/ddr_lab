@@ -1,13 +1,17 @@
 <%@ page language="java" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.text.DecimalFormat" %>
+<%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.Locale" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Properties" %>
 <%@ page import="java.util.Set" %>
+
 <%@ page import="org.apache.lucene.analysis.Analyzer" %>
 <%@ page import="org.apache.lucene.document.Document" %>
 <%@ page import="org.apache.lucene.index.IndexReader" %>
@@ -40,9 +44,13 @@
 <%@ page import="alix.lucene.search.SimilarityOccs" %>
 <%@ page import="alix.lucene.search.SimilarityTheme" %>
 <%@ page import="alix.lucene.search.TopTerms" %>
-<%@ page import="alix.util.ML" %>
 <%@ page import="alix.util.EnumOption" %>
+<%@ page import="alix.util.ML" %>
 <%!
+final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
+static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
+static final DecimalFormat dfdec2 = new DecimalFormat("0.##", ensyms);
 
 /** Field name containing canonized text */
 public static String TEXT = "text";
