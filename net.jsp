@@ -28,10 +28,14 @@
 <%@ page import="alix.fr.Tag" %>
 <%@ page import="alix.fr.Tag.TagFilter" %>
 <%@ page import="alix.util.Dir" %>
+<%@ page import="alix.util.IntList" %>
 <%@ page import="alix.util.IntPair" %>
 
 
 <%!
+private final int STAR = 1;
+private final int NOVA = 2;
+private final int PLANET = -1;
 /*
       <form id="form" style="position: absolute; z-index: 2;">
         <input name="term" value="conscience"/>
@@ -52,23 +56,53 @@
     <script src="vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
     <script src="vendor/sigma/sigma.layout.noverlap.js">//</script>
     <script src="static/sigmot.js">//</script>
+    <link rel="stylesheet" type="text/css" href="static/ddrlab.css"/>
     <style>
 html, body {
   height: 100%; 
   margin: 0;
 }
 body {
-  background: #000;
+  background-color: #666;
   font-family: sans-serif;
+  color: #fff;
+}
+#graphcont {
+  display: flex;
+  flex-direction: column;
+  height:100%;
 }
 #graph {
-  height:90%;
-  width:90%;
-  resize:both;
-  border: 1px solid #FFF;
+  position: relative;
+  flex-grow: 4;
+  width: 100%;
+  border: none;
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
+}
+#form {
+  display: flex;
+  align-items: center;
+}
+#form label {
+  margin-left: 1rem;
+  margin-right: 0.2rem;
+}
+
+#form .elastic {
+  flex-grow: 4;
+}
+#form .elastic input {
+  width: 100%;
+}
+
+input.nb {
+  text-align: right;
+  width: 3rem;
+}
+.butbar {
+  text-align: right;
 }
 .butbar button {
   cursor: pointer;
@@ -92,17 +126,24 @@ body {
   </head>
   <body>
   <%
+boolean first;
+
 
 Analyzer analyzer = alix.analyzer();
+String glob = tools.getString("glob", "ddr1977aena*");
+final int ntopmid = 10;
+final int ntopmax = 30;
+int ntop = tools.getInt("words", -1);
+if (ntop > ntopmax) ntop = ntopmax;
+String words = tools.getString("words", null);
 int width = tools.getInt("width", 20);
-int density = tools.getInt("density", 5);
-int words = tools.getInt("words", 200);
+int planets = tools.getInt("planets", 50);
 
 
-List<File> ls = Dir.ls("/home/fred/code/ddr-test/ddr1977aena*\\.xml");
+List<File> ls = Dir.ls("/var/www/html/ddr-livres/"+glob+".xml");
 TagFilter tagfilter = new TagFilter()
   .setGroup(Tag.SUB).setGroup(Tag.ADJ)
-//  .setGroup(Tag.VERB).clear(Tag.VERBaux).clear(Tag.VERBsup)
+  .setGroup(Tag.VERB).clear(Tag.VERBaux).clear(Tag.VERBsup)
   .setGroup(Tag.NAME).set(Tag.NULL)
 ;
 CharsNet net = new CharsNet(width, false);
@@ -139,104 +180,160 @@ for (File entry : ls) {
     if (Tag.isVerb(tag)) continue;
     
     
-    // if (!tagfilter.accept(tag)) continue;
+    if (!tagfilter.accept(tag)) continue;
     if (lem.length() > 0) net.inc(lem, tag);
     else if (orth.length() > 0) net.inc(orth, tag);
     else net.inc(term, tag);
   }
+}
+Edge[] edgesAll = net.edges();
+Node[] nodesAll = net.nodes();
+//the focus nodes
+
+StringBuilder sb = new StringBuilder();
+if (words != null) {
+  first = true;
+  int count = 0;
+  for (String w: words.split("\\s*[\n,;]\\s*")) {
+    Node node = net.node(w);
+    if (node == null) continue;
+    node.type(STAR);
+    if (first) first = false;
+    else sb.append(", ");
+    sb.append(node.label());
+    if (++count >= ntopmax) break;
+  }
+  if (count > 0) words = sb.toString();
+  else words = null;
+}
+
+if (words == null) {
+  if (ntop < 1) ntop = ntopmid;
+  first = true;
+  int count = 0;
+  for (int i = 0; i < nodesAll.length; i++) {
+    Node node = nodesAll[i];
+    if (Tag.isAdj(node.tag())) continue;
+    node.type(STAR);
+    if (first) first = false;
+    else sb.append(", ");
+    sb.append(node.label());
+    if (++count >= ntop) break;
+  }
+  words = sb.toString();
+}
+
+
+
 %>
-  
-    <div id="graph" class="graph" oncontextmenu="return false" style="position:relative; ">
-      <form id="form" style="position: absolute; z-index: 2;">
-        <label title="Nombre de mots à afficher">nœuds <input name="words" value="<%= words %>" size="3"/></label>
-        <label title="Nombre de mots reliés">fenêtre <input name="width" value="<%= width %>" size="2"/></label>
-        <label title="Densité de liens">densité <input name="density" value="<%= density %>"  size="2"/></label>
-        <button type="submit">O</button>
-      </form>
-      <div class="butbar" style="position: absolute; bottom: 0; right: 2px; z-index: 2; ">
-        <button class="zoomout but" type="button" title="Diminuer">–</button>
-        <button class="zoomin but" type="button" title="Grossir">+</button>
-        <button class="fontdown but" type="button" title="Diminuer le texte">S↓</button>
-        <button class="fontup but" type="button" title="Grossir le texte">S↑</button>
-        <button class="turnleft but" type="button" title="Rotation vers la gauche">↶</button>
-        <button class="turnright but" type="button" title="Rotation vers la droite">↷</button>
-        <button class="shot but" type="button" title="Prendre une photo">📷</button>
-        <!--
-        <button class="colors but" type="button" title="Gris ou couleurs">◐</button>
-        <button class="but restore" type="button" title="Recharger">O</button>
-      -->
-        <button class="mix but" type="button" title="Mélanger le graphe">♻</button>
-        <button class="FR but" type="button" title="Spacialisation Fruchterman Reingold">☆</button>
-        <button class="noverlap but" type="button" title="Écarter les étiquettes">↭</button>
-        <button class="atlas2 but" type="button" title="Démarrer ou arrêter la gravité atlas 2">►</button>
-        <!--
-        <span class="resize interface" style="cursor: se-resize; font-size: 1.3em; " title="Redimensionner la feuille">⬊</span>
-        -->
-      </div>
-    </div>
+	  <div id="graphcont">
+       <form id="form">
+         <label for="glob">livre </label>
+         <input name="glob" value="<%= glob %>" size="5"/>
+         <label for="words">pivots </label>
+         <div class="elastic">
+           <input name="words" value="<%= words %>" size="100"/>
+         </div>
+         <label for="width">fenêtre </label>
+         <input name="width" value="<%= width %>" class="nb" size="2"/>
+         <label for="planets">rayons </label>
+         <input name="planets" value="<%= planets %>" class="nb" size="2"/>
+         <button type="submit">O</button>
+       </form>
+	    <div id="graph" class="graph" oncontextmenu="return false">
+	    </div>
+       <div class="butbar">
+         <button class="zoomout but" type="button" title="Diminuer">–</button>
+         <button class="zoomin but" type="button" title="Grossir">+</button>
+         <button class="fontdown but" type="button" title="Diminuer le texte">S↓</button>
+         <button class="fontup but" type="button" title="Grossir le texte">S↑</button>
+         <button class="turnleft but" type="button" title="Rotation vers la gauche">↶</button>
+         <button class="turnright but" type="button" title="Rotation vers la droite">↷</button>
+         <button class="shot but" type="button" title="Prendre une photo">📷</button>
+         <!--
+         <button class="colors but" type="button" title="Gris ou couleurs">◐</button>
+         <button class="but restore" type="button" title="Recharger">O</button>
+       -->
+         <button class="mix but" type="button" title="Mélanger le graphe">♻</button>
+         <button class="FR but" type="button" title="Spacialisation Fruchterman Reingold">☆</button>
+         <button class="noverlap but" type="button" title="Écarter les étiquettes">↭</button>
+         <button class="atlas2 but" type="button" title="Démarrer ou arrêter la gravité atlas 2">►</button>
+         <!--
+         <span class="resize interface" style="cursor: se-resize; font-size: 1.3em; " title="Redimensionner la feuille">⬊</span>
+         -->
+       </div>
+	  </div>
    <script>
 <%
-  boolean first;
-  int max;
+int max;
 
-  
-  Node[] nodes = net.nodes();
-  java.util.BitSet nodeset = new java.util.BitSet(nodes.length);
-  out.println("var data = {");
+out.println("var data = {");
 
-  max = Math.min(words, nodes.length);
-  out.println("  nodes: [");
-  first = true;
-  for (int i = 0; i < max; i++) {
-    Node node = nodes[i];
-    nodeset.set(node.id());
-    if (first) first = false;
-    else out.println(", ");
-    String color = "rgba(64, 64, 64, 0.5)";
-    if (Tag.isSub(node.tag())) color = "rgba(255, 255, 255, 1)";
-    else if (Tag.isName(node.tag())) color = "rgba(255, 0, 0, 1)";
-    else if (Tag.isVerb(node.tag())) color = "rgba(0, 0, 128, 0.5)";
-    else if (Tag.isAdj(node.tag())) color = "rgba(128, 128, 255, 1)";
-    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-    out.print("    {id:'n" + node.id() + "', label:'" + node.label().toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count())) // node.count()
-    + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
-    + ", color:'" + color + "'"
-    + "}");
+out.println("  edges: [");
+// loop on all edges to select nmax edges by star
+max = edgesAll.length;
+java.util.BitSet nodeset = new java.util.BitSet(net.nodecount());
+first = true;
+for (int i = 0; i < max; i++) {
+  final Edge edge = edgesAll[i];
+  final Node source = edge.source();
+  final Node target = edge.target();
+  if (source.type() != STAR  && target.type() != STAR) continue;
+  if (source.type() == NOVA || target.type() == NOVA) continue;
+  if (source.type() == STAR) {
+    if (source.counterInc() >= planets) source.type(NOVA);
   }
-  out.println("\n  ],");
-
-  
-  Edge[] edges = net.edges();
-  out.println("  edges: [");
-  
-  int[] nodeCounts = new int[nodes.length];
-  
-  first = true;
-  max = edges.length;
-  for (int i = 0; i < max; i++) {
-    Edge edge = edges[i];
-    if (!nodeset.get(edge.source())) continue;
-    if (!nodeset.get(edge.target())) continue;
-    // if ((nodeCounts[edge.source()]+ nodeCounts[edge.target()]) >= density) continue;
-    if (nodeCounts[edge.source()] >= density) continue;
-    if (nodeCounts[edge.target()] >= density) continue;
-    nodeCounts[edge.target()]++;
-    nodeCounts[edge.source()]++;
-    
-    if (first) first = false;
-    else out.println(", ");
-    // out.println(edge);
-    // {id:'e384606', source:'n907', target:'n4225', size:4, color:'rgba(192, 192, 192, 0.4)', type:'halo'}
-    out.print("    {id:'e" + edge.id() + "', source:'n" + edge.source() + "', target:'n" + edge.target() + "', size:" + edge.count() 
-    + ", color:'rgba(128, 128, 128, 0.3)'"
-    + "}");
+  else {
+    source.type(PLANET);
   }
-  out.println("\n  ]");
-
-
-  out.println("}");
-
+  if (target.type() == STAR) {
+    if (target.counterInc() >= planets) target.type(NOVA);
+  }
+  else {
+    target.type(PLANET);
+  }
+  nodeset.set(source.id());
+  nodeset.set(target.id());
+  if (first) first = false;
+  else out.println(", ");
+  out.print("    {id:'e" + edge.id() + "', source:'n" + source.id() + "', target:'n" + target.id() + "', size:" + edge.size() 
+  + ", color:'rgba(0, 0, 0, 0.3)'"
+  + "}");
 }
+out.println("\n  ],");
+
+
+
+
+  // 
+  
+  
+  
+ out.println("  nodes: [");
+ first = true;
+ for (int i = nodeset.nextSetBit(0); i >= 0; i = nodeset.nextSetBit(i+1)) {
+   Node node = net.node(i);
+   if (first) first = false;
+   else out.println(", ");
+   String color = "rgba(230, 230, 255, 1)";
+   if (node.type() == STAR || node.type() == NOVA) color = "rgba(255, 0, 0, 1)";
+   else if (Tag.isSub(node.tag())) color = "rgba(255, 255, 255, 1)";
+   else if (Tag.isName(node.tag())) color = "rgba(0, 255, 0, 1)";
+   // else if (Tag.isVerb(node.tag())) color = "rgba(0, 0, 128, 0.5)";
+   // else if (Tag.isAdj(node.tag())) color = "rgba(128, 128, 255, 1)";
+   // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
+   out.print("    {id:'n" + node.id() + "', label:'" + node.label().toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.size())) // node.count()
+   + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
+   + ", color:'" + color + "'"
+   + "}");
+ }
+ out.println("\n  ]");
+
+  
+
+
+ out.println("}");
+
 
 %>
 var graph = new sigmot('graph', data);

@@ -3,6 +3,7 @@
 <%@ page import="java.io.FileInputStream" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.DecimalFormatSymbols" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.HashSet" %>

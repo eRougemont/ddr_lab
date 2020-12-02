@@ -300,15 +300,15 @@
     var asigmot = this;
 
   
-    var canvas = document.getElementById( id );
-    this.canvas = canvas;
+    var zediv = document.getElementById( id );
+    this.zediv = zediv;
     //
-    var height = canvas.offsetHeight;
+    var height = zediv.offsetHeight;
     // adjust maxnode size to screen height
     // var scale = Math.max( height, 150) / 700;
-    if ( !maxNodeSize ) maxNodeSize = height/40;
+    if ( !maxNodeSize ) maxNodeSize = height/50;
     else maxNodeSize = maxNodeSize * scale;
-    var width = canvas.offsetWidth;
+    var width = zediv.offsetWidth;
     
     console.log(maxNodeSize);
 
@@ -317,7 +317,7 @@
       id: id,
       graph: data,
       renderer: {
-        container: canvas,
+        container: zediv,
         type: 'canvas'
       },
       settings: {
@@ -329,8 +329,8 @@
         // scale : 0.9, // effect of global size on graph objects
         // sideMargin: 1,
         
-        defaultNodeColor: "rgba(255, 255, 255, 0.5)",
-        defaultEdgeColor: 'rgba(255, 255, 255, 0.6)',
+        defaultNodeColor: "rgba(0, 255, 0, 0.5)",
+        defaultEdgeColor: 'rgba(245, 245, 245, 0.6)',
         edgeColor: "default",
         drawLabels: true,
         defaultLabelSize: 10,
@@ -425,33 +425,33 @@
       workOut = false;
 	  } );
 
-    var els = canvas.getElementsByClassName('FR');
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.FR');
+    if (el) {
+      el.onclick = function() {
         asigmot.stopForce();
         sigma.layouts.fruchtermanReingold.start( s );
       }
     }
-    var els = canvas.getElementsByClassName('atlas2');
-    if (els.length) {
-      this.atlas2But = els[0];
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.atlas2');
+    if (el) {
+      this.atlas2But = el;
+      el.onclick = function() {
         if (this.innerHTML = '►') asigmot.startForce();
         else asigmot.stopForce();
       };
     }
-    var els = canvas.getElementsByClassName('noverlap');
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.noverlap');
+    if (el) {
+      el.onclick = function() {
         s.configNoverlap({
           // gridSize: 100,
         });
         s.startNoverlap();
       };
     }
-    var els = canvas.getElementsByClassName('colors');
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.colors');
+    if (el) {
+      el.onclick = function() {
         var bw = s.settings( 'bw' );
         if (!bw) {
           this.innerHTML = '🌈';
@@ -464,46 +464,46 @@
         s.refresh();
       };
     }
-    var els = canvas.getElementsByClassName('fontup');
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.fontup');
+    if (el) {
+      el.onclick = function() {
         var ratio = s.settings('labelSizeRatio');
         s.settings('labelSizeRatio', ratio * 1.2);
         s.refresh();
       };
     }
-    var els = canvas.getElementsByClassName('fontdown');
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.fontdown');
+    if (el) {
+      el.onclick = function() {
         var ratio = s.settings('labelSizeRatio');
         s.settings('labelSizeRatio', ratio * 0.9);
         s.refresh();
       };
     }
-    var els = canvas.getElementsByClassName( 'zoomin' );
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.zoomin');
+    if (el) {
+      el.onclick = function() {
         var c = s.camera; c.goTo({ratio: c.ratio / c.settings('zoomingRatio')});
       };
     }
-    var els = canvas.getElementsByClassName( 'zoomout' );
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.zoomout');
+    if (el) {
+      el.onclick = function() {
         var c = s.camera; c.goTo({ratio: c.ratio * c.settings('zoomingRatio')});
       };
     }
 
     
     
-    var els = canvas.getElementsByClassName( 'turnleft' );
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.turnleft');
+    if (el) {
+      el.onclick = function() {
         asigmot.rotate(15);
       };
     }
-    var els = canvas.getElementsByClassName( 'turnright' );
-    if (els.length) {
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.turnright');
+    if (el) {
+      el.onclick = function() {
         asigmot.rotate(-22.5);
       };
     }
@@ -520,16 +520,16 @@
       return false;
     };
 
-    var els = canvas.getElementsByClassName( 'mix' );
-    if (els.length) {
-      this.mixBut = els[0];
+    var el = document.querySelector('.but.mix' );
+    if (el) {
+      this.mixBut = el;
       this.mixBut.net = this;
       this.mixBut.onclick = sigmot.mix;
     }
-    var els = canvas.getElementsByClassName( 'shot' );
-    if (els.length) {
-      els[0].net = this;
-      els[0].onclick = function() {
+    var el = document.querySelector('.but.shot' );
+    if (el) {
+      el.net = this;
+      el.onclick = function() {
         asigmot.stopForce();
         s.refresh();
         var size = prompt( "Largeur de l’image (en px)", window.innerWidth );
@@ -539,21 +539,21 @@
           size: size,
           clip: true,
           zoomRatio: 1,
-          background: "#000",
+          background: "#666",
           labels: false
         });
       };
     }
 
     // resizer
-    var els = canvas.getElementsByClassName( 'resize' );
-    if (els.length) {
-      els[0].net = this;
-      els[0].onmousedown = function(e) {
+    var el = document.querySelector('.but.resize');
+    if (el) {
+      el.net = this;
+      el.onmousedown = function(e) {
         asigmot.stopForce();
         var html = document.documentElement;
         html.sigma = this.net.sigma; // give an handle to the sigma instance
-        html.dragO = this.net.canvas;
+        html.dragO = this.net.zediv;
         html.dragX = e.clientX;
         html.dragY = e.clientY;
         html.dragWidth = parseInt( document.defaultView.getComputedStyle( html.dragO ).width, 10 );
@@ -569,13 +569,13 @@
   }
     // global static
   sigmot.prototype.doDrag = function(e) {
-    this.canvas.style.width = ( this.dragWidth + e.clientX - this.dragX ) + 'px';
-    this.canvas.style.height = ( this.dragHeight + e.clientY - this.dragY ) + 'px';
+    this.zediv.style.width = ( this.dragWidth + e.clientX - this.dragX ) + 'px';
+    this.zediv.style.height = ( this.dragHeight + e.clientY - this.dragY ) + 'px';
   };
 
   sigmot.prototype.stopDrag = function(e) {
-    var height = this.canvas.offsetHeight;
-    var width = this.canvas.offsetWidth;
+    var height = this.zediv.offsetHeight;
+    var width = this.zediv.offsetWidth;
 
     this.removeEventListener( 'mousemove', sigmot.doDrag, false );
     this.removeEventListener( 'mouseup', sigmot.stopDrag, false );
