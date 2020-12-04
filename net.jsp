@@ -132,15 +132,16 @@ boolean first;
 Analyzer analyzer = alix.analyzer();
 String glob = tools.getString("glob", "ddr1977aena*");
 final int ntopmid = 10;
-final int ntopmax = 30;
+final int ntopmax = 50;
 int ntop = tools.getInt("words", -1);
 if (ntop > ntopmax) ntop = ntopmax;
 String words = tools.getString("words", null);
 int width = tools.getInt("width", 20);
 int planets = tools.getInt("planets", 50);
 
-
-List<File> ls = Dir.ls("/var/www/html/ddr-livres/"+glob+".xml");
+String files = "/var/www/html/critique/bergson/*.xml";
+// String files = "/var/www/html/ddr-livres/"+glob+".xml";
+List<File> ls = Dir.ls(files);
 TagFilter tagfilter = new TagFilter()
   .setGroup(Tag.SUB).setGroup(Tag.ADJ)
   .setGroup(Tag.VERB).clear(Tag.VERBaux).clear(Tag.VERBsup)
@@ -315,7 +316,7 @@ out.println("\n  ],");
    Node node = net.node(i);
    if (first) first = false;
    else out.println(", ");
-   String color = "rgba(230, 230, 255, 1)";
+   String color = "rgba(200, 200, 255, 1)";
    if (node.type() == STAR || node.type() == NOVA) color = "rgba(255, 0, 0, 1)";
    else if (Tag.isSub(node.tag())) color = "rgba(255, 255, 255, 1)";
    else if (Tag.isName(node.tag())) color = "rgba(0, 255, 0, 1)";
