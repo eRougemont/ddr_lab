@@ -9,6 +9,7 @@
 <%@ page import="java.nio.file.Files" %>
 <%@ page import="java.nio.file.StandardOpenOption" %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
+<%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.List" %>
 
 <%@ page import="org.apache.lucene.analysis.Analyzer" %>
@@ -64,6 +65,9 @@ html, body {
 }
 body {
   background-color: #666;
+}
+body,
+h1 {
   font-family: sans-serif;
   color: #fff;
 }
@@ -125,6 +129,7 @@ input.nb {
     </style>
   </head>
   <body>
+
   <%
 boolean first;
 
@@ -139,8 +144,9 @@ String words = tools.getString("words", null);
 int width = tools.getInt("width", 20);
 int planets = tools.getInt("planets", 50);
 
-String files = "/var/www/html/critique/bergson/*.xml";
-// String files = "/var/www/html/ddr-livres/"+glob+".xml";
+String srcdir = pageContext.getServletContext().getInitParameter("ddrlab.srcdir");
+if (!srcdir.endsWith("/")) srcdir = srcdir + "/";
+String files = srcdir + glob + ".xml";
 List<File> ls = Dir.ls(files);
 TagFilter tagfilter = new TagFilter()
   .setGroup(Tag.SUB).setGroup(Tag.ADJ)
