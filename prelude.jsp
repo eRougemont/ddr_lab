@@ -165,10 +165,10 @@ final long time = System.nanoTime();
 final Jsp tools = new Jsp(request, response, pageContext);
 
 final String baseName = "rougemont";
-final String baseDir = getServletContext().getRealPath("WEB-INF/");
+final String baseDir = getServletContext().getRealPath("WEB-INF") + "/";
 final Properties props = new Properties();
 props.loadFromXML(new FileInputStream(baseDir + baseName + ".xml"));
-final Alix alix = Alix.instance(baseDir +"/"+ baseName, new FrAnalyzer());
+final Alix alix = Alix.instance(baseDir + baseName, new FrAnalyzer());
 final IndexSearcher searcher = alix.searcher();
 final IndexReader reader = alix.reader();
 %>
