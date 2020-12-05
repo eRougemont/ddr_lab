@@ -288,13 +288,13 @@ for (int i = 0; i < max; i++) {
   if (source.type() != STAR  && target.type() != STAR) continue;
   if (source.type() == NOVA || target.type() == NOVA) continue;
   if (source.type() == STAR) {
-    if (source.counterInc() >= planets) source.type(NOVA);
+    if (source.scoreInc() >= planets) source.type(NOVA);
   }
   else {
     source.type(PLANET);
   }
   if (target.type() == STAR) {
-    if (target.counterInc() >= planets) target.type(NOVA);
+    if (target.scoreInc() >= planets) target.type(NOVA);
   }
   else {
     target.type(PLANET);
@@ -303,7 +303,7 @@ for (int i = 0; i < max; i++) {
   nodeset.set(target.id());
   if (first) first = false;
   else out.println(", ");
-  out.print("    {id:'e" + edge.id() + "', source:'n" + source.id() + "', target:'n" + target.id() + "', size:" + edge.size() 
+  out.print("    {id:'e" + edge.id() + "', source:'n" + source.id() + "', target:'n" + target.id() + "', size:" + edge.score() 
   + ", color:'rgba(0, 0, 0, 0.3)'"
   + "}");
 }
@@ -329,7 +329,7 @@ out.println("\n  ],");
    // else if (Tag.isVerb(node.tag())) color = "rgba(0, 0, 128, 0.5)";
    // else if (Tag.isAdj(node.tag())) color = "rgba(128, 128, 255, 1)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.id() + "', label:'" + node.label().toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.size())) // node.count()
+   out.print("    {id:'n" + node.id() + "', label:'" + node.label().toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count())) // node.count()
    + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
    + ", color:'" + color + "'"
    + "}");
