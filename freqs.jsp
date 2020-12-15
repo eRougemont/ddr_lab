@@ -5,13 +5,11 @@
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsAtt" %>
 <%@ page import="alix.lucene.analysis.FrDics" %>
 <%@ page import="alix.lucene.analysis.FrDics.LexEntry" %>
-<%@ page import="alix.lucene.search.Freqs" %>
+<%@ page import="alix.lucene.search.FieldStats" %>
 <%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.lucene.util.Cooc" %>
 <%@ page import="alix.util.Char" %>
-<%!
-
-private static final int OUT_HTML = 0;
+<%!private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
 private static final int OUT_JSON = 2;
 
@@ -144,9 +142,7 @@ static private void jsonLine(StringBuilder sb, final TopTerms dic, final Tag tag
   sb.append(Tag.label(tag.group()));
   sb.append("\"}");
   sb.append("}");
-}
-
-%>
+}%>
 <%
   //parameters
 final String q = tools.getString("q", null);
@@ -175,7 +171,7 @@ if (corpus != null) filter = corpus.bits();
 */
 
 if (q == null) {
-  Freqs freqs = alix.freqs(field);
+  FieldStats freqs = alix.fieldStats(field);
   dic = freqs.topTerms(filter);
   dic.sortByOccs();
 }

@@ -147,7 +147,6 @@ int planets = tools.getInt("planets", 50);
 String srcdir = pageContext.getServletContext().getInitParameter("ddrlab.srcdir");
 if (!srcdir.endsWith("/")) srcdir = srcdir + "/";
 String files = srcdir + glob + ".xml";
-List<File> ls = Dir.ls(files);
 TagFilter tagfilter = new TagFilter()
   .setGroup(Tag.SUB).setGroup(Tag.ADJ)
   .setGroup(Tag.VERB).clear(Tag.VERBaux).clear(Tag.VERBsup)
@@ -155,6 +154,7 @@ TagFilter tagfilter = new TagFilter()
 ;
 CharsNet net = new CharsNet(width, false);
 TokenStream stream;
+List<File> ls = Dir.ls(files);
 for (File entry : ls) {
   Path path = entry.toPath();
   String text = Files.readString(path);

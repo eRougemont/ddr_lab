@@ -42,11 +42,16 @@
 <%@ page import="alix.lucene.search.CollectorBits" %>
 <%@ page import="alix.lucene.search.Corpus" %>
 <%@ page import="alix.lucene.search.CorpusQuery" %>
+<%@ page import="alix.lucene.search.FieldStats" %>
 <%@ page import="alix.lucene.search.SimilarityOccs" %>
 <%@ page import="alix.lucene.search.SimilarityTheme" %>
+<%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.lucene.search.TopTerms" %>
-<%@ page import="alix.util.EnumOption" %>
+<%@ page import="alix.lucene.util.Rail" %>
+<%@ page import="alix.web.Distance" %>
+<%@ page import="alix.web.Select" %>
 <%@ page import="alix.util.ML" %>
+<%@ page import="alix.util.TopArray" %>
 <%!
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
@@ -77,24 +82,6 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
   .build();
 }
 
-/**
- * Sort options for facets or corpus
- */
-public static String options(final EnumOption option) throws IOException
-{
-  StringBuilder sb = new StringBuilder();
-  for (EnumOption opt : option.list()) {
-    String value = opt.toString();
-    sb.append("<option");
-    if (option == opt) sb.append(" selected=\"selected\"");
-    sb.append(" value=\"");
-    sb.append(value);
-    sb.append("\">");
-    sb.append(opt.label());
-    sb.append("</option>\n");
-  }
-  return sb.toString();
-}
 
 
 /**
@@ -164,11 +151,10 @@ public static Similarity getSimilarity(final String sortSpec)
 final long time = System.nanoTime();
 final Jsp tools = new Jsp(request, response, pageContext);
 
-final String baseName = "rougemont";
-final String baseDir = getServletContext().getRealPath("WEB-INF") + "/";
+final String baseDir = getServletContext().getRealPath("WEB-INF") ;
 final Properties props = new Properties();
-props.loadFromXML(new FileInputStream(baseDir + baseName + ".xml"));
-final Alix alix = Alix.instance(baseDir + baseName, new FrAnalyzer());
+props.loadFromXML(new FileInputStream(baseDir + "/" + baseName + ".xml"));
+final Alix alix = Alix.instance(baseDir + "/bases/" + baseName, new FrAnalyzer());
 final IndexSearcher searcher = alix.searcher();
 final IndexReader reader = alix.reader();
 %>

@@ -1,3 +1,4 @@
-/bin/
-/WEB-INF/rougemont.xml
-/WEB-INF/rougemont*/
+/WEB-INF/*.xml
+!/WEB-INF/web.xml
+/WEB-INF/bases
+
