@@ -42,7 +42,7 @@ private final int FREQ_FLOOR = 5;
 private final static TagFilter tagSem = new TagFilter();
 static {
   tagSem.setSub();
-  tagSem.setAdj();
+  // tagSem.setAdj();
 }
 
 
