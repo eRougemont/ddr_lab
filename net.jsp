@@ -36,6 +36,14 @@
 
 
 <%!
+/** most significant words, no happax (could bug for smal texts) */
+private final int FREQ_FLOOR = 5;
+/** most semantic words, filter by pos */
+private final static TagFilter tagSem = new TagFilter();
+static {
+  tagSem.setSub();
+  tagSem.setAdj();
+}
 
 
 private final int STAR = 1;
@@ -213,7 +221,7 @@ input.nb {
   <body>
 
   <%
-    final String fieldName = "text";
+  final String fieldName = "text";
   boolean first;
   final int ntopmid = 10;
   final int ntopmax = 50;
@@ -236,7 +244,7 @@ input.nb {
   
   FieldStats fstats = alix.fieldStats(fieldName);
   Rail rail = alix.rail(fieldName);
-  long[] freqs = rail.freqs(filter);
+  long[] freqs = rail.freqs(filter); // term frequencies for this query
   BytesRef bytes = new BytesRef();
 
   Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
@@ -263,13 +271,21 @@ input.nb {
     }
     
   }
-      // if no nodes found, get the first non stop word for the field
-      // filter for the corpus
+  // if no nodes found, get the first non stop word for the field
+  // filter for the corpus
   if (alist.size() < 1) {
     TopArray top = new TopArray(ntop);
+    CharsAtt chars = new CharsAtt();
     for (int termId = 0, length = freqs.length; termId < length; termId++) {
+      if (freqs[termId] < FREQ_FLOOR) continue;
       if (fstats.isStop(termId)) continue;
-      // no ADJ nor ADV ?
+      // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
+      fstats.label(termId, bytes);
+      chars.copy(bytes);
+      FrDics.LexEntry entry = FrDics.word(chars);
+      if (entry != null) {
+        if (!tagSem.accept(entry.tag)) continue;
+      }
       top.push(termId, freqs[termId]);
     }
     first = true;
@@ -335,7 +351,7 @@ out.println("  edges: [");
 // loop on all stars, get there coocs, store the nodes 
 TreeSet<Node> nodeSet = new TreeSet<Node>();
 Node tester = new Node(0, null);
-final int context = (width - 1) / 2;
+final int context = (width + 1) / 2;
 int edgeId = 0;
 long[] cooc = null;
 // first, loop on stars, to add them to the nodeSet
