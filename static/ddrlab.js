@@ -24,3 +24,23 @@ function clearForm(form) {
     }
   }
 }
+
+
+el = document.getElementById("checkall");
+if (el) {
+  el.addEventListener('click', () => {
+    let checked = el.checked;
+    let form = el.form;
+    let els = form.elements;
+    for(i=0; i<els.length; i++) {
+      let el = els[i];
+      let type = el.type.toLowerCase();
+      switch(type) {
+        case "checkbox":
+          el.checked = checked;
+          break;
+      }
+    }
+  });
+}
+

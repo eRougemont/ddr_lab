@@ -11,6 +11,7 @@
 <%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.TreeSet" %>
 
 <%@ page import="org.apache.lucene.analysis.Analyzer" %>
 <%@ page import="org.apache.lucene.analysis.TokenStream" %>
@@ -18,6 +19,7 @@
 <%@ page import="org.apache.lucene.analysis.tokenattributes.CharTermAttribute" %>
 <%@ page import="org.apache.lucene.analysis.tokenattributes.FlagsAttribute" %>
 <%@ page import="org.apache.lucene.analysis.tokenattributes.OffsetAttribute" %>
+<%@ page import="org.apache.lucene.util.BytesRef" %>
 
 <%@ page import="alix.lucene.analysis.CharsNet" %>
 <%@ page import="alix.lucene.analysis.CharsNet.Node" %>
@@ -34,16 +36,95 @@
 
 
 <%!
+
+
 private final int STAR = 1;
 private final int NOVA = 2;
 private final int PLANET = -1;
+
+public static TopArray top(FieldStats fstats, final int pivotId, final long[] cooc, int limit, final Distance distance)
+{
+  TopArray top = new TopArray(limit);
+  for (int termId = 0, length = cooc.length; termId < length; termId++) {
+    if (fstats.isStop(termId)) continue; // sauter les mots vides
+    long m11 = cooc[termId];
+    long m10 = fstats.freq(termId) - m11;
+    long m01 = fstats.freq(pivotId) - m11;
+    // TODO, should be the sub corpus filtered total occs
+    long m00 = fstats.occsAll;
+    double score = distance.score(m11, m10, m01, m00);
+    top.push(termId, score);
+  }
+  return top;
+}
+
+
+static class Node implements Comparable<Node>
+{
+  /** persistent id */
+  private int id;
+  /** persistent label */
+  private String label;
+  /** persistent tag from source  */
+  // private final int tag;
+  /** growable size */
+  private long count;
+  /** mutable type */
+  private int type;
+  /** a counter locally used */
+  private double score;
+  
+  public Node(final int termId, final String label)
+  {
+    this.label = label;
+    this.id = termId;
+  }
+  
+  public Node type(final int type)
+  {
+    this.type = type;
+    return this;
+  }
+
+  public Node id(final int id)
+  {
+    this.id = id;
+    return this;
+  }
+
+  public Node count(final long count)
+  {
+    this.count = count;
+    return this;
+  }
+  
+  public int compareTo(Node o)
+  {
+    return Integer.compare(this.id, o.id);
+  }
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o == null) return false;
+    if (!(o instanceof Node)) return false;
+    return (this.id == ((Node)o).id);
+  }
+  
+  @Override
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(id).append(":").append(label).append(" (").append(type).append(", ").append(count).append(")");
+    return sb.toString();
+  }
+}
+
 /*
       <form id="form" style="position: absolute; z-index: 2;">
         <input name="term" value="conscience"/>
         <label onchange="this.form.submit()">Locutions <input name="loc" type="checkbox" /></label>
       </form>
-*/
-%>
+*/%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -57,6 +138,7 @@ private final int PLANET = -1;
     <script src="vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
     <script src="vendor/sigma/sigma.layout.noverlap.js">//</script>
     <script src="static/sigmot.js">//</script>
+    <script src="static/ddrlab.js">//</script>
     <link rel="stylesheet" type="text/css" href="static/ddrlab.css"/>
     <style>
 html, body {
@@ -131,121 +213,95 @@ input.nb {
   <body>
 
   <%
-boolean first;
-
-
-Analyzer analyzer = alix.analyzer();
-String glob = tools.getString("glob", "ddr1977aena*");
-final int ntopmid = 10;
-final int ntopmax = 50;
-int ntop = tools.getInt("words", -1);
-if (ntop > ntopmax) ntop = ntopmax;
-String words = tools.getString("words", null);
-int width = tools.getInt("width", 20);
-int planets = tools.getInt("planets", 50);
-
-String srcdir = pageContext.getServletContext().getInitParameter("ddrlab.srcdir");
-if (!srcdir.endsWith("/")) srcdir = srcdir + "/";
-String files = srcdir + glob + ".xml";
-TagFilter tagfilter = new TagFilter()
-  .setGroup(Tag.SUB).setGroup(Tag.ADJ)
-  .setGroup(Tag.VERB).clear(Tag.VERBaux).clear(Tag.VERBsup)
-  .setGroup(Tag.NAME).set(Tag.NULL)
-;
-CharsNet net = new CharsNet(width, false);
-TokenStream stream;
-List<File> ls = Dir.ls(files);
-for (File entry : ls) {
-  Path path = entry.toPath();
-  String text = Files.readString(path);
-  // text = "<p>Au train où elle va, l’humanité court vers sa perte programmée. Mais le chemin de fer d'intérêt local, dans son écrasante majorité, elle ne veut pas le savoir";
-  stream = analyzer.tokenStream("cloud", new StringReader(text));
-  
-  // get the CharTermAttribute from the TokenStream
-  CharsAtt term = (CharsAtt)stream.addAttribute(CharTermAttribute.class);
-  CharsAtt orth = (CharsAtt)stream.addAttribute(CharsOrthAtt.class);
-  CharsAtt lem = (CharsAtt)stream.addAttribute(CharsLemAtt.class);
-  FlagsAttribute flags = stream.addAttribute(FlagsAttribute.class);
-  OffsetAttribute offsets = stream.addAttribute(OffsetAttribute.class);
-  
-  stream.reset();
-  while (stream.incrementToken()) {
-    /*
-    out.println(
-      "<li>"
-      + term 
-      + "\t" + orth  
-      + "\t" + Tag.label(flags.getFlags())
-      + "\t" + lem  
-      + " |" + text.substring(offsets.startOffset(), offsets.endOffset()) + "|"
-      + "</li>"
-    );
-    */
-
-    int tag = flags.getFlags();
-    if (FrDics.isStop(orth)) continue;
-    if (Tag.isVerb(tag)) continue;
-    
-    
-    if (!tagfilter.accept(tag)) continue;
-    if (lem.length() > 0) net.inc(lem, tag);
-    else if (orth.length() > 0) net.inc(orth, tag);
-    else net.inc(term, tag);
-  }
-}
-Edge[] edgesAll = net.edges();
-Node[] nodesAll = net.nodes();
-//the focus nodes
-
-StringBuilder sb = new StringBuilder();
-if (words != null) {
-  first = true;
-  int count = 0;
-  for (String w: words.split("\\s*[\n,;]\\s*")) {
-    Node node = net.node(w);
-    if (node == null) continue;
-    node.type(STAR);
-    if (first) first = false;
-    else sb.append(", ");
-    sb.append(node.label());
-    if (++count >= ntopmax) break;
-  }
-  if (count > 0) words = sb.toString();
-  else words = null;
-}
-
-if (words == null) {
+    final String fieldName = "text";
+  boolean first;
+  final int ntopmid = 10;
+  final int ntopmax = 50;
+  int ntop = tools.getInt("words", 30);
   if (ntop < 1) ntop = ntopmid;
-  first = true;
-  int count = 0;
-  for (int i = 0; i < nodesAll.length; i++) {
-    Node node = nodesAll[i];
-    if (Tag.isAdj(node.tag())) continue;
-    node.type(STAR);
-    if (first) first = false;
-    else sb.append(", ");
-    sb.append(node.label());
-    if (++count >= ntop) break;
+  else if (ntop > ntopmax) ntop = ntopmax;
+  String words = tools.getString("words", null);
+  int width = tools.getInt("width", 10, baseName+"Width");
+  if (width < 3) width = 3;
+  
+  final int planetMax = 50;
+  final int planetMid = 10;
+  int planets = tools.getInt("planets", planetMid, baseName+"Planets");
+  if (planets > planetMax) planets = planetMax;
+  if (planets < 1) planets = planetMid;
+
+  BitSet filter = null;
+  Corpus corpus = (Corpus)session.getAttribute(corpusKey);
+  if (corpus != null) filter = corpus.bits();
+  
+  FieldStats fstats = alix.fieldStats(fieldName);
+  Rail rail = alix.rail(fieldName);
+  long[] freqs = rail.freqs(filter);
+  BytesRef bytes = new BytesRef();
+
+  Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
+
+
+  // if we add nodes here, we wil have to take a copy of the 
+  ArrayList<String> alist = new ArrayList<String>();
+  // get the focus nodes from query
+  if (words != null) {
+    String[] terms = alix.qAnalyze(words); // parse query as a set of terms
+    first = true;
+    int count = 0;
+    // rewrite queries, with only known terms
+    for (String w: terms) {
+      int termId = fstats.termId(w);
+      if (termId < 0) continue;
+      long freq = freqs[termId];
+      if (freq < 1) continue;
+      if (first) first = false;
+      alist.add(w);
+      if (++count >= ntopmax) break;
+    }
+    if (alist.size() > 0) {
+    }
+    
   }
-  words = sb.toString();
-}
-
-
-
-%>
+      // if no nodes found, get the first non stop word for the field
+      // filter for the corpus
+  if (alist.size() < 1) {
+    TopArray top = new TopArray(ntop);
+    for (int termId = 0, length = freqs.length; termId < length; termId++) {
+      if (fstats.isStop(termId)) continue;
+      // no ADJ nor ADV ?
+      top.push(termId, freqs[termId]);
+    }
+    first = true;
+    int count = 0;
+    
+    for (TopArray.Entry entry: top) {
+      final String w = fstats.label(entry.id(), bytes).utf8ToString();
+      alist.add(w);
+      
+    }
+  }
+  String[] stars = alist.toArray(new String[alist.size()]);
+  words = String.join(", ", stars);
+  // 
+  %>
 	  <div id="graphcont">
        <form id="form">
-         <label for="glob">livre </label>
-         <input name="glob" value="<%= glob %>" size="5"/>
+         <button type="button" onclick="clearForm(this.form); this.form.submit()">❌</button>
          <label for="words">pivots </label>
          <div class="elastic">
-           <input name="words" value="<%= words %>" size="100"/>
+           <input name="words" value="<%=words%>" size="100"/>
          </div>
          <label for="width">fenêtre </label>
-         <input name="width" value="<%= width %>" class="nb" size="2"/>
+         <input name="width" value="<%=width%>" class="nb" size="2"/>
          <label for="planets">rayons </label>
-         <input name="planets" value="<%= planets %>" class="nb" size="2"/>
-         <button type="submit">O</button>
+         <input name="planets" value="<%=planets%>" class="nb" size="2"/>
+         <label for="distance">Distance </label>
+         <select name="distance" oninput="this.form.submit()">
+           <option value="">…distance</option>
+            <%= distance.options() %>
+         </select>
+         <button type="submit">▷</button>
        </form>
 	    <div id="graph" class="graph" oncontextmenu="return false">
 	    </div>
@@ -272,64 +328,65 @@ if (words == null) {
 	  </div>
    <script>
 <%
-int max;
-
-out.println("var data = {");
-
-out.println("  edges: [");
-// loop on all edges to select nmax edges by star
-max = edgesAll.length;
-java.util.BitSet nodeset = new java.util.BitSet(net.nodecount());
 first = true;
-for (int i = 0; i < max; i++) {
-  final Edge edge = edgesAll[i];
-  final Node source = edge.source();
-  final Node target = edge.target();
-  if (source.type() != STAR  && target.type() != STAR) continue;
-  if (source.type() == NOVA || target.type() == NOVA) continue;
-  if (source.type() == STAR) {
-    if (source.scoreInc() >= planets) source.type(NOVA);
-  }
-  else {
-    source.type(PLANET);
-  }
-  if (target.type() == STAR) {
-    if (target.scoreInc() >= planets) target.type(NOVA);
-  }
-  else {
-    target.type(PLANET);
-  }
-  nodeset.set(source.id());
-  nodeset.set(target.id());
-  if (first) first = false;
-  else out.println(", ");
-  out.print("    {id:'e" + edge.id() + "', source:'n" + source.id() + "', target:'n" + target.id() + "', size:" + edge.score() 
-  + ", color:'rgba(0, 0, 0, 0.3)'"
-  + "}");
+out.println("var data = {");
+out.println("  edges: [");
+
+// loop on all stars, get there coocs, store the nodes 
+TreeSet<Node> nodeSet = new TreeSet<Node>();
+Node tester = new Node(0, null);
+final int context = (width - 1) / 2;
+int edgeId = 0;
+long[] cooc = null;
+// first, loop on stars, to add them to the nodeSet
+for (String starLabel: stars) {
+  final int starId = fstats.termId(starLabel);
+  final long starFreq = freqs[starId]; // local freq
+  nodeSet.add(new Node(starId, starLabel).count(starFreq).type(STAR));
 }
+
+// reloop to get cooc
+for (String starLabel: stars) {
+  final int starId = fstats.termId(starLabel);
+  final long starFreq = freqs[starId]; // local freq
+  // out.println("\n get="+nodeSet.contains(tester.id(starId)));
+  if (cooc != null) Arrays.fill(cooc, 0); // reuse cooc, wash it before
+  cooc = rail.cooc(new String[]{starLabel}, context, context, filter, cooc);
+  TopArray top = top(fstats, starId, cooc, planets, distance);
+  for (TopArray.Entry entry: top) {
+    int planetId = entry.id();
+    if (first) first = false;
+    else out.println(", ");
+    out.print("    {id:'e" + (edgeId++) + "', source:'n" + starId + "', target:'n" + planetId + "', size:" + cooc[planetId] 
+    + ", color:'rgba(0, 0, 0, 0.3)'"
+    + "}");
+    ;
+    if (nodeSet.contains(tester.id(planetId))) continue;
+    String planetLabel = fstats.label(planetId, bytes).utf8ToString();
+    long planetFreq = freqs[starId];
+    Node planet = new Node(planetId, planetLabel).count(planetFreq).type(PLANET);
+    // out.println("\ntester="+tester+" planet="+planet+" eqals="+tester.equals(planet)+" contains="+(nodeSet.contains(tester)));
+    nodeSet.add(planet);
+  }
+  
+}
+
 out.println("\n  ],");
 
 
-
-
-  // 
-  
-  
-  
- out.println("  nodes: [");
- first = true;
- for (int i = nodeset.nextSetBit(0); i >= 0; i = nodeset.nextSetBit(i+1)) {
-   Node node = net.node(i);
+out.println("  nodes: [");
+first = true;
+for (Node node: nodeSet) {
    if (first) first = false;
    else out.println(", ");
-   String color = "rgba(200, 200, 255, 1)";
-   if (node.type() == STAR || node.type() == NOVA) color = "rgba(255, 0, 0, 1)";
-   else if (Tag.isSub(node.tag())) color = "rgba(255, 255, 255, 1)";
-   else if (Tag.isName(node.tag())) color = "rgba(0, 255, 0, 1)";
+   String color = "rgba(255, 255, 255, 1)";
+   if (node.type == STAR || node.type == NOVA) color = "rgba(255, 0, 0, 1)";
+   // else if (Tag.isSub(node.tag())) color = "rgba(255, 255, 255, 1)";
+   // else if (Tag.isName(node.tag())) color = "rgba(0, 255, 0, 1)";
    // else if (Tag.isVerb(node.tag())) color = "rgba(0, 0, 128, 0.5)";
    // else if (Tag.isAdj(node.tag())) color = "rgba(128, 128, 255, 1)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.id() + "', label:'" + node.label().toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count())) // node.count()
+   out.print("    {id:'n" + node.id + "', label:'" + node.label.toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count)) // node.count()
    + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
    + ", color:'" + color + "'"
    + "}");
@@ -340,7 +397,6 @@ out.println("\n  ],");
 
 
  out.println("}");
-
 
 %>
 var graph = new sigmot('graph', data);

@@ -35,7 +35,11 @@
 <%@ page import="alix.util.IntPair" %>
 
 
-<%!final String baseName = "piaget";
+<%!
+static {
+  // local rename
+  baseName = "piaget";
+}
 
 
 private final int STAR = 1;

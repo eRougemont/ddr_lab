@@ -53,6 +53,9 @@
 <%@ page import="alix.util.ML" %>
 <%@ page import="alix.util.TopArray" %>
 <%!
+static String baseName = "rougemont";
+
+
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
 static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
@@ -157,4 +160,5 @@ props.loadFromXML(new FileInputStream(baseDir + "/" + baseName + ".xml"));
 final Alix alix = Alix.instance(baseDir + "/bases/" + baseName, new FrAnalyzer());
 final IndexSearcher searcher = alix.searcher();
 final IndexReader reader = alix.reader();
+final String corpusKey = "CORPUS_"+baseName;
 %>

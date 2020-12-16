@@ -10,6 +10,12 @@
  * orange: #ea5b0c; rgb(234, 91, 12);
  */
 body,
+html {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+body,
 select,
 #header .base mark {
   font-family: "Open Sans", "Ubuntu", "Calibri", "Segoe UI", Avenir, Helvetica, sans-serif;
@@ -249,12 +255,6 @@ input.start {
   min-width: 8rem;
   max-width: 55rem;
   width: 90%;
-}
-
-main {
-  padding-left: 2rem;
-  padding-right: 2rem;
-  padding-bottom: 2rem;
 }
 
 main.right {
@@ -674,10 +674,6 @@ body.corpus caption {
   text-align: left;
 }
 
-body.corpus main {
-  padding: 1rem;
-}
-
 td.title a {
   text-decoration: none;
   display: block;
@@ -747,9 +743,6 @@ body.facet p {
   margin: 0 0 0 1rem;
 }
 
-body.facet main {
-  padding: 1rem 0.2rem 1rem 0.5rem;
-}
 
 body.facet div.term {
   white-space: nowrap;
@@ -1166,7 +1159,6 @@ a.tk5 {
 /**
  * Search results, kwic or snips
  */
-body.results main {}
 
 body.results > header {
   text-align: center;
