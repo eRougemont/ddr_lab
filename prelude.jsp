@@ -151,6 +151,7 @@ public static Similarity getSimilarity(final String sortSpec)
 
 %>
 <%
+response.setHeader("X-Frame-Options", "SAMEORIGIN");
 final long time = System.nanoTime();
 final Jsp tools = new Jsp(request, response, pageContext);
 
