@@ -49,15 +49,15 @@ private final int PLANET = -1;
   <head>
     <meta charset="UTF-8"/>
     <title>Graphe de texte</title>
-    <script src="vendor/sigma/sigma.min.js">//</script>
-    <script src="vendor/sigma/sigma.plugins.dragNodes.js">//</script>
-    <script src="vendor/sigma/sigma.exporters.image.js">//</script>
-    <script src="vendor/sigma/sigma.plugins.animate.js">//</script>
-    <script src="vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
-    <script src="vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
-    <script src="vendor/sigma/sigma.layout.noverlap.js">//</script>
-    <script src="static/sigmot.js">//</script>
-    <link rel="stylesheet" type="text/css" href="static/ddrlab.css"/>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.min.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.exporters.image.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.animate.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.noverlap.js">//</script>
+    <script src="<%= hrefHome %>static/sigmot.js">//</script>
+    <link rel="stylesheet" type="text/css" href="<%= hrefHome %>static/ddrlab.css"/>
     <style>
 html, body {
   height: 100%; 
@@ -183,11 +183,11 @@ for (File entry : ls) {
     */
 
     int tag = flags.getFlags();
-    if (FrDics.isStop(orth)) continue;
-    if (Tag.isVerb(tag)) continue;
+    // if (FrDics.isStop(orth)) continue;
+    // if (Tag.isVerb(tag)) continue;
     
     
-    if (!tagfilter.accept(tag)) continue;
+    // if (!tagfilter.accept(tag)) continue;
     if (lem.length() > 0) net.inc(lem, tag);
     else if (orth.length() > 0) net.inc(orth, tag);
     else net.inc(term, tag);
