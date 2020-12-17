@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@include file="prelude.jsp" %>
+<%@include file="jsp/prelude.jsp" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="java.util.Locale" %>
@@ -133,7 +133,7 @@ main iframe {
     %>
         <button type="submit">Enregistrer</button>
       </form>
-      <iframe src="net.jsp"> </iframe>
+      <iframe src="jsp/net.jsp"> </iframe>
     </main>
     <script src="static/ddrlab.js">//</script>
   </body>

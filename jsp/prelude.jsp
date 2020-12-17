@@ -49,11 +49,13 @@
 <%@ page import="alix.lucene.search.TopTerms" %>
 <%@ page import="alix.lucene.util.Rail" %>
 <%@ page import="alix.web.Distance" %>
+<%@ page import="alix.web.DocSort" %>
 <%@ page import="alix.web.Select" %>
 <%@ page import="alix.util.ML" %>
 <%@ page import="alix.util.TopArray" %>
 <%!
 static String baseName = "rougemont";
+static String hrefHome = "../";
 
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
@@ -62,7 +64,7 @@ static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
 static final DecimalFormat dfdec2 = new DecimalFormat("0.##", ensyms);
 
 /** Field name containing canonized text */
-public static String TEXT = "text";
+final static String TEXT = "text";
 /** Field Name with int date */
 final static String YEAR = "year";
 /** Key prefix for current corpus in session */
@@ -92,23 +94,62 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
  * Will return null if there is no terms in the query,
  * even if there is a corpus.
  */
-public static Query getQuery(Alix alix, String q, Corpus corpus) throws IOException
+public static Query buildQuery(Alix alix, String q, Corpus corpus) throws IOException
 {
-  String fieldName = TEXT;
-  Query qWords = alix.qParse(fieldName, q);
-  if (qWords == null) {
-    return null;
-    // return filter;
-  }
-  if (corpus != null) {
-    Query filter = new CorpusQuery(corpus.name(), corpus.bits());
+  Query qFilter = null;
+  if (corpus != null) qFilter = new CorpusQuery(corpus.name(), corpus.bits());
+  Query qWords = alix.qParse(TEXT, q);
+  if (qWords != null && qFilter != null) {
     return new BooleanQuery.Builder()
-      .add(filter, Occur.FILTER)
+      .add(qFilter, Occur.FILTER)
       .add(qWords, Occur.MUST)
       .build();
   }
-  return qWords;
+  if (qWords != null) return qWords;
+  if (qFilter != null) return qFilter;
+  return QUERY_CHAPTER;
 }
+
+/**
+ * Get a cached set of results.
+ * Ensure to always give something.
+ * Seems quite fast (2ms), no cache needed.
+ * Cache bug if corpus is changed under same name.
+ */
+public TopDocs getTopDocs(PageContext page, Alix alix, Corpus corpus, String q, DocSort sorter) throws IOException
+{
+  Query query = buildQuery(alix, q, corpus);
+  Sort sort = sorter.sort();
+  TopDocs topDocs = null;
+  IndexSearcher searcher = alix.searcher();
+  int totalHitsThreshold = Integer.MAX_VALUE;
+  final int numHits = alix.reader().maxDoc();
+  TopDocsCollector<?> collector;
+  SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
+  Sort sort2 = new Sort(sf2);
+  if (sort != null) {
+    collector = TopFieldCollector.create(sort, numHits, totalHitsThreshold);
+  }
+  else {
+    collector = TopScoreDocCollector.create(numHits, totalHitsThreshold);
+  }
+  /*
+  if (similarity != null) {
+    oldSim = searcher.getSimilarity();
+    searcher.setSimilarity(similarity);
+    searcher.search(query, collector);
+    // will it be fast enough to not affect other results ?
+    searcher.setSimilarity(oldSim);
+  }
+  else {
+  }
+  */
+  searcher.search(query, collector);
+  topDocs = collector.topDocs();
+  return topDocs;
+}
+
+
 
 
 /**
@@ -116,12 +157,7 @@ public static Query getQuery(Alix alix, String q, Corpus corpus) throws IOExcept
  */
 public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
 {
-  Query query = getQuery(alix, q, corpus);
-  
-  if (query == null) {
-    if (corpus == null) return null;
-    return corpus.bits();
-  }
+  Query query = buildQuery(alix, q, corpus);
   IndexSearcher searcher = alix.searcher();
   CollectorBits collector = new CollectorBits(searcher);
   searcher.search(query, collector);

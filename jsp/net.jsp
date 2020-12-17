@@ -138,16 +138,16 @@ static class Node implements Comparable<Node>
   <head>
     <meta charset="UTF-8"/>
     <title>Graphe de texte</title>
-    <script src="vendor/sigma/sigma.min.js">//</script>
-    <script src="vendor/sigma/sigma.plugins.dragNodes.js">//</script>
-    <script src="vendor/sigma/sigma.exporters.image.js">//</script>
-    <script src="vendor/sigma/sigma.plugins.animate.js">//</script>
-    <script src="vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
-    <script src="vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
-    <script src="vendor/sigma/sigma.layout.noverlap.js">//</script>
-    <script src="static/sigmot.js">//</script>
-    <script src="static/ddrlab.js">//</script>
-    <link rel="stylesheet" type="text/css" href="static/ddrlab.css"/>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.min.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.exporters.image.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.animate.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
+    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.noverlap.js">//</script>
+    <script src="<%= hrefHome %>static/sigmot.js">//</script>
+    <script src="<%= hrefHome %>static/ddrlab.js">//</script>
+    <link rel="stylesheet" type="text/css" href="<%= hrefHome %>static/ddrlab.css"/>
     <style>
 html, body {
   height: 100%; 
@@ -379,7 +379,7 @@ for (String starLabel: stars) {
     ;
     if (nodeSet.contains(tester.id(planetId))) continue;
     String planetLabel = fstats.label(planetId, bytes).utf8ToString();
-    long planetFreq = freqs[starId];
+    long planetFreq = freqs[planetId];
     Node planet = new Node(planetId, planetLabel).count(planetFreq).type(PLANET);
     // out.println("\ntester="+tester+" planet="+planet+" eqals="+tester.equals(planet)+" contains="+(nodeSet.contains(tester)));
     nodeSet.add(planet);
