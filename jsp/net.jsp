@@ -225,7 +225,7 @@ input.nb {
   boolean first;
   final int ntopmid = 10;
   final int ntopmax = 50;
-  int ntop = tools.getInt("words", 30);
+  int ntop = tools.getInt("words", 15);
   if (ntop < 1) ntop = ntopmid;
   else if (ntop > ntopmax) ntop = ntopmax;
   String words = tools.getString("words", null);
