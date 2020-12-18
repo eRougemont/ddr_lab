@@ -37,7 +37,10 @@
 
 <%!
 /** most significant words, no happax (could bug for smal texts) */
-private final int FREQ_FLOOR = 5;
+static private final int FREQ_FLOOR = 5;
+/** default number of focus on load */
+static private int hubsDefault = 15;
+
 /** most semantic words, filter by pos */
 private final static TagFilter tagSem = new TagFilter();
 static {
@@ -223,10 +226,9 @@ input.nb {
   <%
   final String fieldName = "text";
   boolean first;
-  final int ntopmid = 10;
   final int ntopmax = 50;
-  int ntop = tools.getInt("words", 15);
-  if (ntop < 1) ntop = ntopmid;
+  int ntop = tools.getInt("words", hubsDefault);
+  if (ntop < 1) ntop = hubsDefault;
   else if (ntop > ntopmax) ntop = ntopmax;
   String words = tools.getString("words", null);
   int width = tools.getInt("width", 10, baseName+"Width");
@@ -402,7 +404,7 @@ for (Node node: nodeSet) {
    // else if (Tag.isVerb(node.tag())) color = "rgba(0, 0, 128, 0.5)";
    // else if (Tag.isAdj(node.tag())) color = "rgba(128, 128, 255, 1)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.id + "', label:'" + node.label.toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count)) // node.count()
+   out.print("    {id:'n" + node.id + "', label:'" + node.label.toString().replace("'", "\\'") + "', size:" + dfdec2.format(10 * Math.sqrt(node.count)) // node.count
    + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
    + ", color:'" + color + "'"
    + "}");

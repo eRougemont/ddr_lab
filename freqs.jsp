@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="prelude.jsp" %>
+<%@ include file="jsp/prelude.jsp" %>
 <%@ page import="org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter" %>
 <%@ page import="alix.fr.Tag" %>
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsAtt" %>
@@ -7,7 +7,6 @@
 <%@ page import="alix.lucene.analysis.FrDics.LexEntry" %>
 <%@ page import="alix.lucene.search.FieldStats" %>
 <%@ page import="alix.lucene.search.TermList" %>
-<%@ page import="alix.lucene.util.Cooc" %>
 <%@ page import="alix.util.Char" %>
 <%!private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
@@ -170,17 +169,10 @@ Corpus corpus = (Corpus)session.getAttribute(corpusKey);
 if (corpus != null) filter = corpus.bits();
 */
 
-if (q == null) {
-  FieldStats freqs = alix.fieldStats(field);
-  dic = freqs.topTerms(filter);
-  dic.sortByOccs();
-}
-else {
-  Cooc cooc = alix.cooc(field);
-  TermList terms = alix.qTermList(TEXT, q);
-  dic = cooc.topTerms(terms, left, right, filter);
-  dic.sortByOccs();
-}
+FieldStats freqs = alix.fieldStats(field);
+dic = freqs.topTerms(filter);
+dic.sortByOccs();
+
 
 String format = tools.getString("format", null);
 // if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
@@ -248,7 +240,6 @@ else {
              %>
            <select name="cat" onchange="this.form.submit()">
               <option/>
-              <%= options(cat) %>
            </select>
            <button type="submit">▼</button>
         </form>

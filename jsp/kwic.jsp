@@ -83,6 +83,8 @@ if (topDocs != null) {
         %>
         
       </form>
+      <pre><%= alix.qParse(TEXT, q) %></pre>
+      <pre><%= Arrays.toString(terms) %></pre>
     <main>
     <%
 if (topDocs != null) {
@@ -112,16 +114,17 @@ if (topDocs != null) {
 
   while (i < max) {
     final int docId = scoreDocs[i].doc;
-    i++; // is now a public start
     final Doc doc = new Doc(alix, docId);
     String type = doc.doc().get(Alix.TYPE);
     // TODO Enenum
     if (type.equals(DocType.book.name())) continue;
     if (doc.doc().get(TEXT) == null) continue;
+    i++; // is now a public start
     href.setLength(hrefLen); // reset href
     href.append("&amp;id=").append(doc.id()).append("&amp;start=").append(i).append("&amp;sort=").append(sort.name());
     
     // show simple metadata
+    out.println("<!-- docId=" + docId + " -->");
     if (terms == null || terms.length == 0) {
       out.println("<article class=\"res\">");
       out.println("<header>");

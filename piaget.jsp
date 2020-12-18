@@ -6,5 +6,6 @@ static {
   baseName = "piaget";
   tagSem.setAdj();
   hrefHome="";
+  hubsDefault = 30;
 }
 %>
