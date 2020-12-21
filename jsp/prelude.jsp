@@ -5,10 +5,12 @@
 <%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Collections" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Properties" %>
 <%@ page import="java.util.Set" %>
@@ -32,27 +34,18 @@
 <%@ page import="org.apache.lucene.search.TopFieldCollector" %>
 <%@ page import="org.apache.lucene.search.TopScoreDocCollector" %>
 <%@ page import="org.apache.lucene.util.BitSet" %>
-<%@ page import="alix.web.Jsp" %>
-<%@ page import="alix.web.Mime" %>
-<%@ page import="alix.web.WordClass" %>
+<%@ page import="alix.fr.Tag" %>
+<%@ page import="alix.fr.Tag.TagFilter" %>
 <%@ page import="alix.lucene.Alix" %>
 <%@ page import="alix.lucene.Alix.FSDirectoryType" %>
 <%@ page import="alix.lucene.DocType" %>
 <%@ page import="alix.lucene.analysis.FrAnalyzer" %>
-<%@ page import="alix.lucene.search.CollectorBits" %>
-<%@ page import="alix.lucene.search.Corpus" %>
-<%@ page import="alix.lucene.search.CorpusQuery" %>
-<%@ page import="alix.lucene.search.FieldStats" %>
-<%@ page import="alix.lucene.search.SimilarityOccs" %>
-<%@ page import="alix.lucene.search.SimilarityTheme" %>
-<%@ page import="alix.lucene.search.TermList" %>
-<%@ page import="alix.lucene.search.TopTerms" %>
+<%@ page import="alix.lucene.search.*" %>
+
 <%@ page import="alix.lucene.util.Rail" %>
-<%@ page import="alix.web.Distance" %>
-<%@ page import="alix.web.DocSort" %>
-<%@ page import="alix.web.Select" %>
 <%@ page import="alix.util.ML" %>
 <%@ page import="alix.util.TopArray" %>
+<%@ page import="alix.web.*" %>
 <%!
 static String baseName = "rougemont";
 static String hrefHome = "../";
@@ -62,6 +55,7 @@ final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Loca
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
 static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
 static final DecimalFormat dfdec2 = new DecimalFormat("0.##", ensyms);
+static final DecimalFormat dfdec1 = new DecimalFormat("0.0", ensyms);
 
 /** Field name containing canonized text */
 final static String TEXT = "text";
@@ -183,7 +177,8 @@ public static Similarity getSimilarity(final String sortSpec)
   else if ("theme".equals(sortSpec)) similarity = new SimilarityTheme();
   else if ("occs".equals(sortSpec)) similarity = new SimilarityOccs();
   return similarity;
-}
+} 
+
 
 %>
 <%

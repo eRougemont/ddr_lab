@@ -250,10 +250,7 @@ var Sortable = {
     row.className = row.className.replace(/ *(odd|even|mod3|mod5|mod10|\d+) */g, ' ');
     if ((i % 2) == 1) row.className+=" even";
     else if ((i % 2) == 0) row.className+=" odd";
-    if ((i % 5) == 1) row.className+=" mod1";
-    if ((i % 5) == 3) row.className+=" mod3";
-    if ((i % 5) == 0) row.className+=" mod5";
-    if ((i % 10) == 0) row.className+=" mod10";
+    row.className+=" mod"+(i % 10);
     // row.className=row.className.replace(/^\s\s*|\s(?=\s)|\s\s*$/g, ""); // normalize-space, will bug a bit on \n\t
   },
   /**

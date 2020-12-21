@@ -35,16 +35,15 @@
 <%@ page import="alix.util.IntPair" %>
 
 
-<%!
-/** most significant words, no happax (could bug for smal texts) */
-static private final int FREQ_FLOOR = 5;
+<%!/** most significant words, no happax (could bug for smal texts) */
+static private int FREQ_FLOOR = 5;
 /** default number of focus on load */
-static private int hubsDefault = 15;
+static int hubsDefault = 15;
 
 /** most semantic words, filter by pos */
 private final static TagFilter tagSem = new TagFilter();
 static {
-  tagSem.setSub();
+  tagSem.setGroup(Tag.ADJ);
   // tagSem.setAdj();
 }
 
@@ -53,14 +52,14 @@ private final int STAR = 1;
 private final int NOVA = 2;
 private final int PLANET = -1;
 
-public static TopArray top(FieldStats fstats, final int pivotId, final long[] cooc, int limit, final Distance distance)
+public static TopArray top(FieldText fstats, final int pivotId, final long[] cooc, int limit, final Distance distance)
 {
   TopArray top = new TopArray(limit);
   for (int termId = 0, length = cooc.length; termId < length; termId++) {
     if (fstats.isStop(termId)) continue; // sauter les mots vides
     long m11 = cooc[termId];
-    long m10 = fstats.freq(termId) - m11;
-    long m01 = fstats.freq(pivotId) - m11;
+    long m10 = fstats.occs(termId) - m11;
+    long m01 = fstats.occs(pivotId) - m11;
     // TODO, should be the sub corpus filtered total occs
     long m00 = fstats.occsAll;
     double score = distance.score(m11, m10, m01, m00);
@@ -141,16 +140,16 @@ static class Node implements Comparable<Node>
   <head>
     <meta charset="UTF-8"/>
     <title>Graphe de texte</title>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.min.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.exporters.image.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.plugins.animate.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
-    <script src="<%= hrefHome %>vendor/sigma/sigma.layout.noverlap.js">//</script>
-    <script src="<%= hrefHome %>static/sigmot.js">//</script>
-    <script src="<%= hrefHome %>static/ddrlab.js">//</script>
-    <link rel="stylesheet" type="text/css" href="<%= hrefHome %>static/ddrlab.css"/>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.min.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.exporters.image.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.plugins.animate.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.layout.fruchtermanReingold.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.layout.forceAtlas2.js">//</script>
+    <script src="<%=hrefHome%>vendor/sigma/sigma.layout.noverlap.js">//</script>
+    <script src="<%=hrefHome%>static/sigmot.js">//</script>
+    <script src="<%=hrefHome%>static/ddrlab.js">//</script>
+    <link rel="stylesheet" type="text/css" href="<%=hrefHome%>static/ddrlab.css"/>
     <style>
 html, body {
   height: 100%; 
@@ -224,38 +223,38 @@ input.nb {
   <body>
 
   <%
-  final String fieldName = "text";
-  boolean first;
-  final int ntopmax = 50;
-  int ntop = tools.getInt("words", hubsDefault);
-  if (ntop < 1) ntop = hubsDefault;
-  else if (ntop > ntopmax) ntop = ntopmax;
-  String words = tools.getString("words", null);
-  int width = tools.getInt("width", 10, baseName+"Width");
-  if (width < 3) width = 3;
-  
-  final int planetMax = 50;
-  final int planetMid = 10;
-  int planets = tools.getInt("planets", planetMid, baseName+"Planets");
-  if (planets > planetMax) planets = planetMax;
-  if (planets < 1) planets = planetMid;
+    final String fieldName = "text";
+      boolean first;
+      final int ntopmax = 50;
+      int ntop = tools.getInt("words", hubsDefault);
+      if (ntop < 1) ntop = hubsDefault;
+      else if (ntop > ntopmax) ntop = ntopmax;
+      String words = tools.getString("words", null);
+      int width = tools.getInt("width", 10, baseName+"Width");
+      if (width < 3) width = 3;
+      
+      final int planetMax = 50;
+      final int planetMid = 10;
+      int planets = tools.getInt("planets", planetMid, baseName+"Planets");
+      if (planets > planetMax) planets = planetMax;
+      if (planets < 1) planets = planetMid;
 
-  BitSet filter = null;
-  Corpus corpus = (Corpus)session.getAttribute(corpusKey);
-  if (corpus != null) filter = corpus.bits();
-  
-  FieldStats fstats = alix.fieldStats(fieldName);
-  Rail rail = alix.rail(fieldName);
-  long[] freqs = rail.freqs(filter); // term frequencies for this query
-  BytesRef bytes = new BytesRef();
+      BitSet filter = null;
+      Corpus corpus = (Corpus)session.getAttribute(corpusKey);
+      if (corpus != null) filter = corpus.bits();
+      
+      FieldText fstats = alix.fieldStats(fieldName);
+      Rail rail = alix.rail(fieldName);
+      long[] freqs = rail.freqs(filter); // term frequencies for this query
+      BytesRef bytes = new BytesRef();
 
-  Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
+      Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
 
 
-  // if we add nodes here, we wil have to take a copy of the 
-  ArrayList<String> alist = new ArrayList<String>();
-  // get the focus nodes from query
-  if (words != null) {
+      // if we add nodes here, we wil have to take a copy of the 
+      ArrayList<String> alist = new ArrayList<String>();
+      // get the focus nodes from query
+      if (words != null) {
     String[] terms = alix.qAnalyze(words); // parse query as a set of terms
     first = true;
     int count = 0;
@@ -272,21 +271,21 @@ input.nb {
     if (alist.size() > 0) {
     }
     
-  }
-  // if no nodes found, get the first non stop word for the field
-  // filter for the corpus
-  if (alist.size() < 1) {
+      }
+      // if no nodes found, get the first non stop word for the field
+      // filter for the corpus
+      if (alist.size() < 1) {
     TopArray top = new TopArray(ntop);
     CharsAtt chars = new CharsAtt();
     for (int termId = 0, length = freqs.length; termId < length; termId++) {
       if (freqs[termId] < FREQ_FLOOR) continue;
       if (fstats.isStop(termId)) continue;
       // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
-      fstats.label(termId, bytes);
+      fstats.term(termId, bytes);
       chars.copy(bytes);
       FrDics.LexEntry entry = FrDics.word(chars);
       if (entry != null) {
-        if (!tagSem.accept(entry.tag)) continue;
+    if (!tagSem.accept(entry.tag)) continue;
       }
       top.push(termId, freqs[termId]);
     }
@@ -294,14 +293,14 @@ input.nb {
     int count = 0;
     
     for (TopArray.Entry entry: top) {
-      final String w = fstats.label(entry.id(), bytes).utf8ToString();
+      final String w = fstats.term(entry.id(), bytes).utf8ToString();
       alist.add(w);
       
     }
-  }
-  String[] stars = alist.toArray(new String[alist.size()]);
-  words = String.join(", ", stars);
-  // 
+      }
+      String[] stars = alist.toArray(new String[alist.size()]);
+      words = String.join(", ", stars);
+      //
   %>
 	  <div id="graphcont">
        <form id="form">
@@ -310,14 +309,14 @@ input.nb {
          <div class="elastic">
            <input name="words" value="<%=words%>" size="100"/>
          </div>
-         <label for="width">fenêtre </label>
-         <input name="width" value="<%=width%>" class="nb" size="2"/>
          <label for="planets">rayons </label>
          <input name="planets" value="<%=planets%>" class="nb" size="2"/>
+         <label for="width">fenêtre </label>
+         <input name="width" value="<%=width%>" class="nb" size="2"/>
          <label for="distance">Distance </label>
          <select name="distance" oninput="this.form.submit()">
            <option value="">…distance</option>
-            <%= distance.options() %>
+            <%=distance.options()%>
          </select>
          <button type="submit">▷</button>
        </form>
@@ -345,8 +344,7 @@ input.nb {
        </div>
 	  </div>
    <script>
-<%
-first = true;
+<%first = true;
 out.println("var data = {");
 out.println("  edges: [");
 
@@ -380,7 +378,7 @@ for (String starLabel: stars) {
     + "}");
     ;
     if (nodeSet.contains(tester.id(planetId))) continue;
-    String planetLabel = fstats.label(planetId, bytes).utf8ToString();
+    String planetLabel = fstats.term(planetId, bytes).utf8ToString();
     long planetFreq = freqs[planetId];
     Node planet = new Node(planetId, planetLabel).count(planetFreq).type(PLANET);
     // out.println("\ntester="+tester+" planet="+planet+" eqals="+tester.equals(planet)+" contains="+(nodeSet.contains(tester)));
@@ -414,9 +412,7 @@ for (Node node: nodeSet) {
   
 
 
- out.println("}");
-
-%>
+ out.println("}");%>
 var graph = new sigmot('graph', data);
     </script>
   </body>

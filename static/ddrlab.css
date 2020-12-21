@@ -1,19 +1,32 @@
 @charset "UTF-8";
 
+:root {
+  /*# Les variables ne fonctionnent pas après minification dans concrete5 */
+  --red: #cf1308;
+  --redlight: #fba19d;
+  --redmid: #cc6b66;
+  --redalpha: rgba(207, 19, 8, 0.5);
+  --light: #f5f4f5;
+  --black: #212529;
+  --gray: #6c757d;
+}
+
+
 /**
  * colors and fonts
  * blue: 1a1a80  rgba(26, 26, 128, 1)
- * greige: #faf9f6
+ * greige: #fff
  * greige2: #E2DED0;
  * lines: #92897F rgb(146,137,127) hsl(32, 8%, 54%)
- * brown:
- * orange: #ea5b0c; rgb(234, 91, 12);
  */
 body,
 html {
   height: 100%;
   padding: 0;
   margin: 0;
+}
+* {
+  font-size: inherit;
 }
 body,
 select,
@@ -41,7 +54,7 @@ body.facet a span {
 body,
 .biflex,
 .gutter.but {
-  background-color: #faf9f6;
+  background-color: #fff;
 }
 
 body.document #qform,
@@ -50,7 +63,7 @@ body.comp #qform {
 }
 
 ::-webkit-scrollbar {
-  background: #faf9f6;
+  background: #fff;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -59,7 +72,7 @@ body.comp #qform {
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: #92897F #faf9f6;
+  scrollbar-color: #92897F #fff;
 }
 
 .gutter.but {
@@ -143,7 +156,7 @@ mark:target {
 
 mark:target b {
   /*
-  outline: #ea5b0c solid 1px;
+  outline: #cf1308 solid 1px;
   outline-offset: 2px;
   */
 }
@@ -177,7 +190,7 @@ select,
 body.facet,
 .sortable caption,
 .hit .bibl a {
-  color: rgb(120, 105, 101);
+
 }
 
 a:hover,
@@ -198,7 +211,7 @@ body.facet .active,
 h4 .occs,
 a.xred,
 .term .occs {
-  color: #ea5b0c;
+  color: #cf1308;
 }
 
 select {
@@ -295,16 +308,6 @@ a:focus, a:active {
   outline: unset;
 }
 
-button {
-  cursor: pointer;
-  outline: unset;
-  padding: 0.1em 0.3em;
-  margin: 0 2px 0 0;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 3px;
-}
-
 button.magnify {
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
@@ -351,10 +354,18 @@ input.year {
   width: 10ex;
 }
 
+button,
 select {
+  /*
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
+  */
+  cursor: pointer;
+}
+select {
+
+  /*
   line-height: 1.2em;
   font-size: 16px;
   font-weight: 700;
@@ -365,37 +376,40 @@ select {
   box-shadow: 0 1px 0 1px rgba(0, 0, 0, .04);
   border-radius: .5rem;
   background-image: url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='25px' width='16px'><text x='0' y='20' font-size='20' fill='rgb(120, 105, 101)'>▼</text></svg>");
-  /* , linear-gradient(to bottom, #ffffff 0%, #e5e5e5 100%) %2380460d */
-  ;
   background-repeat: no-repeat, repeat;
   background-position: right 0.4em top 50%, 0 0;
   background-size: auto 1em;
+  */
 }
 
+button {
+  /*
+  outline: unset;
+  padding: 0.1em 0.3em;
+  margin: 0 2px 0 0;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  */
+}
+
+
+/*
 select::-ms-expand {
   display: none;
 }
 
 select:hover {
-  border-color: #888;
 }
 
 select:focus {
-  border-color: #aaa;
-  /*
-  box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
-  box-shadow: 0 0 0 3px -moz-mac-focusring;
-  */
   outline: none;
 }
 
 select:after {
   content: "▼";
 }
-
-select option {
-  font-weight: normal;
-}
+*/
 
 sub, sup {
   font-size: 75%;
@@ -419,6 +433,10 @@ summary {
 
 summary:hover {
   background: #FFFFFF;
+}
+
+table {
+  border-spacing: 0;
 }
 
 td.num {
@@ -1015,7 +1033,7 @@ body.right {
 }
 
 html.right {
-  scrollbar-color: #faf9f6 hsla(32, 8%, 54%, 0.5);
+  scrollbar-color: #fff hsla(32, 8%, 54%, 0.5);
 }
 
 body.right::-webkit-scrollbar {
@@ -1023,7 +1041,7 @@ body.right::-webkit-scrollbar {
 }
 
 body.right::-webkit-scrollbar-thumb {
-  background: #faf9f6;
+  background: #fff;
 }
 
 body.help {
@@ -1091,7 +1109,7 @@ body.comp #text, ul.legend {
 #text a:hover, .keywords a:hover {
   color: #000;
   text-decoration: none;
-  outline: 1px rgb(234, 91, 12) solid;
+  outline: 1px #fba19d solid;
 }
 
 .keywords label {
@@ -1120,7 +1138,7 @@ a.delete:hover,
 }
 
 a.tokspec {
-  color: rgb(234, 91, 12);
+  color: #fba19d;
 }
 
 a.tokshared {
@@ -1429,10 +1447,6 @@ body.chrono form {
 
 .sortable {
   margin-top: 0;
-}
-.sortable thead th {
-  font-weight: normal;
-  font-size: 16px;
 }
 
 /**
