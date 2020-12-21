@@ -356,7 +356,7 @@ table.sortable th {
 .mod3, .mod8 {
   background-color: #ccffcc;
 }
-.mod9 td {
+.mod0 td {
   border-bottom: 2px solid #666;
 }
 .mod5 td {
