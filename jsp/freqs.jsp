@@ -288,17 +288,33 @@ else {
   <head>
     <meta charset="UTF-8">
     <title>Fréquences, <%=(corpus != null) ? Jsp.escape(corpus.name())+", " : ""%><%=props.get("name")%> [Obvie]</title>
+    <!-- 
     <link href="<%=hrefHome%>static/ddrlab.css" rel="stylesheet"/>
+     -->
     <style type="text/css">
+
 body,
 select,
 button {
   font-family: monospace;
 }
+button,
+select {
+  font-size: inherit;
+  /*
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  */
+  border: 1px solid #000;
+  background: #fff;
+  cursor: pointer;
+}
 body {
   padding: 0 45px;
   font-size:20px;
   line-height: 100%;
+  background-color: #fff;
   background-image: 
     url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 72" fill="rgb(64, 64, 64)" stroke="rgb(192, 192, 192)" stroke-width="3%"><circle cx="24" cy="24" r="8"/></svg>'),
     url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 72" fill="rgb(64, 64, 64)" stroke="rgb(192, 192, 192)" stroke-width="3%"><circle cx="24" cy="24" r="8"/></svg>')
@@ -320,7 +336,9 @@ main {
   z-index: 10;
   border-bottom: 2px solid #666;
 }
-
+table.sortable {
+  border-spacing: 0;
+}
 table.sortable caption {
   text-align: left;
 }
