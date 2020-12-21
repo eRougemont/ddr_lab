@@ -377,6 +377,9 @@ td.no {
 caption {
   padding: 0 30px;
 }
+td.num {
+  text-align: right;
+}
 td.no.left {
   text-align: right;
   padding-right: 5px;
