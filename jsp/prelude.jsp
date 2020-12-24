@@ -49,6 +49,7 @@
 <%!
 static String baseName = "rougemont";
 static String hrefHome = "../";
+static String kwic = "kwic.jsp";
 
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);

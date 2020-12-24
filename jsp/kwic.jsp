@@ -31,7 +31,9 @@ final int left = 70;
 final int right = 50;
 // terms of the query
 final String field = TEXT;
-String[] terms = alix.qAnalyze(q);
+String[] terms;
+if (q.contains("a")) terms = alix.qAnalyze(q);
+else terms =  new String[]{q.trim()};
 
 %>
 <!DOCTYPE html>

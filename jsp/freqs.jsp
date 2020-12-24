@@ -14,14 +14,48 @@ private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
 private static final int OUT_JSON = 2;
 
-static public enum Ranking implements Select {
-  freq("Fréquence"), 
-  bm25("BM25 (pondération par documents)"),
-  tfidf("tf-idf (term frequency–inverse document frequency)"),
-  // jaccard("Jaccard (pondération par occurrences)"),
+static public enum Ranking implements Option {
+  occs("Occurrences") {
+    @Override
+    public Specif specif() {
+      return new SpecifOccs();
+    }
+  },
+  tf("Fréquence") {
+    @Override
+    public Specif specif() {
+      return new SpecifTf();
+    }
+  },
+  jaccard("Jaccard") {
+    @Override
+    public Specif specif() {
+      return new SpecifJaccard();
+    }
+    
+  },
+  dice("Dice") {
+    @Override
+    public Specif specif() {
+      return new SpecifDice();
+    }
+    
+  },
+  hypergeo("Loi hypergéométrique") {
+    @Override
+    public Specif specif() {
+      return new SpecifHypergeo();
+    }
+    
+  },
+  // bm25("BM25 (pondération par documents)"),
+  // tfidf("tf-idf (term frequency–inverse document frequency)"),
   // dice("Dice (pondération par occurrences ²)"),
   ;
 
+  abstract public Specif specif();
+
+  
   private Ranking(final String label) {  
     this.label = label ;
   }
@@ -29,13 +63,10 @@ static public enum Ranking implements Select {
   // Repeating myself
   final public String label;
   public String label() { return label; }
-  static final public List<Select> list;
-  static { list = Collections.unmodifiableList(Arrays.asList((Select[]) values())); }
-  public List<Select> list() { return list; }
   public String hint() { return null; }
 }
 
-static public enum Cat implements Select {
+static public enum Cat implements Option {
   NOSTOP("Mots pleins"), 
   SUB("Substantifs"), 
   NAME("Noms propres"),
@@ -48,18 +79,26 @@ static public enum Cat implements Select {
     this.label = label ;
   }
 
-  
-  // Repeating myself
   final public String label;
   public String label() { return label; }
-  static final public List<Select> list;
-  static { list = Collections.unmodifiableList(Arrays.asList((Select[]) values())); }
-  public List<Select> list() { return list; }
+  public String hint() { return null; }
+}
+
+static public enum Order implements Option {
+  top("Scores le + haut"), 
+  last("Scores le + bas (hors 0)"), 
+  ;
+  private Order(final String label) {  
+    this.label = label ;
+  }
+
+  final public String label;
+  public String label() { return label; }
   public String hint() { return null; }
 }
 
 
-private static String lines(final SortEnum terms, final Mime mime, final String q)
+private static String lines(final FormEnum terms, final Mime mime, final String q)
 {
   StringBuilder sb = new StringBuilder();
 
@@ -70,7 +109,6 @@ private static String lines(final SortEnum terms, final Mime mime, final String 
   boolean first = true;
   while (terms.hasNext()) {
     terms.next();
-    LexEntry entry = FrDics.word(terms.label(att));
     // if (term.isEmpty()) continue; // ?
     // get nore info from dictionary
     
@@ -84,7 +122,7 @@ private static String lines(final SortEnum terms, final Mime mime, final String 
         break;
       default:
         // sb.append(entry+"<br/>");
-        htmlLine(sb, terms, no, entry, q);
+        htmlLine(sb, terms, no, q);
     }
     no++;
     first = false;
@@ -96,44 +134,47 @@ private static String lines(final SortEnum terms, final Mime mime, final String 
 /**
  * An html table row &lt;tr&gt; for lexical frequence result.
  */
-private static void htmlLine(StringBuilder sb, final SortEnum terms, final int no, final LexEntry entry, final String q)
+private static void htmlLine(StringBuilder sb, final FormEnum forms, final int no, final String q)
 {
-  String term = terms.label();
+  String term = forms.label();
   // .replace('_', ' ') ?
   sb.append("  <tr>\n");
   sb.append("    <td class=\"no left\">").append(no).append("</td>\n");
   sb.append("    <td class=\"form\">");
-  if (q != null) {
-    sb.append(" href=\"kwic?sort=score&amp;q=");
-    sb.append(q);
-    sb.append(" %2B").append(term);
-    sb.append("&amp;expression=on");
-    sb.append("\">");
+  sb.append("    <a");
+  {
+    sb.append(" href=\"" + kwic + "?sort=score&amp;q=");
+    if (q != null) sb.append(Jsp.escUrl(q));
+    // sb.append(" %2B")
+    sb.append(Jsp.escUrl(term));
+    // sb.append("&amp;expression=on");
+    sb.append("\"");
   }
+  sb.append(">");
   sb.append(term);
-  // sb.append("</a>");
+  sb.append("</a>");
   sb.append("</td>\n");
   sb.append("    <td>");
-  sb.append(Tag.label(terms.tag()));
+  sb.append(Tag.label(forms.tag()));
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(terms.docsMatching()) ;
+  sb.append(forms.docsMatching()) ;
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(terms.occsMatching()) ;
+  sb.append(forms.occsMatching()) ;
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(dfdec1.format((double)terms.occsMatching() * 1000000 / terms.occsCount())) ;
+  sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  if (entry != null) sb.append(dfdec1.format(entry.lemfreq));
+  sb.append(forms.score());
   sb.append("</td>\n");
   sb.append("    <td></td>\n");
   sb.append("    <td class=\"no right\">").append(no).append("</td>\n");
   sb.append("  </tr>\n");
 }
 
-private static void csvLine(StringBuilder sb, final SortEnum terms, final int no)
+private static void csvLine(StringBuilder sb, final FormEnum terms, final int no)
 {
   sb.append(terms.label().replaceAll("\t\n", " "));
   sb.append("\t").append(Tag.label(terms.tag())) ;
@@ -142,7 +183,7 @@ private static void csvLine(StringBuilder sb, final SortEnum terms, final int no
   sb.append("\n");
 }
 
-static private void jsonLine(StringBuilder sb, final SortEnum terms, final int no)
+static private void jsonLine(StringBuilder sb, final FormEnum terms, final int no)
 {
   sb.append("    {\"word\" : \"");
   sb.append(terms.label().replace( "\"", "\\\"" ).replace('_', ' ')) ;
@@ -155,22 +196,23 @@ static private void jsonLine(StringBuilder sb, final SortEnum terms, final int n
   sb.append("}");
 }%>
 <%
-// parameters
+  // parameters
 final String q = tools.getString("q", null);
 
 
 // final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
 Cat cat = (Cat)tools.getEnum("cat", Cat.NOSTOP);
-Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.freq);
+Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.occs);
 String format = tools.getString("format", null);
 //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
 Mime mime = (Mime)tools.getEnum("format", Mime.html);
+Order order = (Order)tools.getEnum("order", Order.top);
 
 
 int limit = tools.getInt("limit", -1);
 // limit a bit if not csv
 if (mime == Mime.csv);
-else if (limit < 1 || limit > 2000) limit = 500;
+else if (limit < 1 || limit > 5000) limit = 2000;
 
 
 int left = tools.getInt("left", 5);
@@ -188,38 +230,10 @@ if (bookid != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{bookid}
 
 final String field = TEXT; // the field to process
 
-FieldText fstats = alix.fieldStats(field);
+FieldText fstats = alix.fieldText(field);
 
-Scorer scorer = null;
-switch(ranking) {
-  case freq:
-    scorer = new ScorerOccs();
-    break;
-  case bm25:
-    scorer = new ScorerBM25();
-    break;
-  case tfidf:
-    scorer = new ScorerTfidf();
-    break;
-    /*
-  case jaccard:
-    double[] scores = new double[dic.size()];
-    for (int termId = 0, length = dic.size(); termId < length; termId++) {
-  long m11 = dic.occs(termId);
-  long m10 = fstats.occs(termId) - m11;
-  // long m01 = fstats.freq(pivotId) - m11;
-  // TODO, should be the sub corpus filtered total occs
-  long m00 = fstats.occsAll;
-  // double score = distance.score(m11, m10, m01, m00);
-  // top.push(termId, score);
-    }
+Specif specif = ranking.specif();
 
-    break;
-  case dice:
-    dic.sortByScores();
-    break;
-    */
-}
 
 TagFilter tags = new TagFilter();
 // filtering
@@ -246,9 +260,10 @@ switch (cat) {
     tags = null;
     break;
 }
+boolean reverse = false;
+if (order == Order.last) reverse = true;
 
-
-SortEnum terms = fstats.iterator(limit, filter, scorer, tags);
+FormEnum terms = fstats.iterator(limit, filter, specif, tags, reverse);
 
 
 
@@ -293,14 +308,16 @@ else {
      -->
     <style type="text/css">
 
-body,
-select,
-button {
+body {
   font-family: monospace;
+  font-size:20px;
+  line-height: 110%;
 }
 button,
 select {
+  font-family: inherit;
   font-size: inherit;
+  line-height: inherit;
   /*
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -312,8 +329,6 @@ select {
 }
 body {
   padding: 0 45px;
-  font-size:20px;
-  line-height: 100%;
   background-color: #fff;
   background-image: 
     url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 72" fill="rgb(64, 64, 64)" stroke="rgb(192, 192, 192)" stroke-width="3%"><circle cx="24" cy="24" r="8"/></svg>'),
@@ -379,6 +394,7 @@ caption {
 }
 td.num {
   text-align: right;
+  padding-left: 1ex;
 }
 td.no.left {
   text-align: right;
@@ -401,33 +417,33 @@ td.form {
              <br/>
                <%
                  if (q == null) {
-                               // out.println(max+" termes");
-                             }
-                             else {
-                               out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+left+"\"/>");
-                               out.print(q);
-                               out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+right+"\"/>&gt;");
-                               out.println("<input type=\"hidden\" name=\"q\" value=\""+Jsp.escape(q)+"\"/>");
-                             }
+                                          // out.println(max+" termes");
+                                        }
+                                        else {
+                                          out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+left+"\"/>");
+                                          out.print(q);
+                                          out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+right+"\"/>&gt;");
+                                          out.println("<input type=\"hidden\" name=\"q\" value=\""+Jsp.escape(q)+"\"/>");
+                                        }
                %>
              <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
              <br/><select name="book" onchange="this.form.submit()">
                   <option value="">TOUT</option>
                   <%
-                  FieldFacet facet = alix.facet(Alix.BOOKID, TEXT);
-                  SortEnum books = facet.iterator();
-                    while (books.hasNext()) {
-                      books.next();
-                      String id = books.label();
-                      Document doc = reader.document(alix.getDocId(id), FIELDS);
-                      out.print("<option value=\"" + id + "\"");
-                      if (id.equals(bookid)) out.print(" selected=\"selected\"");
-                      out.print(">");
-                      out.print(doc.get("year"));
-                      out.print(", ");
-                      out.print(doc.get("title"));
-                      out.println("</option>");
-                    }
+                    FieldFacet facet = alix.facet(Alix.BOOKID, TEXT);
+                                FormEnum books = facet.iterator();
+                                  while (books.hasNext()) {
+                                    books.next();
+                                    String id = books.label();
+                                    Document doc = reader.document(alix.getDocId(id), FIELDS);
+                                    out.print("<option value=\"" + id + "\"");
+                                    if (id.equals(bookid)) out.print(" selected=\"selected\"");
+                                    out.print(">");
+                                    out.print(doc.get("year"));
+                                    out.print(", ");
+                                    out.print(doc.get("title"));
+                                    out.println("</option>");
+                                  }
                   %>
                </select>
              </label>
@@ -438,10 +454,16 @@ td.form {
                  <%= cat.options() %>
               </select>
              </label>
-             <br/><label>Trier les mots
+             <br/><label>Algorithme d’ordre
              <br/><select name="ranking" onchange="this.form.submit()">
                  <option/>
                  <%= ranking.options() %>
+              </select>
+             </label>
+             <br/><label>Direction
+             <br/><select name="order" onchange="this.form.submit()">
+                 <option/>
+                 <%= order.options() %>
               </select>
              </label>
              
@@ -455,12 +477,12 @@ td.form {
         <thead>
           <tr>
             <td/>
-		        <th title="Forme graphique indexée">Graphie</th>
-		        <th title="Catégorie grammaticale">Catégorie</th>
+            <th title="Forme graphique indexée">Graphie</th>
+            <th title="Catégorie grammaticale">Catégorie</th>
             <th title="Nombre de chapitres"> Chapitres</th>
             <th title="Nombre d’occurrences"> Occurrences</th>
             <th title="Effectif par million d’occurrences"> Fréquence</th>
-            <th title="Frantext, effectif par million d’occurrences"> Frantext</th>
+            <th title="Score selon l’algorithme"> Score</th>
             <th width="100%"/>
           <tr>
         </thead>
@@ -468,13 +490,14 @@ td.form {
           <%= lines(terms, mime, q) %>
         </tbody>
       </table>
-      <pre style="text-align: center;">
-██████   ██████  ██    ██  ██████  ███████ ███    ███  ██████  ███    ██ ████████     ██████      ██████  
-██   ██ ██    ██ ██    ██ ██       ██      ████  ████ ██    ██ ████   ██    ██             ██    ██  ████ 
-██████  ██    ██ ██    ██ ██   ███ █████   ██ ████ ██ ██    ██ ██ ██  ██    ██         █████     ██ ██ ██ 
-██   ██ ██    ██ ██    ██ ██    ██ ██      ██  ██  ██ ██    ██ ██  ██ ██    ██        ██         ████  ██ 
-██   ██  ██████   ██████   ██████  ███████ ██      ██  ██████  ██   ████    ██        ███████ ██  ██████  
-      </pre>
+      <pre style="text-align: center; line-height: 125%; font-size: 14px;">
+██████╗░░█████╗░██╗░░░██╗░██████╗░███████╗███╗░░░███╗░█████╗░███╗░░██╗████████╗░░░░██████╗░░░░░█████╗░
+██╔══██╗██╔══██╗██║░░░██║██╔════╝░██╔════╝████╗░████║██╔══██╗████╗░██║╚══██╔══╝░░░░╚════██╗░░░██╔═███╗
+██████╔╝██║░░██║██║░░░██║██║░░██╗░█████╗░░██╔████╔██║██║░░██║██╔██╗██║░░░██║░░░░░░░░░███╔═╝░░░██║█╔██║
+██╔══██╗██║░░██║██║░░░██║██║░░╚██╗██╔══╝░░██║╚██╔╝██║██║░░██║██║╚████║░░░██║░░░░░░░██╔══╝░░░░░███╔╝██║
+██║░░██║╚█████╔╝╚██████╔╝╚██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██║░╚███║░░░██║░░░░░░░███████╗██╗╚█████╔╝
+╚═╝░░╚═╝░╚════╝░░╚═════╝░░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝░░░╚═╝░░░░░░░╚══════╝╚═╝░╚════╝░
+</pre>
     </main>
     <% out.println("<!-- time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>

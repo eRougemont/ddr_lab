@@ -34,7 +34,7 @@ boolean author = (alix.info("author") != null);
 */
 // get the dictionnary of terms, with no request nor filter
 boolean score = false;
-SortEnum terms = facet.iterator();
+FormEnum terms = facet.iterator();
 %>
 <!DOCTYPE html>
 <html>
