@@ -32,6 +32,20 @@ static public enum Ranking implements Option {
     }
   },
   
+  hypergeo("Loi hypergeometrique (Lafon)") {
+    @Override
+    public Specif specif() {
+      return new SpecifHypergeo();
+    }
+  },
+
+  chi2("Chi2 (Muller)") {
+    @Override
+    public Specif specif() {
+      return new SpecifChi2();
+    }
+  },
+
   bm25("BM25") {
     @Override
     public Specif specif() {
@@ -53,28 +67,23 @@ static public enum Ranking implements Option {
     public Specif specif() {
       return new SpecifJaccard();
     }
-    
   },
-  
-  /* pas bon
-  jaccardtf("Jaccard") {
+
+  jaccardtf("Jaccard (par document)") {
     @Override
     public Specif specif() {
       return new SpecifJaccardTf();
     }
   },
-  */
   
-  /*
-  dice("Dice (par livre)") {
+  dice("Dice") {
     @Override
     public Specif specif() {
       return new SpecifDice();
     }
   },
-  */
   
-  dicetf("Dice") {
+  dicetf("Dice (par document)") {
     @Override
     public Specif specif() {
       return new SpecifDiceTf();
@@ -82,13 +91,6 @@ static public enum Ranking implements Option {
   },
 
 
-  hypergeo("Distribution hypergeometrique (Lafon)") {
-    @Override
-    public Specif specif() {
-      return new SpecifHypergeo();
-    }
-    
-  },
 
   
   ;
@@ -107,13 +109,13 @@ static public enum Ranking implements Option {
 }
 
 static public enum Cat implements Option {
+  ALL("Tout"),
   NOSTOP("Mots pleins"), 
   SUB("Substantifs"), 
   NAME("Noms propres"),
   VERB("Verbes"),
   ADJ("Adjectifs"),
   ADV("Adverbes"),
-  ALL("Tout"),
   ;
   private Cat(final String label) {  
     this.label = label ;
@@ -240,8 +242,8 @@ final String q = tools.getString("q", null);
 
 
 // final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
-Cat cat = (Cat)tools.getEnum("cat", Cat.NOSTOP);
-Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.occs);
+Cat cat = (Cat)tools.getEnum("cat", Cat.ALL);
+Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.chi2);
 String format = tools.getString("format", null);
 //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
 Mime mime = (Mime)tools.getEnum("format", Mime.html);
@@ -497,12 +499,14 @@ td.form {
                  <%= ranking.options() %>
               </select>
              </label>
+             <!-- 
              <br/><label>Direction
              <br/><select name="order" onchange="this.form.submit()">
                  <option/>
                  <%= order.options() %>
               </select>
              </label>
+              -->
              
              <br/>
              <br/><button style="width: 100%; text-align: center;" type="submit">Lancer la requête</button>
