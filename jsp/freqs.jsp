@@ -8,7 +8,17 @@
 <%@ page import="alix.lucene.search.FieldText" %>
 <%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.util.Char" %>
-<%!final static HashSet<String> FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
+<%!
+
+final static HashSet<String> FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
+static final DecimalFormat dfscore = new DecimalFormat("0.00000000", ensyms);
+
+final static Sort bookSort = new Sort(
+  new SortField[] {
+    new SortField(YEAR, SortField.Type.INT),
+    new SortField(Alix.BOOKID, SortField.Type.STRING),
+  }
+);
 
 private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
@@ -21,12 +31,23 @@ static public enum Ranking implements Option {
       return new SpecifOccs();
     }
   },
-  tf("Fréquence") {
+  
+  bm25("BM25") {
     @Override
     public Specif specif() {
-      return new SpecifTf();
+      return new SpecifBM25();
     }
+    
   },
+
+  tfidf("tf-idf") {
+    @Override
+    public Specif specif() {
+      return new SpecifTfidf();
+    }
+    
+  },
+
   jaccard("Jaccard") {
     @Override
     public Specif specif() {
@@ -34,23 +55,42 @@ static public enum Ranking implements Option {
     }
     
   },
-  dice("Dice") {
+  
+  /* pas bon
+  jaccardtf("Jaccard") {
+    @Override
+    public Specif specif() {
+      return new SpecifJaccardTf();
+    }
+  },
+  */
+  
+  /*
+  dice("Dice (par livre)") {
     @Override
     public Specif specif() {
       return new SpecifDice();
     }
-    
   },
-  hypergeo("Loi hypergéométrique") {
+  */
+  
+  dicetf("Dice") {
+    @Override
+    public Specif specif() {
+      return new SpecifDiceTf();
+    }
+  },
+
+
+  hypergeo("Distribution hypergeometrique (Lafon)") {
     @Override
     public Specif specif() {
       return new SpecifHypergeo();
     }
     
   },
-  // bm25("BM25 (pondération par documents)"),
-  // tfidf("tf-idf (term frequency–inverse document frequency)"),
-  // dice("Dice (pondération par occurrences ²)"),
+
+  
   ;
 
   abstract public Specif specif();
@@ -158,14 +198,13 @@ private static void htmlLine(StringBuilder sb, final FormEnum forms, final int n
   sb.append(Tag.label(forms.tag()));
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(forms.docsMatching()) ;
-  sb.append("</td>\n");
-  sb.append("    <td class=\"num\">");
   sb.append(forms.occsMatching()) ;
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+  sb.append(forms.docsMatching()) ;
   sb.append("</td>\n");
+  // fréquence
+  // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
   sb.append("    <td class=\"num\">");
   sb.append(forms.score());
   sb.append("</td>\n");
@@ -302,7 +341,7 @@ else {
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Fréquences, <%=(corpus != null) ? Jsp.escape(corpus.name())+", " : ""%><%=props.get("name")%> [Obvie]</title>
+    <title><%=props.get("label")%> [Alix]</title>
     <!-- 
     <link href="<%=hrefHome%>static/ddrlab.css" rel="stylesheet"/>
      -->
@@ -430,20 +469,18 @@ td.form {
              <br/><select name="book" onchange="this.form.submit()">
                   <option value="">TOUT</option>
                   <%
-                    FieldFacet facet = alix.facet(Alix.BOOKID, TEXT);
-                                FormEnum books = facet.iterator();
-                                  while (books.hasNext()) {
-                                    books.next();
-                                    String id = books.label();
-                                    Document doc = reader.document(alix.getDocId(id), FIELDS);
-                                    out.print("<option value=\"" + id + "\"");
-                                    if (id.equals(bookid)) out.print(" selected=\"selected\"");
-                                    out.print(">");
-                                    out.print(doc.get("year"));
-                                    out.print(", ");
-                                    out.print(doc.get("title"));
-                                    out.println("</option>");
-                                  }
+                    int[] books = alix.books(bookSort);
+                    for (int docId: books) {
+                      Document doc = reader.document(docId, FIELDS);
+                      String abid = doc.get(Alix.BOOKID);
+                      out.print("<option value=\"" + abid + "\"");
+                      if (abid.equals(bookid)) out.print(" selected=\"selected\"");
+                      out.print(">");
+                      out.print(doc.get("year"));
+                      out.print(", ");
+                      out.print(doc.get("title"));
+                      out.println("</option>");
+                    }
                   %>
                </select>
              </label>
@@ -468,7 +505,7 @@ td.form {
              </label>
              
              <br/>
-             <br/><button style="width: 100%; text-align: center;" type="submit">Appuyer ici pour faire calculer votre requête (attention cela peut prendre de nombreuses minutes)</button>
+             <br/><button style="width: 100%; text-align: center;" type="submit">Lancer la requête</button>
              <br/>
              <br/>
              <br/>
@@ -479,9 +516,8 @@ td.form {
             <td/>
             <th title="Forme graphique indexée">Graphie</th>
             <th title="Catégorie grammaticale">Catégorie</th>
-            <th title="Nombre de chapitres"> Chapitres</th>
             <th title="Nombre d’occurrences"> Occurrences</th>
-            <th title="Effectif par million d’occurrences"> Fréquence</th>
+            <th title="Nombre de chapitres"> Chapitres</th>
             <th title="Score selon l’algorithme"> Score</th>
             <th width="100%"/>
           <tr>

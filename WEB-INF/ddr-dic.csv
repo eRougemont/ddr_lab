@@ -1,0 +1,74 @@
+GRAPH;CAT;ORTH;LEM
+# état;;État
+suisse;NAME;Suisse
+suisses;NAME;Suisse
+Suisses;NAME;Suisse
+Suisses;NAME;Suisse
+allemand;NAME;Allemagne
+allemande;NAME;Allemagne
+allemands;NAME;Allemagne
+allemandes;NAME;Allemagne
+Allemand;NAME;Allemagne
+Allemands;NAME;Allemagne
+Français;NAME;France
+français;NAME;France
+française;NAME;France
+françaises;NAME;France
+Espagnol;NAME;Espagne
+Espagnols;NAME;Espagne
+espagnol;NAME;Espagne
+espagnole;NAME;Espagne
+espagnols;NAME;Espagne
+espagnoles;NAME;Espagne
+anglais;NAME;Grande-Bretagne
+anglaise;NAME;Grande-Bretagne
+anglaises;NAME;Grande-Bretagne
+Angleterre;;Grande-Bretagne
+hollandais;NAME;Pays-Bas
+hollandaise;NAME;Pays-Bas
+hollandaises;NAME;Pays-Bas
+italien;NAME;Italie
+italiens;NAME;Italie
+italienne;NAME;Italie
+italiennes;NAME;Italie
+belge;NAME;Belgique
+belges;NAME;Belgique
+américain;NAME;États-Unis
+américains;NAME;États-Unis
+américaine;NAME;États-Unis
+américaines;NAME;États-Unis
+Amérique;;États-Unis
+Club de Rome;NAMEorg
+club de Rome;NAMEorg;Club de Rome;
+Club des Jacobins;NAMEorg;
+club des Jacobins;NAMEorg;Club des Jacobins
+je;PROpers;je
+me;PROpers;je
+moi;PROpers;je
+mon;PROpers;je
+ma;PROpers;je
+mes;PROpers;je
+mien;PROpers;je
+le mien;PROpers;je
+les miens;PROpers;je
+tu;PROpers;tu
+te;PROpers;tu
+toi;PROpers;tu
+ton;PROpers;tu
+ta;PROpers;tu
+tes;PROpers;tu
+tien;PROpers;tu
+le tien;PROpers;tu
+les tiens;PROpers;tu
+nos;PROpers;nous
+notre;PROpers;nous
+nôtre;PROpers;nous
+le nôtre;PROpers;nous
+les nôtres;PROpers;nous
+vos;PROpers;vous
+votre;PROpers;vous
+vôtre;PROpers;vous
+le vôtre;PROpers;vous
+les vôtres;PROpers;vous
+
+
