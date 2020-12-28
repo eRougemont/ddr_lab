@@ -113,19 +113,19 @@ if (doc != null) { // document id is verified, give it to javascript
         %>
       </form>
     <%
-    if (doc != null) {
+      if (doc != null) {
       out.println("<div class=\"heading\">");
       out.println(doc.doc().get("bibl"));
       out.println("</div>");
       // hilite
       if (!"".equals(q)) {
-        String[] terms = alix.qAnalyze(q);
+        String[] terms = alix.forms(q);
         out.print(doc.hilite(TEXT, terms));
       }
       else {
         out.print(doc.doc().get(TEXT));
       }
-    }
+        }
     %>
     </main>
     <a href="#" id="gotop">▲</a>

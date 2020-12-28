@@ -8,7 +8,7 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="WEB-INF/lib/alix.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-analyzers-common-8.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="WEB-INF/lib/lucene-core-8.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="WEB-INF/lib/lucene-core-8.7.0.jar" sourcepath="/home/fred/code/lucene-src/core/src/java"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-highlighter-8.7.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-queries-8.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="WEB-INF/ext/jsp-api_tomcat7.jar"/>

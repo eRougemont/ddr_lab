@@ -1,0 +1,833 @@
+@charset "UTF-8";
+
+:root {
+  --red: #cf1308;
+  --redlight: #fba19d;
+  --redmid: #cc6b66;
+  --redalpha: rgba(207, 19, 8, 0.5);
+  --light: #f5f4f5;
+  --black: #212529;
+  --gray: #6c757d;
+}
+
+
+/**
+ * colors and fonts
+ * blue: 1a1a80  rgba(26, 26, 128, 1)
+ * greige: #fff
+ * greige2: #E2DED0;
+ * lines: #92897F rgb(146,137,127) hsl(32, 8%, 54%)
+ */
+
+/**
+ * Colors and fonts
+ */
+
+body {
+  background-color: #fff;
+  font-family: sans-serif;
+}
+
+
+caption {
+  background: var(--red);
+  color: #fff;
+}
+
+td.no {
+  color: var(--red);
+}
+
+.mod3, 
+.mod8 {
+  background-color: var(--light);
+}
+
+nav.tabs {
+  background-color: var(--gray);
+}
+
+nav.tabs a,
+nav.tabs {
+  color: #fff;
+}
+
+nav.tabs a {
+  padding: 5px 0.5rem;
+}
+
+nav.tabs a.selected,
+nav.tabs a:hover {
+  background-color: #ccc;
+  color: #000;
+}
+
+
+/** 
+ * Global HTML 
+ */
+* {
+  font-size: inherit;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+body, 
+body main {
+  position: relative;
+}
+
+
+a {
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:focus, a:active {
+  outline: unset;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+summary {
+  outline: unset;
+  cursor: pointer;
+}
+
+summary:hover {
+  background: #FFFFFF;
+}
+
+table {
+  border-spacing: 0;
+}
+
+/**
+ * Forms
+ */
+input.year {
+  width: 10ex;
+}
+
+button,
+select {
+  border-width: 1px;
+  border-style: solid;
+  /*
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  */
+  cursor: pointer;
+}
+
+button,
+select {
+  border-style: none;
+}
+
+select {
+
+  /*
+  line-height: 1.2em;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 1.5em 0 1ex;
+  margin: 0;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0 1px 0 1px rgba(0, 0, 0, .04);
+  border-radius: .5rem;
+  background-image: url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='25px' width='16px'><text x='0' y='20' font-size='20' fill='rgb(120, 105, 101)'>▼</text></svg>");
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.4em top 50%, 0 0;
+  background-size: auto 1em;
+  */
+}
+
+button {
+  /*
+  outline: unset;
+  padding: 0.1em 0.3em;
+  margin: 0 2px 0 0;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  */
+}
+
+
+/*
+select::-ms-expand {
+  display: none;
+}
+
+select:hover {
+}
+
+select:focus {
+  outline: none;
+}
+
+select:after {
+  content: "▼";
+}
+*/
+
+
+/**
+ * Header
+ */
+/*
+#tabs button.here,
+#tabs a.here {
+  background: rgba(120, 105, 101, 0.8);
+  color: #FFFFFF;
+}
+
+#tabs button:hover,
+#tabs a:hover {
+  background: hsl(31, 17%, 80%);
+}
+*/
+
+/**
+ * Sortable
+ */
+table.sortable {
+  border-spacing: 0;
+  line-height: 110%;
+}
+
+.sortable thead td,
+.sortable thead th {
+  background: rgba(255, 255, 255, 1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 2px solid #666;
+}
+
+.sortable thead td {
+  background: transparent;
+}
+
+table.sortable caption {
+  text-align: left;
+  padding: 1rem 30px;
+}
+
+.sortable td a {
+  display: block;
+}
+
+table.sortable th {
+  color: #000 !important;
+  text-align: left;
+  font-weight: bold;
+}
+
+.mod1 td,
+.mod4 td,
+.mod6 td,
+.mod9 td {
+  border-bottom: 0.5px solid #CCC;
+}
+
+.mod1 td.no,
+.mod4 td.no,
+.mod6 td.no,
+.mod9 td.no {
+  border: none;
+}
+
+
+.mod0 td {
+  border-bottom: 2px solid #666;
+}
+
+.mod5 td {
+  border-bottom: 0.6px solid #000;
+}
+
+th.form,
+td.form {
+  padding-left: 1rem;
+}
+td.no {
+  vertical-align: middle;
+  font-size: 80%;
+}
+
+table.sortable th.num,
+td.num {
+  text-align: right;
+  padding-left: 1ex;
+}
+td.num {
+  font-family: monospace;
+}
+td.no.left {
+  text-align: right;
+  padding-right: 5px;
+}
+td.no.right {
+  text-align: left;
+  padding-left: 5px;
+}
+td.form {
+  white-space: nowrap;
+}
+
+
+
+
+/** ???? */
+
+
+.gutter.but {
+  color: #92897F;
+}
+
+#chapters a:hover,
+.gutter {
+  background: #E1DDCF;
+}
+
+header.biblbar {
+  background-color: #92897F;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0px 3px 2px 1px rgba(146, 137, 127, 0.5);
+}
+
+header.biblbar,
+header.biblbar a {
+  color: #FFFFFF;
+}
+
+header.biblbar a:hover {
+  color: #000;
+}
+
+header.biblbar table {
+  border: none;
+}
+
+button {
+  color: #444;
+}
+
+button,
+select:hover,
+select:focus,
+details,
+#tabs a,
+#tabs button,
+.marginnote,
+.gutter.but {
+  border-color: #c3b7aa;
+}
+
+header {
+  border-color: #FFFFFF;
+}
+
+::-moz-selection {
+  /* let it alone for Chrome */
+  background: rgba(120, 105, 101, 0.8);
+  color: #FFFFFF;
+}
+
+#tabs button.here,
+#tabs a.here {
+  background: rgba(120, 105, 101, 0.8);
+  color: #FFFFFF;
+}
+
+#tabs button:hover,
+#tabs a:hover {
+  background: hsl(31, 17%, 80%);
+}
+
+::selection {
+  background: rgba(120, 105, 101, 0.8);
+  color: #FFFFFF;
+}
+
+mark {
+  background: transparent;
+}
+
+mark:target {
+  border: none;
+  color: #000;
+  background: rgba(234, 91, 12, 0.2);
+}
+
+mark:target b {
+  /*
+  outline: #cf1308 solid 1px;
+  outline-offset: 2px;
+  */
+}
+
+input[type=text] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input[type=text]:focus,
+textarea:focus {
+  box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
+}
+
+#header .base mark,
+#rulhi {
+  border-color: rgba(146, 137, 127, 0.3);
+}
+
+a {
+  color: #1a1a80;
+}
+
+.keywords a,
+details,
+h1,
+h2,
+h3,
+h4,
+select,
+body.facet,
+.sortable caption,
+.hit .bibl a {
+
+}
+
+a:hover,
+#gotop:hover,
+div.term a:hover,
+#q,
+.mark,
+article.res mark,
+table.sortable th,
+button.magnify,
+a.reset,
+.sortable td.title a:hover,
+article.res header a:hover, /* title in short result */
+article.res div.line a, /* pivot word in kwic */
+#chapters mark, /* hilite in chapter research */
+a.delete,
+body.facet .active,
+h4 .occs,
+a.xred,
+.term .occs {
+  color: #cf1308;
+}
+
+select {
+  background-color: #FFFFFF;
+}
+
+#ruloccs a {
+  background-color: rgba(120, 105, 101, 0.2);
+}
+
+#ruloccs a:hover {
+  background-color: rgba(120, 105, 101, 1);
+}
+
+#ruloccs {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.keywords a,
+.mark a.prev,
+.mark a.next {
+  rgba(128, 70, 13, 0.5);
+}
+
+/**
+ * Global styling
+ */
+#header form {
+  width: 80%;
+  margin-right: 20px;
+  margin-left: calc(15vw + 100px);
+}
+
+input.start,
+input[type=text] {
+  -webkit-appearance: none;
+  outline: none;
+  font-size: 120%;
+  margin: 1px;
+  outline: 1px solid #CCC;
+  border: none;
+  border-width: 1px;
+}
+
+input.start {
+  text-align: right;
+}
+
+
+#q {
+  font-size: 1.3rem;
+  padding: 2px 1rem;
+  font-weight: bold;
+  min-width: 8rem;
+  max-width: 55rem;
+  width: 90%;
+}
+
+main.right {
+  margin-right: 2rem;
+}
+
+main.left {
+  margin-left: 2rem;
+}
+
+/**
+ * Default
+ */
+
+details {
+  padding: 0 0.5rem 2px 0.5rem;
+  border-style: solid;
+  border-width: 1px;
+}
+
+[type=checkbox] {
+  margin: 0;
+  padding: 0;
+}
+
+::-moz-placeholder, ::-webkit-input-placeholder {
+  /* does not work */
+  font-style: italic;
+  font-weight: 100;
+  color: #999;
+  font-size: 1rem;
+}
+
+::-ms-input-placeholder {
+  font-style: italic;
+  color: #999;
+}
+
+
+#gotop,
+.goright {
+  font-size: 3rem;
+  line-height: 3rem;
+  padding: 0 0.3rem 0 0.5rem;
+  text-decoration: none;
+  border-bottom: none;
+  opacity: 0.5;
+  z-index: 10;
+}
+
+#gotop {
+  color: #888;
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0rem;
+  z-index: 10;
+}
+
+/**
+ * Search results, kwic or snips
+ */
+
+body.results > header {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.results form {
+  text-align: center;
+}
+
+article.res {
+  margin: 1rem 0;
+}
+
+article.res header {
+  text-align: left;
+  margin-bottom: 0.5rem;
+  background-color: #FFF;
+  line-height: 110%;
+  padding: 1px 0.5rem;
+}
+
+article.res header small {
+  float: left;
+  margin: 0.3ex 1ex 0 0;
+}
+
+article.res header a {
+  display: block;
+  color: rgb(120, 105, 101);
+}
+
+article.res header a:hover {
+  text-decoration: none;
+}
+
+#chapters mark,
+div.line a {
+  font-weight: bold;
+}
+
+article.res div.line {
+  white-space: nowrap;
+}
+
+article.res div.line a:hover {
+  text-decoration: none;
+  color: #000;
+}
+
+article.res .surname {
+  font-variant: small-caps;
+  font-size: 115%;
+  font-weight: bold;
+}
+
+article.res .title {
+  font-style: italic;
+}
+
+article.hit p.frags {
+  line-height: 130%;
+  margin: 0.5ex 0 0 2em;
+  text-indent: 0;
+  padding: 0;
+  text-align: justify;
+}
+
+article.res mark {
+  background: #FFF;
+  font-weight: bold;
+}
+
+#chapters > a {
+  color: #000;
+  display: block;
+  text-align: justify;
+  margin: 5px 0;
+  padding: 0 0.5rem;
+}
+
+#chapters > a:hover {
+  text-decoration: none;
+}
+
+#chapters .more {
+  margin-left: auto;
+  margin-right: auto;
+  width: 3rem;
+  font-size: 3rem;
+}
+
+#chapters span.title {
+  font-style: italic;
+}
+
+#chapters .surname {
+  font-variant: small-caps;
+  font-size: 115%;
+  font-weight: bold;
+}
+
+/**
+ * Word cloud
+ */
+body.cloud {
+  background: #FFFFFF;
+  padding: 25px;
+}
+
+body.cloud #filter {
+  top: 0;
+  right: 0;
+  z-index: 10;
+  position: absolute;
+}
+
+#wordcloud2 {
+  height: 100%;
+}
+
+#wordcloud2 a {
+  color: #887;
+  text-decoration: none;
+  line-height: 0.8em;
+  display: block;
+  position: absolute;
+  line-height: 100%;
+  white-space: nowrap;
+  -ms-transform-origin: 50% 40%;
+  -webkit-transform-origin: 50% 40%;
+  transform-origin: 50% 40%;
+}
+
+#wordcloud2 .SUB {
+  color: #000033;
+}
+
+#wordcloud2 .ADJ {}
+
+#wordcloud2 .VERB {}
+
+#wordcloud2 .ADV {}
+
+#wordcloud2 .NAME {
+  color: #FF0000;
+}
+
+/**
+ * Dygraph (chronology)
+ */
+/** Chart in chrono */
+body.chrono {
+  overflow: hidden;
+  /*
+  padding-bottom: 1rem;
+  */
+}
+
+body.chrono form {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+}
+
+#chart {
+  font-family: sans-serif;
+  width: 99%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.dygraph-annotation, .dygraph-legend {
+  overflow: hidden
+}
+
+.dygraph-legend {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  line-height: 100%;
+  left: 4em !important;
+  top: 0.5rem !important;
+  font-size: 17px;
+  z-index: 10;
+  width: 250px;
+  background: #fff;
+  line-height: normal;
+  text-align: left;
+  padding: 4px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  box-shadow: 4px 4px 4px #888;
+}
+
+.dygraph-legend-dash, .dygraph-legend-line {
+  display: inline-block;
+  position: relative;
+  bottom: .5ex;
+  height: 1px;
+  border-bottom-width: 2px;
+  border-bottom-style: solid
+}
+
+.dygraph-legend-line {
+  padding-left: 1em
+}
+
+.dygraph-annotation, .dygraph-roller {
+  position: absolute;
+  z-index: 10
+}
+
+.dygraph-default-annotation {
+  border: 1px solid #000;
+  background-color: #fff;
+  text-align: center
+}
+
+.dygraph-axis-label {
+  z-index: 10;
+  line-height: normal;
+  overflow: hidden;
+  color: #000
+}
+
+.dygraph-axis-label-x {
+  font-size: 12pt;
+}
+
+.dygraph-title {
+  color: #000;
+  padding-top: 3px;
+  font-weight: 100;
+  z-index: 10;
+  text-align: center
+}
+
+.dygraph-label {
+  color: #000;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dygraph-xlabel {
+  text-align: center
+}
+
+.dygraph-label-rotate-left {
+  text-align: center;
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg)
+}
+
+.dygraph-label-rotate-right {
+  text-align: center;
+  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg)
+}
+
+

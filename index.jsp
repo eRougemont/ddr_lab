@@ -1,126 +1,95 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@include file="jsp/prelude.jsp" %>
-<%@ page import="java.text.DecimalFormat" %>
-<%@ page import="java.text.DecimalFormatSymbols" %>
-<%@ page import="java.util.Locale" %>
-<%!final static DecimalFormat dfScoreFr = new DecimalFormat("0.00000", frsyms);
-final static DecimalFormat dfint = new DecimalFormat("###,###,##0", frsyms);
-final static HashSet<String> FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
-static Sort SORT = new Sort(new SortField("year", SortField.Type.INT));%>
+<%@ include file="jsp/freqs.jsp" %>
 <%
-  // params for this page
-String q = tools.getString("q", null);
-
-    
-String[] books = request.getParameterValues("book");
-Corpus corpus;
-if (books != null) {
-  corpus = new Corpus(alix, books);
-  session.setAttribute(corpusKey, corpus);
-}
-else {
-  corpus = (Corpus)session.getAttribute(corpusKey);
-}
-
-Set<String> bookSet = null;
-if (corpus != null) bookSet = corpus.books();
-FieldFacet facet = alix.facet(Alix.BOOKID, TEXT);
-/*
-IntSeries years = alix.intSeries(YEAR); // to get min() max() year
-TermList qTerms = alix.qTermList(TEXT, q);
-boolean score = (qTerms != null && qTerms.size() > 0);
-BitSet bits = bits(alix, corpus, q);
-boolean author = (alix.info("author") != null);
-*/
-// get the dictionnary of terms, with no request nor filter
-boolean score = false;
-FormEnum terms = facet.iterator();
+limitMax = 200;
 %>
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>Rougemont 2.0, laboratoire</title>
-    <link rel="stylesheet" type="text/css" href="static/ddrlab.css"/>
-    <style type="text/css">
-div.book {
-  color: #999;
-  white-space: nowrap;
-}
-label {
-  cursor: pointer;
-  white-space: nowrap;
-}
-:checked,
-:checked + label {
-  background: #FFF;
-  color: #000;
-}
-button.save {
-  display: block;
-}
-main {
-  display: flex;
-  positon:relative;
-  height: 100%;
-}
-main form {
-  width: 400px;
-  max-width: 20%;
-  height: 100%;
-  overflow: auto;
-  padding: 0.5rem;
-}
-main iframe {
-  height: 100%;
-}
-    </style>
+   <%@ include file="ddr_head.jsp" %>
+   <title><%=props.get("label")%> [Alix]</title>
   </head>
-  <body class="corpus">
-    
+  <body>
+    <header>
+    <%@ include file="tabs.jsp" %>
+    </header>
     <main>
-      <form>
-        <label>
-          <input id="checkall" type="checkbox" title="Sélectionner/déselectionner tout"/>
-          Tout, sélectionner / déselectionner
-        </label>
-        <button class="save" type="submit">Enregistrer</button>
-    <%
-      // sorting
-
-     
-      // Hack to use facet as a navigator in results
-      // get and cache results in facet order, find a index 
-      // TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
-      // int[] nos = facet.nos(topDocs);
-      // dic.setNos(nos);
-      while (terms.hasNext()) {
-        terms.next();
-        String bookid = terms.label();
-        // String bookid = doc.get(Alix.BOOKID);
-        Document doc = reader.document(alix.getDocId(bookid), FIELDS);
-        // for results, do not diplay not relevant results
-        // if (score && terms.occs() == 0) continue;
-
-        out.println("<div class=\"book\">");
-        out.print("    <input type=\"checkbox\" name=\"book\" id=\""+bookid+"\" value=\""+bookid+"\"");
-        if (bookSet != null && bookSet.contains(bookid)) out.print(" checked=\"checked\"");
-        out.println(" />");
-        out.println("  <label for=\"" + bookid + "\">");
-        out.println("    <span class=\"year\">"+doc.get("year")+",</span>");
-        out.print("    <em class=\"title\">");
-        // out.println("<a href=\"kwic?sort="+facetField+"&amp;q="+q+"&start="+(n+1)+"&amp;hpp="+hits+"\">");
-        out.print(doc.get("title"));
-        out.println("</em>");
-        out.println("  </label>");
-        out.println("</div>");
-      }
-    //  <a href="#" id="gotop">▲</a>
-    %>
-        <button type="submit">Enregistrer</button>
-      </form>
-      <iframe src="jsp/net.jsp"> </iframe>
+      <table class="sortable" width="100%">
+        <caption>
+          <form id="sortForm">
+               <%
+if (q == null) {
+  // out.println(max+" termes");
+}
+else {
+  out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+left+"\"/>");
+  out.print(q);
+  out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+right+"\"/>&gt;");
+  out.println("<input type=\"hidden\" name=\"q\" value=\""+Jsp.escape(q)+"\"/>");
+}
+               %>
+             <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
+             <br/><select name="book" onchange="this.form.submit()">
+                  <option value="">TOUT</option>
+                  <%
+int[] books = alix.books(bookSort);
+for (int docId: books) {
+  Document doc = reader.document(docId, BOOK_FIELDS);
+  String abid = doc.get(Alix.BOOKID);
+  out.print("<option value=\"" + abid + "\"");
+  if (abid.equals(bookid)) out.print(" selected=\"selected\"");
+  out.print(">");
+  out.print(doc.get("year"));
+  out.print(", ");
+  out.print(doc.get("title"));
+  out.println("</option>");
+}
+                  %>
+               </select>
+             </label>
+             
+             <br/><label>Filtrer par catégorie grammaticale
+             <br/><select name="cat" onchange="this.form.submit()">
+                 <option/>
+                 <%= cat.options() %>
+              </select>
+             </label>
+             <br/><label>Algorithme d’ordre
+             <br/><select name="ranking" onchange="this.form.submit()">
+                 <option/>
+                 <%= ranking.options() %>
+              </select>
+             </label>
+             <br/><label>Direction
+             <br/><select name="order" onchange="this.form.submit()">
+                 <option/>
+                 <%= order.options() %>
+              </select>
+             </label><button type="submit">Lancer la requête</button>
+          </form>
+        </caption>
+        <thead>
+          <tr>
+            <td/>
+            <th title="Forme graphique indexée">Graphie</th>
+            <th title="Catégorie grammaticale">Catégorie</th>
+            <th title="Nombre d’occurrences" class="num"> Occurrences</th>
+            <th title="Nombre de chapitres" class="num"> Chapitres</th>
+            <th title="Score selon l’algorithme" class="num"> Score</th>
+            <th width="100%"/>
+            <td/>
+          <tr>
+        </thead>
+        <tbody>
+          <% 
+          String href = "books.jsp?ranking="+ranking+"&amp;q=";
+          out.println(lines(forms, mime, href));
+          
+          %>
+        </tbody>
+      </table>
     </main>
-    <script src="static/ddrlab.js">//</script>
+    <script src="<%= hrefHome %>vendor/sortable.js">//</script>
   </body>
+  <!-- <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
 </html>

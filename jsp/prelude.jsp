@@ -48,8 +48,6 @@
 <%@ page import="alix.web.*" %>
 <%!
 static String baseName = "rougemont";
-static String hrefHome = "../";
-static String kwic = "kwic.jsp";
 
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
@@ -57,6 +55,10 @@ final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Loca
 static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
 static final DecimalFormat dfdec2 = new DecimalFormat("0.##", ensyms);
 static final DecimalFormat dfdec1 = new DecimalFormat("0.0", ensyms);
+static final DecimalFormat dfscore = new DecimalFormat("0.00000", ensyms);
+/** Fields to retrieve in document for a book */
+final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
+
 
 /** Field name containing canonized text */
 final static String TEXT = "text";
@@ -66,6 +68,108 @@ final static String YEAR = "year";
 public static String CORPUS_ = "corpus_";
 /** A filter for documents */
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
+
+
+static public enum Ranking implements Option {
+  occs("Occurrences") {
+    @Override
+    public Specif specif() {
+      return new SpecifOccs();
+    }
+  },
+  
+  hypergeo("Loi hypergeometrique (Lafon)") {
+    @Override
+    public Specif specif() {
+      return new SpecifHypergeo();
+    }
+  },
+
+  chi2("Chi2 (Muller)") {
+    @Override
+    public Specif specif() {
+      return new SpecifChi2();
+    }
+  },
+
+  /* pas bon 
+  binomial("Loi binomiale") {
+    @Override
+    public Specif specif() {
+      return new SpecifBinomial();
+    }
+  },
+  */
+  
+  bm25("BM25") {
+    @Override
+    public Specif specif() {
+      return new SpecifBM25();
+    }
+    
+  },
+
+  tfidf("tf-idf") {
+    @Override
+    public Specif specif() {
+      return new SpecifTfidf();
+    }
+    
+  },
+
+  jaccard("Jaccard") {
+    @Override
+    public Specif specif() {
+      return new SpecifJaccard();
+    }
+  },
+
+  jaccardtf("Jaccard (par document)") {
+    @Override
+    public Specif specif() {
+      return new SpecifJaccardTf();
+    }
+  },
+  
+  dice("Dice") {
+    @Override
+    public Specif specif() {
+      return new SpecifDice();
+    }
+  },
+  
+  dicetf("Dice (par document)") {
+    @Override
+    public Specif specif() {
+      return new SpecifDiceTf();
+    }
+  },
+
+  alpha("Alphabétique") {
+    @Override
+    public Specif specif() {
+      return null;
+    }
+  },
+
+
+
+  
+  ;
+
+  abstract public Specif specif();
+
+  
+  private Ranking(final String label) {  
+    this.label = label ;
+  }
+
+  // Repeating myself
+  final public String label;
+  public String label() { return label; }
+  public String hint() { return null; }
+}
+
 
 /**
  * Build a filtering query with a corpus
@@ -93,7 +197,7 @@ public static Query buildQuery(Alix alix, String q, Corpus corpus) throws IOExce
 {
   Query qFilter = null;
   if (corpus != null) qFilter = new CorpusQuery(corpus.name(), corpus.bits());
-  Query qWords = alix.qParse(TEXT, q);
+  Query qWords = alix.query(TEXT, q);
   if (qWords != null && qFilter != null) {
     return new BooleanQuery.Builder()
       .add(qFilter, Occur.FILTER)

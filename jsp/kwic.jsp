@@ -9,7 +9,7 @@
 String hrefDoc = "doc.jsp";
 %>
 <%
-final int hppDefault = 100;
+  final int hppDefault = 100;
 final int hppMax = 1000;
   // parameters
 int hpp = tools.getInt("hpp", hppDefault);
@@ -32,9 +32,8 @@ final int right = 50;
 // terms of the query
 final String field = TEXT;
 String[] terms;
-if (q.contains("a")) terms = alix.qAnalyze(q);
+if (q.contains("a")) terms = alix.forms(q);
 else terms =  new String[]{q.trim()};
-
 %>
 <!DOCTYPE html>
 <html>
@@ -52,13 +51,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(left 
         <input type="submit"
        style="position: absolute; left: -9999px; width: 1px; height: 1px;"
        tabindex="-1" />
-        <%
-if (start > 1 && q != null) {
-  int n = Math.max(1, start-hppDefault);
-  out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
-}
-        %>
-        <input type="hidden" id="q" name="q" value="<%=Jsp.escape(q)%>" autocomplete="off" size="60" autofocus="autofocus" 
+        <input id="q" name="q" value="<%=Jsp.escape(q)%>" autocomplete="off" size="60" autofocus="autofocus" 
           onfocus="this.setSelectionRange(this.value.length,this.value.length);"
           oninput="this.form['start'].value='';"
         />
@@ -75,6 +68,10 @@ else if (expression) {
 else {
   out.println("<button title=\"Cliquer pour grouper les locutions\" type=\"submit\" name=\"expression\" value=\"true\">☐ Locutions</button>");
 }
+if (start > 1 && q != null) {
+  int n = Math.max(1, start-hppDefault);
+  out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
+}
 if (topDocs != null) {
   long max = topDocs.totalHits.value;
   out.println("<input  name=\"start\" value=\""+start+"\" autocomplete=\"off\" class=\"start\"/>");
@@ -85,8 +82,6 @@ if (topDocs != null) {
         %>
         
       </form>
-      <pre><%= alix.qParse(TEXT, q) %></pre>
-      <pre><%= Arrays.toString(terms) %></pre>
     <main>
     <%
 if (topDocs != null) {

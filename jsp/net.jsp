@@ -224,83 +224,83 @@ input.nb {
 
   <%
     final String fieldName = "text";
-    boolean first;
-    final int ntopmax = 50;
-    int ntop = tools.getInt("words", hubsDefault);
-    if (ntop < 1) ntop = hubsDefault;
-    else if (ntop > ntopmax) ntop = ntopmax;
-    String words = tools.getString("words", null);
-    int width = tools.getInt("width", 10, baseName+"Width");
-    if (width < 3) width = 3;
+      boolean first;
+      final int ntopmax = 50;
+      int ntop = tools.getInt("words", hubsDefault);
+      if (ntop < 1) ntop = hubsDefault;
+      else if (ntop > ntopmax) ntop = ntopmax;
+      String words = tools.getString("words", null);
+      int width = tools.getInt("width", 10, baseName+"Width");
+      if (width < 3) width = 3;
+      
+      final int planetMax = 50;
+      final int planetMid = 10;
+      int planets = tools.getInt("planets", planetMid, baseName+"Planets");
+      if (planets > planetMax) planets = planetMax;
+      if (planets < 1) planets = planetMid;
+
+      BitSet filter = null;
+      Corpus corpus = (Corpus)session.getAttribute(corpusKey);
+      if (corpus != null) filter = corpus.bits();
+      
+      FieldText fstats = alix.fieldText(fieldName);
+      Rail rail = alix.rail(fieldName);
+      long[] freqs = rail.freqs(filter); // term frequencies for this query
+      BytesRef bytes = new BytesRef();
+
+      Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
+
+
+      // if we add nodes here, we wil have to take a copy of the 
+      ArrayList<String> alist = new ArrayList<String>();
+      // get the focus nodes from query
+      if (words != null) {
+    String[] terms = alix.forms(words); // parse query as a set of terms
+    first = true;
+    int count = 0;
+    // rewrite queries, with only known terms
+    for (String w: terms) {
+      int termId = fstats.termId(w);
+      if (termId < 0) continue;
+      long freq = freqs[termId];
+      if (freq < 1) continue;
+      if (first) first = false;
+      alist.add(w);
+      if (++count >= ntopmax) break;
+    }
+    if (alist.size() > 0) {
+    }
     
-    final int planetMax = 50;
-    final int planetMid = 10;
-    int planets = tools.getInt("planets", planetMid, baseName+"Planets");
-    if (planets > planetMax) planets = planetMax;
-    if (planets < 1) planets = planetMid;
-
-    BitSet filter = null;
-    Corpus corpus = (Corpus)session.getAttribute(corpusKey);
-    if (corpus != null) filter = corpus.bits();
+      }
+      // if no nodes found, get the first non stop word for the field
+      // filter for the corpus
+      if (alist.size() < 1) {
+    TopArray top = new TopArray(ntop);
+    CharsAtt chars = new CharsAtt();
+    for (int termId = 0, length = freqs.length; termId < length; termId++) {
+      if (freqs[termId] < FREQ_FLOOR) continue;
+      if (fstats.isStop(termId)) continue;
+      // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
+      fstats.term(termId, bytes);
+      chars.copy(bytes);
+      FrDics.LexEntry entry = FrDics.word(chars);
+      if (entry != null) {
+    if (!tagSem.accept(entry.tag)) continue;
+      }
+      top.push(termId, freqs[termId]);
+    }
+    first = true;
+    int count = 0;
     
-    FieldText fstats = alix.fieldText(fieldName);
-    Rail rail = alix.rail(fieldName);
-    long[] freqs = rail.freqs(filter); // term frequencies for this query
-    BytesRef bytes = new BytesRef();
-
-    Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
-
-
-    // if we add nodes here, we wil have to take a copy of the 
-    ArrayList<String> alist = new ArrayList<String>();
-    // get the focus nodes from query
-    if (words != null) {
-      String[] terms = alix.qAnalyze(words); // parse query as a set of terms
-      first = true;
-      int count = 0;
-      // rewrite queries, with only known terms
-      for (String w: terms) {
-    int termId = fstats.termId(w);
-    if (termId < 0) continue;
-    long freq = freqs[termId];
-    if (freq < 1) continue;
-    if (first) first = false;
-    alist.add(w);
-    if (++count >= ntopmax) break;
-      }
-      if (alist.size() > 0) {
-      }
+    for (TopArray.Entry entry: top) {
+      final String w = fstats.term(entry.id(), bytes).utf8ToString();
+      alist.add(w);
       
     }
-    // if no nodes found, get the first non stop word for the field
-    // filter for the corpus
-    if (alist.size() < 1) {
-      TopArray top = new TopArray(ntop);
-      CharsAtt chars = new CharsAtt();
-      for (int termId = 0, length = freqs.length; termId < length; termId++) {
-    if (freqs[termId] < FREQ_FLOOR) continue;
-    if (fstats.isStop(termId)) continue;
-    // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
-    fstats.term(termId, bytes);
-    chars.copy(bytes);
-    FrDics.LexEntry entry = FrDics.word(chars);
-    if (entry != null) {
-      if (!tagSem.accept(entry.tag)) continue;
-    }
-    top.push(termId, freqs[termId]);
       }
-      first = true;
-      int count = 0;
-      
-      for (TopArray.Entry entry: top) {
-    final String w = fstats.term(entry.id(), bytes).utf8ToString();
-    alist.add(w);
-    
-      }
-    }
-    String[] stars = alist.toArray(new String[alist.size()]);
-    words = String.join(", ", stars);
-    //
+      String[] stars = alist.toArray(new String[alist.size()]);
+      words = String.join(", ", stars);
+      //
   %>
 	  <div id="graphcont">
        <form id="form">
