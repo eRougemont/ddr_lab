@@ -29,7 +29,6 @@ FormEnum forms = fstats.iterator(pars.limit, filter, pars.ranking.specif(), pars
     <%@ include file="tabs.jsp" %>
     </header>
     <main>
-      <%= FrDics.word("il y a") %>
       <table class="sortable" width="100%">
         <caption>
           <form id="sortForm">

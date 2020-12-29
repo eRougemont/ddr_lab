@@ -4,9 +4,9 @@
 static public enum Tab {
   freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "ranking"}) {
   },
-  books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking"}) {
+  books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },
-  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"book", "ranking"}) {
+  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"book", "ranking", "q"}) {
   },
   ;
   
