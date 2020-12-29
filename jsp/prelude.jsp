@@ -1,6 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="java.util.ArrayList" %>
@@ -49,7 +50,6 @@
 <%!
 static String baseName = "rougemont";
 
-
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
 static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
@@ -70,105 +70,6 @@ public static String CORPUS_ = "corpus_";
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
 
 
-static public enum Ranking implements Option {
-  occs("Occurrences") {
-    @Override
-    public Specif specif() {
-      return new SpecifOccs();
-    }
-  },
-  
-  hypergeo("Loi hypergeometrique (Lafon)") {
-    @Override
-    public Specif specif() {
-      return new SpecifHypergeo();
-    }
-  },
-
-  chi2("Chi2 (Muller)") {
-    @Override
-    public Specif specif() {
-      return new SpecifChi2();
-    }
-  },
-
-  /* pas bon 
-  binomial("Loi binomiale") {
-    @Override
-    public Specif specif() {
-      return new SpecifBinomial();
-    }
-  },
-  */
-  
-  bm25("BM25") {
-    @Override
-    public Specif specif() {
-      return new SpecifBM25();
-    }
-    
-  },
-
-  tfidf("tf-idf") {
-    @Override
-    public Specif specif() {
-      return new SpecifTfidf();
-    }
-    
-  },
-
-  jaccard("Jaccard") {
-    @Override
-    public Specif specif() {
-      return new SpecifJaccard();
-    }
-  },
-
-  jaccardtf("Jaccard (par document)") {
-    @Override
-    public Specif specif() {
-      return new SpecifJaccardTf();
-    }
-  },
-  
-  dice("Dice") {
-    @Override
-    public Specif specif() {
-      return new SpecifDice();
-    }
-  },
-  
-  dicetf("Dice (par document)") {
-    @Override
-    public Specif specif() {
-      return new SpecifDiceTf();
-    }
-  },
-
-  alpha("Alphabétique") {
-    @Override
-    public Specif specif() {
-      return null;
-    }
-  },
-
-
-
-  
-  ;
-
-  abstract public Specif specif();
-
-  
-  private Ranking(final String label) {  
-    this.label = label ;
-  }
-
-  // Repeating myself
-  final public String label;
-  public String label() { return label; }
-  public String hint() { return null; }
-}
 
 
 /**
@@ -289,7 +190,7 @@ public static Similarity getSimilarity(final String sortSpec)
 <%
 response.setHeader("X-Frame-Options", "SAMEORIGIN");
 final long time = System.nanoTime();
-final Jsp tools = new Jsp(request, response, pageContext);
+final JspTools tools = new JspTools(pageContext);
 
 final String baseDir = getServletContext().getRealPath("WEB-INF") ;
 final Properties props = new Properties();

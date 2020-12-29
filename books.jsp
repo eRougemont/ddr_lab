@@ -27,7 +27,7 @@ String[] forms = alix.forms(q);
           <form id="qform" target="_self">
             <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
             <label>Classer les livres selon un ou plusieurs mots
-            <br/><input id="q" name="q" value="<%=Jsp.escape(q)%>" width="100" autocomplete="off"/>
+            <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
             </label>
             <br/><label>Algorithme d’ordre
             <br/><select name="ranking" onchange="this.form.submit()">
@@ -60,7 +60,7 @@ int[] nos = facet.nos(topDocs);
 dic.setNos(nos);
 */  
 // build a resizable href link
-final String href = "index.jsp?ranking=" + ranking + "&amp;book=";
+final String href = "kwic.jsp?q=" + q + "&amp;book=";
 // resend a query somewhere ?
 boolean zero = false;
 int no = 1;

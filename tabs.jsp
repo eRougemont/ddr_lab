@@ -6,6 +6,8 @@ static public enum Tab {
   },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking"}) {
   },
+  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"book", "ranking"}) {
+  },
   ;
   
   final public String label;
@@ -65,8 +67,5 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  <%
-out.println(Tab.nav(request));
-  
-  %>
+  <%= Tab.nav(request) %>
 </nav>

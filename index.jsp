@@ -1,7 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="jsp/freqs.jsp" %>
+<%@ include file="jsp/prelude.jsp" %>
 <%
-limitMax = 200;
+// get default parameters from request
+Pars pars = pars(pageContext);
+Corpus corpus = null;
+BitSet filter = null; // if a corpus is selected, filter results with a bitset
+if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
+
+final String field = TEXT; // the field to process
+
+FieldText fstats = alix.fieldText(field);
+
+boolean reverse = false;
+if (pars.order == Order.last) reverse = true;
+
+FormEnum forms = fstats.iterator(pars.limit, filter, pars.ranking.specif(), pars.cat.tags(), reverse);
+
 %>
 <!DOCTYPE html>
 <html>
@@ -14,18 +29,19 @@ limitMax = 200;
     <%@ include file="tabs.jsp" %>
     </header>
     <main>
+      <%= FrDics.word("il y a") %>
       <table class="sortable" width="100%">
         <caption>
           <form id="sortForm">
                <%
-if (q == null) {
+if (pars.q == null) {
   // out.println(max+" termes");
 }
 else {
-  out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+left+"\"/>");
-  out.print(q);
-  out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+right+"\"/>&gt;");
-  out.println("<input type=\"hidden\" name=\"q\" value=\""+Jsp.escape(q)+"\"/>");
+  out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+pars.left+"\"/>");
+  out.print(pars.q);
+  out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+pars.right+"\"/>&gt;");
+  out.println("<input type=\"hidden\" name=\"q\" value=\""+JspTools.escape(pars.q)+"\"/>");
 }
                %>
              <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
@@ -37,7 +53,7 @@ for (int docId: books) {
   Document doc = reader.document(docId, BOOK_FIELDS);
   String abid = doc.get(Alix.BOOKID);
   out.print("<option value=\"" + abid + "\"");
-  if (abid.equals(bookid)) out.print(" selected=\"selected\"");
+  if (abid.equals(pars.book)) out.print(" selected=\"selected\"");
   out.print(">");
   out.print(doc.get("year"));
   out.print(", ");
@@ -51,19 +67,19 @@ for (int docId: books) {
              <br/><label>Filtrer par catégorie grammaticale
              <br/><select name="cat" onchange="this.form.submit()">
                  <option/>
-                 <%= cat.options() %>
+                 <%= pars.cat.options() %>
               </select>
              </label>
              <br/><label>Algorithme d’ordre
              <br/><select name="ranking" onchange="this.form.submit()">
                  <option/>
-                 <%= ranking.options() %>
+                 <%= pars.ranking.options() %>
               </select>
              </label>
              <br/><label>Direction
              <br/><select name="order" onchange="this.form.submit()">
                  <option/>
-                 <%= order.options() %>
+                 <%= pars.order.options() %>
               </select>
              </label><button type="submit">Lancer la requête</button>
           </form>
@@ -82,8 +98,9 @@ for (int docId: books) {
         </thead>
         <tbody>
           <% 
-          String href = "books.jsp?ranking="+ranking+"&amp;q=";
-          out.println(lines(forms, mime, href));
+          // todo, book selector
+          String href = "kwic.jsp?" + ((pars.book != null)?"book="+pars.book+"&amp;":"") + "q=";
+          out.println(lines(forms, pars.mime, href));
           
           %>
         </tbody>

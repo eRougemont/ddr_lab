@@ -1,18 +1,84 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="prelude.jsp"%>
+<%@ page import="java.text.DecimalFormat" %>
+<%@ page import="java.text.DecimalFormatSymbols" %>
+<%@ page import="java.util.Locale" %>
 <%@ page import="org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter" %>
+<%@ page import="org.apache.lucene.search.Sort" %>
+<%@ page import="org.apache.lucene.search.SortField" %>
 <%@ page import="alix.fr.Tag" %>
+<%@ page import="alix.fr.Tag.TagFilter" %>
+<%@ page import="alix.lucene.Alix" %>
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsAtt" %>
 <%@ page import="alix.lucene.analysis.FrDics" %>
 <%@ page import="alix.lucene.analysis.FrDics.LexEntry" %>
 <%@ page import="alix.lucene.search.FieldText" %>
+<%@ page import="alix.lucene.search.FormEnum" %>
 <%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.util.Char" %>
+<%@ page import="alix.web.*" %>
 <%!
+/** Uded to sort books, good place ? */
+static String bookYear = "year";
+static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+static final DecimalFormat formatDec3 = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+/**
+ * Specific pars for this display
+ */
+class Pars {
+  String fieldName;
+  Cat cat;
+  Ranking ranking;
+  Mime mime;
+  int limit;
+  Order order;
+  String q;
+  int left;
+  int right;
+  String book;
+}
+
+/**
+ * Get default pars 
+ */
+public Pars pars(final PageContext page)
+{
+  Pars pars = new Pars();
+  JspTools tools = new JspTools(page);
+  //parameters
+  pars.q = tools.getString("q", null);
+  //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
+  pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
+  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.hypergeo);
+  String format = tools.getString("format", null);
+  //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
+  pars.mime = (Mime)tools.getEnum("format", Mime.html);
+  pars.order = (Order)tools.getEnum("order", Order.top);
+  
+  // limit to a book
+  pars.book = tools.getString("book", null);
+
+  
+  pars.limit = tools.getInt("limit", limitMax);
+  //limit a bit if not csv
+  if (pars.mime == Mime.csv);
+  else if (pars.limit < 1 || pars.limit > limitMax) pars.limit = limitMax;
+  
+  // coocs
+  pars.left = tools.getInt("left", 5);
+  if (pars.left < 0) pars.left = 0;
+  else if (pars.left > 10) pars.left = 10;
+  pars.right = tools.getInt("right", 5);
+  if (pars.right < 0) pars.right = 0;
+  else if (pars.right > 10) pars.right = 10;
+  return pars;
+}
+
+
 
 final static Sort bookSort = new Sort(
   new SortField[] {
-    new SortField(YEAR, SortField.Type.INT),
+    new SortField(bookYear, SortField.Type.INT),
     new SortField(Alix.BOOKID, SortField.Type.STRING),
   }
 );
@@ -23,21 +89,24 @@ private static final int OUT_JSON = 2;
 private static int limitMax = 500;
 
 static public enum Cat implements Option {
-  ALL("Tout"),
-  NOSTOP("Mots pleins"), 
-  SUB("Substantifs"), 
-  NAME("Noms propres"),
-  VERB("Verbes"),
-  ADJ("Adjectifs"),
-  ADV("Adverbes"),
-  STOP("Mots vides"), 
-  NULL("Mots inconnus"), 
+  
+  ALL("Tout", null),
+  NOSTOP("Mots pleins", new TagFilter().setAll().noStop(true)), 
+  SUB("Substantifs", new TagFilter().setGroup(Tag.SUB)), 
+  NAME("Noms propres", new TagFilter().setGroup(Tag.NAME)),
+  VERB("Verbes", new TagFilter().setGroup(Tag.VERB)),
+  ADJ("Adjectifs", new TagFilter().setGroup(Tag.ADJ)),
+  ADV("Adverbes", new TagFilter().setGroup(Tag.ADV)),
+  STOP("Mots vides", new TagFilter().setAll().clearGroup(Tag.SUB).clearGroup(Tag.NAME).clearGroup(Tag.VERB).clearGroup(Tag.ADJ).clear(0)), 
+  NULL("Mots inconnus", new TagFilter().set(0)), 
   ;
-  private Cat(final String label) {  
-    this.label = label ;
-  }
-
   final public String label;
+  final public TagFilter tags;
+  private Cat(final String label, final TagFilter tags) {  
+    this.label = label ;
+    this.tags = tags;
+  }
+  public TagFilter tags(){ return tags; }
   public String label() { return label; }
   public String hint() { return null; }
 }
@@ -100,7 +169,7 @@ private static void htmlLine(StringBuilder sb, final FormEnum forms, final int n
   sb.append("    <td class=\"no left\">").append(no).append("</td>\n");
   sb.append("    <td class=\"form\">");
   sb.append("    <a");
-  if (href != null) sb.append(" href=\"" + href + Jsp.escUrl(term) + "\"");
+  if (href != null) sb.append(" href=\"" + href + JspTools.escUrl(term) + "\"");
   sb.append(">");
   sb.append(term);
   sb.append("</a>");
@@ -117,7 +186,7 @@ private static void htmlLine(StringBuilder sb, final FormEnum forms, final int n
   // fréquence
   // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
   sb.append("    <td class=\"num\">");
-  sb.append(dfscore.format(forms.score()));
+  sb.append(formatScore.format(forms.score()));
   sb.append("</td>\n");
   sb.append("    <td></td>\n");
   sb.append("    <td class=\"no right\">").append(no).append("</td>\n");
@@ -139,92 +208,15 @@ static private void jsonLine(StringBuilder sb, final FormEnum forms, final int n
   sb.append(forms.label().replace( "\"", "\\\"" ).replace('_', ' ')) ;
   sb.append("\"");
   sb.append(", \"weight\" : ");
-  sb.append(dfdec3.format(forms.score()));
+  sb.append(formatDec3.format(forms.score()));
   sb.append(", \"attributes\" : {\"class\" : \"");
   sb.append(Tag.label(Tag.group(forms.tag())));
   sb.append("\"}");
   sb.append("}");
-}%>
-<%
-  // parameters
-final String q = tools.getString("q", null);
-
-
-// final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
-Cat cat = (Cat)tools.getEnum("cat", Cat.ALL);
-Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.hypergeo);
-String format = tools.getString("format", null);
-//if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
-Mime mime = (Mime)tools.getEnum("format", Mime.html);
-Order order = (Order)tools.getEnum("order", Order.top);
-
-
-int limit = tools.getInt("limit", limitMax);
-// limit a bit if not csv
-if (mime == Mime.csv);
-else if (limit < 1 || limit > limitMax) limit = limitMax;
-
-
-int left = tools.getInt("left", 5);
-if (left < 0) left = 0;
-else if (left > 10) left = 10;
-int right = tools.getInt("right", 5);
-if (right < 0) right = 0;
-else if (right > 10) right = 10;
-
-Corpus corpus = null;
-
-BitSet filter = null; // if a corpus is selected, filter results with a bitset
-String bookid = tools.getString("book", null);
-if (bookid != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{bookid});
-
-final String field = TEXT; // the field to process
-
-FieldText fstats = alix.fieldText(field);
-
-Specif specif = ranking.specif();
-
-
-TagFilter tags = new TagFilter();
-// filtering
-switch (cat) {
-  case SUB:
-    tags.setGroup(Tag.SUB);
-    break;
-  case NAME:
-    tags.setGroup(Tag.NAME);
-    break;
-  case VERB:
-    tags.setGroup(Tag.VERB);
-    break;
-  case ADJ:
-    tags.setGroup(Tag.ADJ);
-    break;
-  case ADV:
-    tags.setGroup(Tag.ADV);
-    break;
-  case NOSTOP:
-    tags.setAll().noStop(true);
-    break;
-  case STOP:
-    tags.setAll().clearGroup(Tag.SUB).clearGroup(Tag.NAME).clearGroup(Tag.VERB).clearGroup(Tag.ADJ).clear(0);
-    break;
-  case NULL:
-    tags.set(0);
-    break;
-  case ALL:
-    tags = null;
-    break;
 }
-boolean reverse = false;
-if (order == Order.last) reverse = true;
-
-FormEnum forms = fstats.iterator(limit, filter, specif, tags, reverse);
 
 
-
-
-
+/*
 if (Mime.json.equals(mime)) {
   response.setContentType(Mime.json.type);
   out.println("{");
@@ -252,8 +244,7 @@ else if (Mime.csv.equals(mime)) {
   out.println();
   out.print( lines(forms, mime, q));
 }
-else {
-%>
-<%
-}
+*/
+
+
 %>
