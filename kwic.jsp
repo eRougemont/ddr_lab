@@ -2,10 +2,16 @@
 <%@ include file="jsp/kwic.jsp" %>
 <%@ include file="jsp/prelude.jsp" %>
 <%
+long time = System.nanoTime();
+Alix alix = alix(pageContext);
+JspTools tools = new JspTools(pageContext);
+Properties props = props(pageContext);
+
+
 Pars pars = pars(pageContext);
 pars.forms = alix.forms(pars.q);
 pars.fieldName = TEXT;
-Corpus corpus = (Corpus)session.getAttribute(corpusKey);
+Corpus corpus = (Corpus)session.getAttribute("corpus");
 long nanos = System.nanoTime();
 TopDocs topDocs = getTopDocs(pageContext, alix, corpus, pars.q, pars.sort);
 out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" -->");
@@ -57,10 +63,13 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
         */
 
         %>
-        
+       </form> 
             
-       <% kwic(pageContext, alix, topDocs, pars); %>
-      <form>
+       <% 
+       pars.href = "doc.jsp?";
+       kwic(pageContext, alix, topDocs, pars); 
+       %>
+
     <% 
     /*
 if (start > 1 && q != null) {

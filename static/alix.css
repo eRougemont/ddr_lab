@@ -29,9 +29,10 @@ body {
 }
 
 
-caption {
+form {
   background: var(--red);
   color: #fff;
+  padding: 1rem 30px;
 }
 
 td.no {
@@ -215,11 +216,132 @@ select:after {
 */
 
 /**
+ * Design global
+ */
+div.container {
+  width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html,
+body,
+main {
+  position: relative;
+}
+
+.row {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  background-color: var(--light);
+}
+
+div.text {
+  width: 50rem;
+  background-color: #fff;
+  padding: 2rem;
+}
+
+#sidebar {
+  position: fixed;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  order: -1;
+  overflow-y: auto;
+  padding-left: 0;
+  padding-right: 0;
+  height: 100vh;
+  width: 15rem;
+}
+
+/**
+ * Snips
+ */
+
+td.title em {
+  display: block;
+  width: 20ex;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.snip .analytic {
+  font-weight: bold;
+}
+
+article.snip p.frags {
+  width: 40rem;
+  line-height: 130%;
+  margin: 0.5ex auto 0 auto;
+  text-indent: 0;
+  padding: 0;
+  text-align: justify;
+}
+
+article.snip mark {
+  font-weight: bold;
+}
+
+/**
+ * Suggest
+ */
+
+.suggest .bibl {
+  cursor: pointer;
+}
+
+.suggest .bibl:hover {
+  background: #fff;
+}
+
+
+.suggest {
+  /*
+  margin-top: -15px;
+  padding-top: 25px;
+  */
+  color: #000;
+  border-top: none;
+  display: none;
+  text-align: left;
+  background: #f5f4f5;
+  position: absolute;
+  padding: 5px 1rem;
+  z-index: 2;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px #888;
+  right: 30px;
+  left: 30px;
+}
+
+.progress {
+  background: #ccc;
+  margin: 1px 1rem 0 1rem;
+  visibility: hidden;
+}
+
+.progress div {
+  height: 2px;
+  background-color: #cf1308;
+  width: 25%;
+ -webkit-animation: 0.5s ease-in 0s infinite alternate move_load;
+         animation: 0.5s ease-in 0s infinite alternate move_load;
+
+}
+@-webkit-keyframes move_load { from { margin-left:0%; } to { margin-left:75%; }  }
+        @keyframes move_load { from { margin-left:0%; } to { margin-left:75%; }  }
+
+
+/**
  * Sortable
  */
 table.sortable {
   border-spacing: 0;
-  line-height: 110%;
 }
 
 .sortable thead td,
@@ -237,7 +359,6 @@ table.sortable {
 
 table.sortable caption {
   text-align: left;
-  padding: 1rem 30px;
 }
 
 .sortable td a {
@@ -286,6 +407,7 @@ table.sortable th.num,
 td.num {
   text-align: right;
   padding-left: 1ex;
+  padding-right: 1ex;
 }
 td.num {
   font-family: monospace;
@@ -431,7 +553,7 @@ a:hover,
 div.term a:hover,
 #q,
 .mark,
-article.res mark,
+article.snip mark,
 table.sortable th,
 button.magnify,
 a.reset,
@@ -573,10 +695,6 @@ body.results form {
   text-align: center;
 }
 
-article.res {
-  margin: 1rem 0;
-}
-
 article.res header {
   text-align: left;
   margin-bottom: 0.5rem;
@@ -623,13 +741,7 @@ article.res .title {
   font-style: italic;
 }
 
-article.hit p.frags {
-  line-height: 130%;
-  margin: 0.5ex 0 0 2em;
-  text-indent: 0;
-  padding: 0;
-  text-align: justify;
-}
+
 
 article.res mark {
   background: #FFF;

@@ -55,15 +55,15 @@ private final int PLANET = -1;
 public static TopArray top(FieldText fstats, final int pivotId, final long[] cooc, int limit, final Distance distance)
 {
   TopArray top = new TopArray(limit);
-  for (int termId = 0, length = cooc.length; termId < length; termId++) {
-    if (fstats.isStop(termId)) continue; // sauter les mots vides
-    long m11 = cooc[termId];
-    long m10 = fstats.occs(termId) - m11;
+  for (int formId = 0, length = cooc.length; formId < length; formId++) {
+    if (fstats.isStop(formId)) continue; // sauter les mots vides
+    long m11 = cooc[formId];
+    long m10 = fstats.occs(formId) - m11;
     long m01 = fstats.occs(pivotId) - m11;
     // TODO, should be the sub corpus filtered total occs
     long m00 = fstats.occsAll;
     double score = distance.score(m11, m10, m01, m00);
-    top.push(termId, score);
+    top.push(formId, score);
   }
   return top;
 }
@@ -84,10 +84,10 @@ static class Node implements Comparable<Node>
   /** a counter locally used */
   private double score;
   
-  public Node(final int termId, final String label)
+  public Node(final int formId, final String label)
   {
     this.label = label;
-    this.id = termId;
+    this.id = formId;
   }
   
   public Node type(final int type)
@@ -260,9 +260,9 @@ input.nb {
     int count = 0;
     // rewrite queries, with only known terms
     for (String w: terms) {
-      int termId = fstats.termId(w);
-      if (termId < 0) continue;
-      long freq = freqs[termId];
+      int formId = fstats.formId(w);
+      if (formId < 0) continue;
+      long freq = freqs[formId];
       if (freq < 1) continue;
       if (first) first = false;
       alist.add(w);
@@ -277,17 +277,17 @@ input.nb {
       if (alist.size() < 1) {
     TopArray top = new TopArray(ntop);
     CharsAtt chars = new CharsAtt();
-    for (int termId = 0, length = freqs.length; termId < length; termId++) {
-      if (freqs[termId] < FREQ_FLOOR) continue;
-      if (fstats.isStop(termId)) continue;
+    for (int formId = 0, length = freqs.length; formId < length; formId++) {
+      if (freqs[formId] < FREQ_FLOOR) continue;
+      if (fstats.isStop(formId)) continue;
       // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
-      fstats.term(termId, bytes);
+      fstats.term(formId, bytes);
       chars.copy(bytes);
       FrDics.LexEntry entry = FrDics.word(chars);
       if (entry != null) {
     if (!tagSem.accept(entry.tag)) continue;
       }
-      top.push(termId, freqs[termId]);
+      top.push(formId, freqs[formId]);
     }
     first = true;
     int count = 0;
@@ -356,14 +356,14 @@ int edgeId = 0;
 long[] cooc = null;
 // first, loop on stars, to add them to the nodeSet
 for (String starLabel: stars) {
-  final int starId = fstats.termId(starLabel);
+  final int starId = fstats.formId(starLabel);
   final long starFreq = freqs[starId]; // local freq
   nodeSet.add(new Node(starId, starLabel).count(starFreq).type(STAR));
 }
 
 // reloop to get cooc
 for (String starLabel: stars) {
-  final int starId = fstats.termId(starLabel);
+  final int starId = fstats.formId(starLabel);
   final long starFreq = freqs[starId]; // local freq
   // out.println("\n get="+nodeSet.contains(tester.id(starId)));
   if (cooc != null) Arrays.fill(cooc, 0); // reuse cooc, wash it before

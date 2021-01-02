@@ -2,6 +2,10 @@
 <%@include file="jsp/prelude.jsp"%>
 
 <%
+long time = System.nanoTime();
+Alix alix = alix(pageContext);
+JspTools tools = new JspTools(pageContext);
+IndexReader reader = alix.reader();
 // Params for the page
 String q = tools.getString("q", null);
 Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.alpha);
@@ -58,7 +62,7 @@ FormEnum dic = facet.iterator(-1, null, forms, ranking.specif());
 TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
 int[] nos = facet.nos(topDocs);
 dic.setNos(nos);
-*/  
+*/
 // build a resizable href link
 final String href = "kwic.jsp?q=" + q + "&amp;book=";
 // resend a query somewhere ?

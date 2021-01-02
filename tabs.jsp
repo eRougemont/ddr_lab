@@ -6,7 +6,11 @@ static public enum Tab {
   },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },
+  chapters("Chapitres", "chapters.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
+  },
   kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"book", "ranking", "q"}) {
+  },
+  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "ranking", "q"}) {
   },
   ;
   

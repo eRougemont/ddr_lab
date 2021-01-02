@@ -1,6 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.FileNotFoundException"%>
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.DecimalFormatSymbols" %>
@@ -9,6 +10,7 @@
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.HashSet" %>
+<%@ page import="java.util.InvalidPropertiesFormatException" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.Locale" %>
 <%@ page import="java.util.List" %>
@@ -20,20 +22,9 @@
 <%@ page import="org.apache.lucene.document.Document" %>
 <%@ page import="org.apache.lucene.index.IndexReader" %>
 <%@ page import="org.apache.lucene.index.Term" %>
-<%@ page import="org.apache.lucene.search.BooleanClause.Occur" %>
-<%@ page import="org.apache.lucene.search.BooleanQuery" %>
-<%@ page import="org.apache.lucene.search.Collector" %>
-<%@ page import="org.apache.lucene.search.IndexSearcher" %>
-<%@ page import="org.apache.lucene.search.Query" %>
-<%@ page import="org.apache.lucene.search.ScoreDoc" %>
+<%@ page import="org.apache.lucene.search.*" %>
 <%@ page import="org.apache.lucene.search.similarities.*" %>
-<%@ page import="org.apache.lucene.search.Sort" %>
-<%@ page import="org.apache.lucene.search.SortField" %>
-<%@ page import="org.apache.lucene.search.TermQuery" %>
-<%@ page import="org.apache.lucene.search.TopDocs" %>
-<%@ page import="org.apache.lucene.search.TopDocsCollector" %>
-<%@ page import="org.apache.lucene.search.TopFieldCollector" %>
-<%@ page import="org.apache.lucene.search.TopScoreDocCollector" %>
+<%@ page import="org.apache.lucene.search.BooleanClause.*" %>
 <%@ page import="org.apache.lucene.util.BitSet" %>
 <%@ page import="alix.fr.Tag" %>
 <%@ page import="alix.fr.Tag.TagFilter" %>
@@ -58,6 +49,7 @@ static final DecimalFormat dfdec1 = new DecimalFormat("0.0", ensyms);
 static final DecimalFormat dfscore = new DecimalFormat("0.00000", ensyms);
 /** Fields to retrieve in document for a book */
 final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
+final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, Alix.ID, "year", "title", "analytic", "pages"}));
 
 
 /** Field name containing canonized text */
@@ -69,6 +61,44 @@ public static String CORPUS_ = "corpus_";
 /** A filter for documents */
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
 
+/**
+ * Options for filters by grammatical types
+ */
+static public enum Cat implements Option {
+  
+  ALL("Tout", null),
+  NOSTOP("Mots pleins", new TagFilter().setAll().noStop(true)), 
+  SUB("Substantifs", new TagFilter().setGroup(Tag.SUB)), 
+  NAME("Noms propres", new TagFilter().setGroup(Tag.NAME)),
+  VERB("Verbes", new TagFilter().setGroup(Tag.VERB)),
+  ADJ("Adjectifs", new TagFilter().setGroup(Tag.ADJ)),
+  ADV("Adverbes", new TagFilter().setGroup(Tag.ADV)),
+  STOP("Mots vides", new TagFilter().setAll().clearGroup(Tag.SUB).clearGroup(Tag.NAME).clearGroup(Tag.VERB).clearGroup(Tag.ADJ).clear(0)), 
+  NULL("Mots inconnus", new TagFilter().set(0)), 
+  ;
+  final public String label;
+  final public TagFilter tags;
+  private Cat(final String label, final TagFilter tags) {  
+    this.label = label ;
+    this.tags = tags;
+  }
+  public TagFilter tags(){ return tags; }
+  public String label() { return label; }
+  public String hint() { return null; }
+}
+
+static public enum Order implements Option {
+  top("Score, haut"), 
+  last("Score, bas"), 
+  ;
+  private Order(final String label) {  
+    this.label = label ;
+  }
+
+  final public String label;
+  public String label() { return label; }
+  public String hint() { return null; }
+}
 
 
 
@@ -164,39 +194,19 @@ public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
   return collector.bits();
 }
 
-
-/**
- * Was used for testing the similarities.
- */
-public static Similarity getSimilarity(final String sortSpec)
+public static Alix alix(final PageContext pageContext) throws IOException
 {
-  Similarity similarity = null;
-  if ("dfi_chi2".equals(sortSpec)) similarity = new DFISimilarity(new IndependenceChiSquared());
-  else if ("dfi_std".equals(sortSpec)) similarity = new DFISimilarity(new IndependenceStandardized());
-  else if ("dfi_sat".equals(sortSpec)) similarity = new DFISimilarity(new IndependenceSaturated());
-  else if ("tfidf".equals(sortSpec)) similarity = new ClassicSimilarity();
-  else if ("lmd".equals(sortSpec)) similarity = new LMDirichletSimilarity();
-  else if ("lmd0.1".equals(sortSpec)) similarity = new LMJelinekMercerSimilarity(0.1f);
-  else if ("lmd0.7".equals(sortSpec)) similarity = new LMJelinekMercerSimilarity(0.7f);
-  else if ("dfr".equals(sortSpec)) similarity = new DFRSimilarity(new BasicModelG(), new AfterEffectB(), new NormalizationH1());
-  else if ("ib".equals(sortSpec)) similarity = new IBSimilarity(new DistributionLL(), new LambdaDF(), new NormalizationH3());
-  else if ("theme".equals(sortSpec)) similarity = new SimilarityTheme();
-  else if ("occs".equals(sortSpec)) similarity = new SimilarityOccs();
-  return similarity;
-} 
+  final String baseDir = pageContext.getServletContext().getRealPath("WEB-INF") ;
+  final Alix alix = Alix.instance(baseDir + "/bases/" + baseName, new FrAnalyzer());
+  return alix;
+}
 
+public static Properties props(final PageContext pageContext) throws IOException, FileNotFoundException, InvalidPropertiesFormatException
+{
+  final String baseDir = pageContext.getServletContext().getRealPath("WEB-INF") ;
+  final Properties props = new Properties();
+  props.loadFromXML(new FileInputStream(baseDir + "/" + baseName + ".xml"));
+  return props;
+}
 
-%>
-<%
-response.setHeader("X-Frame-Options", "SAMEORIGIN");
-final long time = System.nanoTime();
-final JspTools tools = new JspTools(pageContext);
-
-final String baseDir = getServletContext().getRealPath("WEB-INF") ;
-final Properties props = new Properties();
-props.loadFromXML(new FileInputStream(baseDir + "/" + baseName + ".xml"));
-final Alix alix = Alix.instance(baseDir + "/bases/" + baseName, new FrAnalyzer());
-final IndexSearcher searcher = alix.searcher();
-final IndexReader reader = alix.reader();
-final String corpusKey = "CORPUS_"+baseName;
 %>

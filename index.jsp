@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="jsp/freqs.jsp" %>
-<%@ include file="jsp/prelude.jsp" %>
 <%
+long time = System.nanoTime();
+Alix alix = alix(pageContext);
+JspTools tools = new JspTools(pageContext);
+Properties props = props(pageContext);
+IndexReader reader = alix.reader();
+
 // get default parameters from request
 Pars pars = pars(pageContext);
 Corpus corpus = null;

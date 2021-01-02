@@ -96,7 +96,13 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
       out.println("<article class=\"res\">");
       out.println("<header>");
       out.println("<small>"+(i)+".</small> ");
-      out.println("<a href=\""+href+"\">"+doc.get("bibl")+"</a>");
+      out.print("<a href=\"" + href + "\">");
+      out.print(doc.get("year"));
+      out.print(", ");
+      out.print(doc.get("title"));
+      out.print(". ");
+      out.print(doc.get("analytic"));
+      out.print("</a>");
       out.println("</header>");
       out.println("</article>");
       if (++docs >= pars.hpp) break;
@@ -110,7 +116,13 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     out.println("<header>");
     out.println("<small>"+(i)+"</small> ");
 
-    out.println("<a href=\""+href+"\">"+doc.get("bibl")+"</a></header>");
+    out.print("<a href=\""+href+"\">");
+    out.print(doc.get("year"));
+    out.print(", ");
+    out.print(doc.get("title"));
+    out.print(". ");
+    out.print(doc.get("analytic"));
+    out.println("</a></header>");
     for (String l: lines) {
       out.println("<div class=\"line\">"+l+"</div>");
     }

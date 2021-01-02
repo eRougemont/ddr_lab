@@ -107,7 +107,7 @@ else if (q!=null) { // a query, something to hilite
   String[] fragments = res.get(fieldName);
 
   final StringBuilder href = new StringBuilder();
-  href.append("?q=").append(Jsp.escUrl(q));
+  href.append("?q=").append(JspTools.escUrl(q));
   final int hrefLen = href.length();
   for (int i = 0; i < len; i++) {
     href.setLength(hrefLen); // reset query String

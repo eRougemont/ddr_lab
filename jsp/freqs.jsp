@@ -16,6 +16,7 @@
 <%@ page import="alix.lucene.search.TermList" %>
 <%@ page import="alix.util.Char" %>
 <%@ page import="alix.web.*" %>
+<%@include file="prelude.jsp"%>
 <%!
 /** Uded to sort books, good place ? */
 static String bookYear = "year";
@@ -49,7 +50,7 @@ public Pars pars(final PageContext page)
   pars.q = tools.getString("q", null);
   //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
   pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
-  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.hypergeo);
+  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.chi2);
   String format = tools.getString("format", null);
   //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
   pars.mime = (Mime)tools.getEnum("format", Mime.html);
@@ -87,42 +88,6 @@ private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
 private static final int OUT_JSON = 2;
 private static int limitMax = 500;
-
-static public enum Cat implements Option {
-  
-  ALL("Tout", null),
-  NOSTOP("Mots pleins", new TagFilter().setAll().noStop(true)), 
-  SUB("Substantifs", new TagFilter().setGroup(Tag.SUB)), 
-  NAME("Noms propres", new TagFilter().setGroup(Tag.NAME)),
-  VERB("Verbes", new TagFilter().setGroup(Tag.VERB)),
-  ADJ("Adjectifs", new TagFilter().setGroup(Tag.ADJ)),
-  ADV("Adverbes", new TagFilter().setGroup(Tag.ADV)),
-  STOP("Mots vides", new TagFilter().setAll().clearGroup(Tag.SUB).clearGroup(Tag.NAME).clearGroup(Tag.VERB).clearGroup(Tag.ADJ).clear(0)), 
-  NULL("Mots inconnus", new TagFilter().set(0)), 
-  ;
-  final public String label;
-  final public TagFilter tags;
-  private Cat(final String label, final TagFilter tags) {  
-    this.label = label ;
-    this.tags = tags;
-  }
-  public TagFilter tags(){ return tags; }
-  public String label() { return label; }
-  public String hint() { return null; }
-}
-
-static public enum Order implements Option {
-  top("Score, haut"), 
-  last("Score, bas"), 
-  ;
-  private Order(final String label) {  
-    this.label = label ;
-  }
-
-  final public String label;
-  public String label() { return label; }
-  public String hint() { return null; }
-}
 
 
 private static String lines(final FormEnum forms, final Mime mime, final String href)
