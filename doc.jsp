@@ -31,19 +31,19 @@ pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
 pars.limit = tools.getInt("docid", 100);
 
 int docId = tools.getInt("docid", -1); // get doc by lucene internal docId or persistant String id
-String id = tools.getString("id", null);
+String id = tools.getString("id", "");
 String q = tools.getString("q", null); // if no doc, get params to navigate in a results series
 
 Doc doc = null;
 try { // load full document
-  if (id != null) doc = new Doc(alix, id);
+  if (!id.isEmpty()) doc = new Doc(alix, id);
   else if (docId >= 0) {
     doc = new Doc(alix, docId);
     id = doc.id();
   }
 }
 catch (IllegalArgumentException e) { // doc not found
-  id = null;
+  id = "";
 }
 
 /*

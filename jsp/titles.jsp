@@ -24,10 +24,14 @@ SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
 Sort sort = new Sort(sf1, sf2);
 
 Query query = null;
-if (query == null) query = new MatchAllDocsQuery();
+if (query == null) query = QUERY_CHAPTER;
 if (q != null) {
   String lowbibl = q.toLowerCase();
   query = Alix.query("bibl", lowbibl, ANAMET, Occur.MUST);
+  query = new BooleanQuery.Builder()
+     .add(QUERY_CHAPTER, Occur.FILTER)
+     .add(query, Occur.MUST)
+   .build();
 }
 
 Marker marker = null;
