@@ -13,15 +13,36 @@ Corpus corpus = null;
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
 
-final String field = TEXT; // the field to process
+final String fieldName = TEXT; // the field to process
 
-FieldText fstats = alix.fieldText(field);
+FieldText fieldText = alix.fieldText(fieldName);
 
 boolean reverse = false;
 if (pars.order == Order.last) reverse = true;
 
-FormEnum forms = fstats.iterator(pars.limit, filter, pars.ranking.specif(), pars.cat.tags(), reverse);
-
+FormEnum dic = null;
+if (pars.q != null) {
+  FieldRail rail = alix.fieldRail(fieldName); // get the tool for cooccurrences
+  // parameters and population of dic.freqs and dic.hits with the rail co-occurrents
+  dic = new FormEnum(fieldText); // build a wrapper to have results
+  dic.search = alix.forms(pars.q); // parse query as terms
+  dic.left = pars.left; // left context
+  dic.right = pars.right; // right context
+  dic.filter = filter; // limit to some documents
+  dic.tags = pars.cat.tags(); // limit word list by tags
+  long found = rail.coocs(dic);
+  if (found > 0) { // nothing found, what should I do here ?
+    // parameters for sorting
+    dic.limit = pars.limit;
+    dic.specif = pars.ranking.specif();
+    dic.reverse = reverse;
+    rail.score(dic);
+  }
+}
+else {
+  // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
+  dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
+}
 %>
 <!DOCTYPE html>
 <html>
@@ -37,17 +58,6 @@ FormEnum forms = fstats.iterator(pars.limit, filter, pars.ranking.specif(), pars
       <table class="sortable" width="100%">
         <caption>
           <form id="sortForm">
-               <%
-if (pars.q == null) {
-  // out.println(max+" termes");
-}
-else {
-  out.println("&lt;<input style=\"width: 2em;\" name=\"left\" value=\""+pars.left+"\"/>");
-  out.print(pars.q);
-  out.println("<input style=\"width: 2em;\" name=\"right\" value=\""+pars.right+"\"/>&gt;");
-  out.println("<input type=\"hidden\" name=\"q\" value=\""+JspTools.escape(pars.q)+"\"/>");
-}
-               %>
              <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
              <br/><select name="book" onchange="this.form.submit()">
                   <option value="">TOUT</option>
@@ -67,7 +77,12 @@ for (int docId: books) {
                   %>
                </select>
              </label>
-             
+            <br/><label>Cooccurrents fréquents autour d’un ou plusieurs mots
+            <br/><input name="q" value="<%= JspTools.escape(pars.q) %>"/>
+            </label>
+            <label><input name="left" value="<%= pars.left %>" size="1" class="num3"/> mots à gauche</label>
+            <label><input name="right" value="<%= pars.right %>" size="1" class="num3"/> mots à droite</label>
+            
              <br/><label>Filtrer par catégorie grammaticale
              <br/><select name="cat" onchange="this.form.submit()">
                  <option/>
@@ -104,7 +119,7 @@ for (int docId: books) {
           <% 
           // todo, book selector
           String href = "kwic.jsp?" + ((pars.book != null)?"book="+pars.book+"&amp;":"") + "q=";
-          out.println(lines(forms, pars.mime, href));
+          out.println(lines(dic, pars.mime, href));
           
           %>
         </tbody>

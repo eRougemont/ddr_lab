@@ -34,7 +34,7 @@
 <%@ page import="alix.lucene.analysis.FrAnalyzer" %>
 <%@ page import="alix.lucene.search.*" %>
 
-<%@ page import="alix.lucene.util.Rail" %>
+<%@ page import="alix.lucene.search.FieldRail" %>
 <%@ page import="alix.util.ML" %>
 <%@ page import="alix.util.TopArray" %>
 <%@ page import="alix.web.*" %>

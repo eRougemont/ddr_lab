@@ -2,7 +2,7 @@
 <%@ page import="java.nio.file.Paths" %>
 <%!
 static public enum Tab {
-  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "ranking"}) {
+  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "ranking", "q"}) {
   },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },

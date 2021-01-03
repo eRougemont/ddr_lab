@@ -12,7 +12,7 @@ Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.alpha);
 
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
-String[] forms = alix.forms(q);
+String[] search = alix.forms(q);
 %>
 <!DOCTYPE html>
 <html>
@@ -56,7 +56,7 @@ String[] forms = alix.forms(q);
         
     
 <%
-FormEnum dic = facet.iterator(-1, null, forms, ranking.specif());
+FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
 /* 
 // Hack to use facet as a navigator in results, cache results in the facet order
 TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);

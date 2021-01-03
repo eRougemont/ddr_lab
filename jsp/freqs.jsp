@@ -68,10 +68,10 @@ public Pars pars(final PageContext page)
   // coocs
   pars.left = tools.getInt("left", 5);
   if (pars.left < 0) pars.left = 0;
-  else if (pars.left > 10) pars.left = 10;
+  else if (pars.left > 10) pars.left = 50;
   pars.right = tools.getInt("right", 5);
   if (pars.right < 0) pars.right = 0;
-  else if (pars.right > 10) pars.right = 10;
+  else if (pars.right > 10) pars.right = 50;
   return pars;
 }
 

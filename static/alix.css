@@ -132,6 +132,17 @@ table {
 input.year {
   width: 10ex;
 }
+input.num1 {
+  width: 1ex;
+}
+input.num2 {
+  width: 2ex;
+
+}
+input.num3 {
+  width: 5ex;
+  text-align: right;
+}
 
 button,
 select {
