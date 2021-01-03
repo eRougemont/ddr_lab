@@ -118,8 +118,23 @@ for (int docId: books) {
         <tbody>
           <% 
           // todo, book selector
-          String href = "kwic.jsp?" + ((pars.book != null)?"book="+pars.book+"&amp;":"") + "q=";
-          out.println(lines(dic, pars.mime, href));
+          StringBuilder href = new StringBuilder();
+          href.append("");
+          boolean first =  true;
+          for (String par: new String[]{"left", "right", "cat", "ranking"}) {
+            String value = request.getParameter(par);
+            if (value == null) continue;
+            if (first) {
+              first = false;
+              href.append("?");
+            }
+            else {
+              href.append("&amp;");
+            }
+            href.append(par).append("=").append(value);
+          }
+          href.append("&amp;q=");
+          out.println(lines(dic, pars.mime, href.toString()));
           
           %>
         </tbody>
