@@ -19,6 +19,7 @@ static int hppMax = 1000;
 class Pars {
   String fieldName;
   String q;
+  String book;
   int start;
   int left;
   int right;
@@ -38,6 +39,7 @@ public Pars pars(final PageContext page)
   JspTools tools = new JspTools(page);
   
   pars.q = tools.getString("q", null);
+  pars.book = tools.getString("book", null);
   
   pars.expression = tools.getBoolean("expression", false);
   pars.hpp = tools.getInt("hpp", hppDefault);
@@ -93,7 +95,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     // show simple metadata
     out.println("<!-- docId=" + docId + " -->");
     if (pars.forms == null || pars.forms.length == 0) {
-      out.println("<article class=\"res\">");
+      out.println("<article class=\"kwic\">");
       out.println("<header>");
       out.println("<small>"+(i)+".</small> ");
       out.print("<a href=\"" + href + "\">");
@@ -112,7 +114,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     String[] lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression);
     if (lines == null || lines.length < 1) continue;
     // doc.kwic(field, include, 50, 50, 100);
-    out.println("<article class=\"res\">");
+    out.println("<article class=\"kwic\">");
     out.println("<header>");
     out.println("<small>"+(i)+"</small> ");
 

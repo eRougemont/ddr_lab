@@ -119,73 +119,13 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
 
 
 
-/**
- * Build a text query fron a String and an optional Corpus.
- * Will return null if there is no terms in the query,
- * even if there is a corpus.
- */
-public static Query buildQuery(Alix alix, String q, Corpus corpus) throws IOException
-{
-  Query qFilter = null;
-  if (corpus != null) qFilter = new CorpusQuery(corpus.name(), corpus.bits());
-  Query qWords = alix.query(TEXT, q);
-  if (qWords != null && qFilter != null) {
-    return new BooleanQuery.Builder()
-      .add(qFilter, Occur.FILTER)
-      .add(qWords, Occur.MUST)
-      .build();
-  }
-  if (qWords != null) return qWords;
-  if (qFilter != null) return qFilter;
-  return QUERY_CHAPTER;
-}
-
-/**
- * Get a cached set of results.
- * Ensure to always give something.
- * Seems quite fast (2ms), no cache needed.
- * Cache bug if corpus is changed under same name.
- */
-public TopDocs getTopDocs(PageContext page, Alix alix, Corpus corpus, String q, DocSort sorter) throws IOException
-{
-  Query query = buildQuery(alix, q, corpus);
-  Sort sort = sorter.sort();
-  TopDocs topDocs = null;
-  IndexSearcher searcher = alix.searcher();
-  int totalHitsThreshold = Integer.MAX_VALUE;
-  final int numHits = alix.reader().maxDoc();
-  TopDocsCollector<?> collector;
-  SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
-  Sort sort2 = new Sort(sf2);
-  if (sort != null) {
-    collector = TopFieldCollector.create(sort, numHits, totalHitsThreshold);
-  }
-  else {
-    collector = TopScoreDocCollector.create(numHits, totalHitsThreshold);
-  }
-  /*
-  if (similarity != null) {
-    oldSim = searcher.getSimilarity();
-    searcher.setSimilarity(similarity);
-    searcher.search(query, collector);
-    // will it be fast enough to not affect other results ?
-    searcher.setSimilarity(oldSim);
-  }
-  else {
-  }
-  */
-  searcher.search(query, collector);
-  topDocs = collector.topDocs();
-  return topDocs;
-}
-
-
 
 
 /**
  * Get a bitSet of a query. Seems quite fast (2ms), no cache needed.
  */
-public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
+/*
+ public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
 {
   Query query = buildQuery(alix, q, corpus);
   IndexSearcher searcher = alix.searcher();
@@ -193,7 +133,7 @@ public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
   searcher.search(query, collector);
   return collector.bits();
 }
-
+*/
 public static Alix alix(final PageContext pageContext) throws IOException
 {
   final String baseDir = pageContext.getServletContext().getRealPath("WEB-INF") ;

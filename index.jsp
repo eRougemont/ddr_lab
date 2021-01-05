@@ -100,7 +100,8 @@ for (int docId: books) {
                  <option/>
                  <%= pars.order.options() %>
               </select>
-             </label><button type="submit">Lancer la requête</button>
+             </label>
+             <button type="submit">▶</button>
           </form>
         </caption>
         <thead>

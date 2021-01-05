@@ -146,19 +146,14 @@ input.num3 {
 
 button,
 select {
-  border-width: 1px;
-  border-style: solid;
+  border: 1px solid rgba(255, 255, 255, .5);
+  border-radius: 3px;
   /*
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
   */
   cursor: pointer;
-}
-
-button,
-select {
-  border-style: none;
 }
 
 select {
@@ -180,7 +175,8 @@ select {
   */
 }
 
-button {
+button[type="submit"] {
+background: transparent;
   /*
   outline: unset;
   padding: 0.1em 0.3em;
@@ -191,6 +187,9 @@ button {
   */
 }
 
+button[type="submit"]:hover {
+  background: var(--light);
+}
 
 /*
 select::-ms-expand {
@@ -210,21 +209,7 @@ select:after {
 */
 
 
-/**
- * Header
- */
-/*
-#tabs button.here,
-#tabs a.here {
-  background: rgba(120, 105, 101, 0.8);
-  color: #FFFFFF;
-}
 
-#tabs button:hover,
-#tabs a:hover {
-  background: hsl(31, 17%, 80%);
-}
-*/
 
 /**
  * Design global
@@ -469,21 +454,6 @@ header.biblbar table {
   border: none;
 }
 
-button {
-  color: #444;
-}
-
-button,
-select:hover,
-select:focus,
-details,
-#tabs a,
-#tabs button,
-.marginnote,
-.gutter.but {
-  border-color: #c3b7aa;
-}
-
 header {
   border-color: #FFFFFF;
 }
@@ -498,11 +468,6 @@ header {
 #tabs a.here {
   background: rgba(120, 105, 101, 0.8);
   color: #FFFFFF;
-}
-
-#tabs button:hover,
-#tabs a:hover {
-  background: hsl(31, 17%, 80%);
 }
 
 ::selection {
@@ -696,68 +661,62 @@ details {
  * Search results, kwic or snips
  */
 
-body.results > header {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-body.results form {
-  text-align: center;
-}
-
-article.res header {
+article.kwic header {
+  background-color: var(--light);
   text-align: left;
-  margin-bottom: 0.5rem;
-  background-color: #FFF;
-  line-height: 110%;
-  padding: 1px 0.5rem;
+  margin: 1rem 0 0.2rem 0;
+  line-height: 120%;
+  padding: 1px 1rem;
+  font-weight: 400;
+  color: #000;
 }
 
-article.res header small {
+article.kwic header a {
+  color: #000;
+}
+
+article.kwic header small {
   float: left;
   margin: 0.3ex 1ex 0 0;
 }
 
-article.res header a {
+article.kwic header a {
   display: block;
-  color: rgb(120, 105, 101);
 }
 
-article.res header a:hover {
+article.kwic header a:hover {
   text-decoration: none;
 }
 
-#chapters mark,
 div.line a {
   font-weight: bold;
 }
 
-article.res div.line {
+article.kwic div.line {
   white-space: nowrap;
 }
 
-article.res div.line a:hover {
+article.kwic div.line a:hover {
   text-decoration: none;
   color: #000;
 }
 
-article.res .surname {
+article.kwic .surname {
   font-variant: small-caps;
   font-size: 115%;
   font-weight: bold;
 }
 
-article.res .title {
+article.kwic .title {
   font-style: italic;
 }
 
-
-
-article.res mark {
+article.kwic mark {
   background: #FFF;
   font-weight: bold;
 }
+
+/** Chapters */
 
 #chapters > a {
   color: #000;

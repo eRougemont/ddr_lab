@@ -80,6 +80,7 @@ String[] forms = alix.forms(q);
                   <%= sim.options() %>
                </select>
               </label>
+              <button type="submit">▶</button>
             </form>
           </caption>
           <thead>

@@ -11,9 +11,53 @@ Properties props = props(pageContext);
 Pars pars = pars(pageContext);
 pars.forms = alix.forms(pars.q);
 pars.fieldName = TEXT;
-Corpus corpus = (Corpus)session.getAttribute("corpus");
+
+// build query and get results
 long nanos = System.nanoTime();
-TopDocs topDocs = getTopDocs(pageContext, alix, corpus, pars.q, pars.sort);
+Query query = null;
+Query qWords = null;
+Query qFilter = null;
+if (pars.q != null) {
+  qWords = alix.query(TEXT, pars.q);
+}
+if (pars.book != null) {
+  qFilter = new TermQuery(new Term(Alix.BOOKID, pars.book));
+}
+if (qWords != null && qFilter != null) {
+  query = new BooleanQuery.Builder()
+    .add(qFilter, Occur.FILTER)
+    .add(qWords, Occur.MUST)
+    .build();
+}
+else if (qWords != null) query = qWords;
+else if (qFilter != null) query = qFilter;
+else query = QUERY_CHAPTER;
+
+TopDocs topDocs = null;
+IndexSearcher searcher = alix.searcher();
+int totalHitsThreshold = Integer.MAX_VALUE;
+final int numHits = alix.reader().maxDoc();
+TopDocsCollector<?> collector = null;
+
+
+SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
+Sort sort2 = new Sort(sf2);
+
+/*
+out.print(pars.sort.sort());
+out.close();
+*/
+if (pars.sort != null && pars.sort.sort() != null) {
+  collector = TopFieldCollector.create(pars.sort.sort(), numHits, totalHitsThreshold);
+}
+else {
+  collector = TopScoreDocCollector.create(numHits, totalHitsThreshold);
+}
+
+
+searcher.search(query, collector);
+topDocs = collector.topDocs();
+
 out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" -->");
 
 %>
@@ -32,11 +76,14 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
     </header>
     <main>
       <form>
-        <input id="q" name="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
+        <label>Chercher un ou plusieurs mots
+        <button style="position: absolute; left: -9999px" type="submit">▶</button>
+        <br/><input id="q" name="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
           onfocus="this.setSelectionRange(this.value.length,this.value.length);"
           oninput="this.form['start'].value='';"
         />
-        <select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
+        </label>
+        <br/><select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
           <option/>
           <%= pars.sort.options() %>
         </select>
@@ -47,7 +94,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
         }
         if (topDocs != null) {
           long max = topDocs.totalHits.value;
-          out.println("<input  name=\"start\" value=\""+ pars.start+"\" autocomplete=\"off\" class=\"start\"/>");
+          out.println("<input  name=\"start\" value=\""+ pars.start+"\" autocomplete=\"off\" class=\"start num3\"/>");
           out.println("<span class=\"hits\"> / "+ max  + "</span>");
           int n = pars.start + pars.hpp;
           if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
@@ -63,6 +110,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
         */
 
         %>
+        
        </form> 
             
        <% 

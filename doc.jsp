@@ -97,7 +97,6 @@ if (doc != null) { // document id is verified, give it to javascript
     </header>
     <main>
       <form class="search" id="search" autocomplete="off" onsubmit="return false;" action="#" role="search">
-        <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" tabindex="-1" />
       <!-- 
         <button name="magnify" type="button">
           <svg viewBox="0 0 24 24"  width="24px" height="24px">
@@ -111,11 +110,12 @@ if (doc != null) { // document id is verified, give it to javascript
         </button>
        -->
         <label>Chercher un titre
-          <br/><input id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
+          <br/>
           <input id="titles" name="titles" aria-describedby="titles-hint" placeholder="am… dia… eu… fed…" size="50"/>
           <div class="progress"><div></div></div>
           <div class="suggest"></div>
         </label>
+        <input style="float: right;"" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
         <!-- 
         
         <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
@@ -132,6 +132,7 @@ if (doc != null) { // document id is verified, give it to javascript
             <%= pars.ranking.options() %>
          </select>
         </label>
+        <button type="submit">▶</button>
         
         <%
         /*
