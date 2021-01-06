@@ -67,12 +67,18 @@ String[] forms = alix.forms(q);
         
     
 <%
-int len = 100;
+Sort sort = null;
+int len = 500;
 Query query = alix.query("text", q);
-if (query == null) query = new MatchAllDocsQuery();
+if (query == null) {
+  query = QUERY_CHAPTER;
+  sort = sortYear;
+}
 IndexSearcher searcher = alix.searcher();
 searcher.setSimilarity(sim.similarity());
-TopDocs topDocs = searcher.search(query, len);
+TopDocs topDocs;
+if (sort != null) topDocs = searcher.search(query, len, sort);
+else topDocs = searcher.search(query, len);
 ScoreDoc[] hits = topDocs.scoreDocs;
 
 /*

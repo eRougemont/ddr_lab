@@ -60,7 +60,7 @@ FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
 // if no word searched, sort by date, not well optimized here
 if (search == null || search.length < 1) {
   // get docIds of books sorted by a query
-  int[] books = alix.books(bookSort);
+  int[] books = alix.books(sortYear);
   // take a facteId for these books to set a sorter
   for (int i = 0, length = books.length; i < length; i++) books[i] = facet.facetId(books[i]);
   dic.sorter(books);

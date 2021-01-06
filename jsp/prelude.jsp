@@ -51,11 +51,10 @@ static final DecimalFormat dfscore = new DecimalFormat("0.00000", ensyms);
 final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
 final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, Alix.ID, "year", "title", "analytic", "pages"}));
 
-final static String bookYear = "year";
-final static Sort bookSort = new Sort(
+final static Sort sortYear = new Sort(
   new SortField[] {
-    new SortField(bookYear, SortField.Type.INT),
-    new SortField(Alix.BOOKID, SortField.Type.STRING),
+    new SortField("year", SortField.Type.INT),
+    new SortField(Alix.ID, SortField.Type.STRING),
   }
 );
 
