@@ -62,7 +62,7 @@ else {
              <br/><select name="book" onchange="this.form.submit()">
                   <option value="">TOUT</option>
                   <%
-int[] books = alix.books(bookSort);
+int[] books = alix.books(sortYear);
 for (int docId: books) {
   Document doc = reader.document(docId, BOOK_FIELDS);
   String abid = doc.get(Alix.BOOKID);
