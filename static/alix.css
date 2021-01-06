@@ -489,20 +489,20 @@ header {
 
 ::-moz-selection {
   /* let it alone for Chrome */
-  background: rgba(120, 105, 101, 0.8);
+  background: var(--gray);
+  color: #FFFFFF;
+}
+::selection {
+  background: var(--gray);
   color: #FFFFFF;
 }
 
 #tabs button.here,
 #tabs a.here {
-  background: rgba(120, 105, 101, 0.8);
+  background: var(--gray);
   color: #FFFFFF;
 }
 
-::selection {
-  background: rgba(120, 105, 101, 0.8);
-  color: #FFFFFF;
-}
 
 mark {
   background: transparent;
