@@ -10,7 +10,10 @@ allemands;NAME;Allemagne
 allemandes;NAME;Allemagne
 Allemand;NAME;Allemagne
 Allemands;NAME;Allemagne
+Allemandes;NAME;Allemagne
 Français;NAME;France
+Française;NAME;France
+Françaises;NAME;France
 français;NAME;France
 française;NAME;France
 françaises;NAME;France
@@ -97,3 +100,18 @@ G. de Reynold;NAMEpers;Reynold
 Bertrand de Jouvenel;NAMEpers;Jouvenel
 B. de Jouvenel;NAMEpers;Jouvenel
 Guillaume d’Orange;NAMEpers
+hégélien;NAME;Hegel
+hegelien;NAME;Hegel
+hegeliens;NAME;Hegel
+marxisme;NAME;Marx
+marxisme;NAME;Marx
+marxiste;NAME;Marx
+marxistes;NAME;Marx
+Karl Marx;NAME;Marx
+Illich;NAME;Ivan Illich
+Europæ;NAME;Europe
+Europé;NAME;Europe
+russe;NAME;Russie
+russes;NAME;Russie
+Russe;NAME;Russie
+Russes;NAME;Russie

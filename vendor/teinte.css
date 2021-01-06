@@ -1,4 +1,33 @@
 /*! Teinte.css, generic TEI styling, https://github.com/oeuvres/Teinte   */
+
+/* Relative sizes */
+
+.argument,
+.epigraph,
+blockquote.quote,
+li.witness,
+div.speaker,
+p.speaker,
+.questions,
+.note,
+.floatingText,
+li.bibl {
+  font-size: 93%;
+  line-height: 125%;
+}
+
+.titlePage div.rights,
+a.noteback,
+.note-page,
+.p.manuscrits,
+p dfn.gloss,
+div.gloss,
+div.l dfn.gloss,
+.small {
+  font-size: small;
+  line-height: 110%;
+}
+
 /* Reset CSS */
 html,
 body {
@@ -152,8 +181,6 @@ aside header {
 
 blockquote.quote {
   margin: 1.5rem 0rem 1.5rem 1.5rem;
-  line-height: 130%;
-  font-size: 92%;
   padding: 0;
 }
 
@@ -740,7 +767,6 @@ textarea {
 
 textarea[readonly],
 textarea.readonly {
-  font-size: 20px;
   padding: 1rem;
   height: 10rem;
   width: 90%;
@@ -761,9 +787,7 @@ h2.castList {
 
 .argument {
   margin: 2rem 0 3rem 0;
-  line-height: 140%;
   text-indent: 0;
-  font-size: 85%;
   text-align: justify
 }
 
@@ -809,7 +833,6 @@ figure.bibl {
 
 li.bibl {
   list-style: circle;
-  font-size: 90%;
 }
 
 /* like li.witness */
@@ -953,7 +976,6 @@ aside .docDate {
 
 .epigraph {
   margin: 2rem 0 3rem 5rem;
-  font-size: 87%;
 }
 
 .epigraph p.p,
@@ -1033,8 +1055,6 @@ li.item {
 }
 
 .floatingText {
-  font-size: 0.8rem;
-  line-height: 120%;
   padding: 0% 1% 1% 5%;
   background-color: #F8F7F4;
 }
@@ -1060,21 +1080,15 @@ hr.footnotes {
   font-variant: normal;
 }
 
-.form {
-  font-weight: bold;
-}
-
 div.l dfn.gloss {
   display: block;
   position: absolute;
   padding: 5px 5px 5px 5px;
   border-radius: 10px;
-  line-height: 110%;
   text-align: left;
   float: right;
   margin-left: 25rem;
   width: 250px;
-  font-size: small;
   background-color: #F3F3F3;
   text-indent: 0;
 }
@@ -1083,9 +1097,7 @@ p dfn.gloss,
 div.gloss {
   padding: 5px 5px 5px 5px;
   border-radius: 10px;
-  line-height: 110%;
   text-align: left;
-  font-size: small;
   background-color: #F3F3F3;
   text-indent: 0;
 }
@@ -1188,7 +1200,6 @@ li.item {
 }
 
 .p.manuscrits {
-  font-size: 80%;
   margin-top: 1.5rem;
   background-color: #FBFAF8;
   border-radius: 8px;
@@ -1274,8 +1285,6 @@ div.lg {
 }
 
 .note {
-  line-height: 125%;
-  font-size: 90%;
   margin: 1px 0 1rem 0;
   clear: both;
 }
@@ -1312,10 +1321,6 @@ p.note {
   margin-top: 0.5rem;
 }
 
-.note-page {
-  font-size: 0.8rem;
-}
-
 .note-margin-left {
   float: left;
   margin-left: -2rem;
@@ -1340,10 +1345,6 @@ a.noteback {
   /* note sep */
 }
 
-a.noteback {
-  font-size: 85%;
-}
-
 .num {
   font-family: inherit;
   line-height: 100%;
@@ -1360,7 +1361,6 @@ a.noteback {
 
 .questions {
   margin: 1rem 0 1rem 0;
-  font-size: 90%;
 }
 
 /*
@@ -1408,9 +1408,7 @@ p.speaker {
   margin-bottom: 0.25rem;
   font-weight: normal;
   text-transform: uppercase;
-  font-size: 0.9rem;
   text-indent: 3rem;
-  line-height: 120%;
 }
 
 .speaker i,
@@ -1576,9 +1574,6 @@ i .title,
   margin-top: 1rem;
 }
 
-.titlePage div.rights {
-  font-size: 65%;
-}
 
 .titlePage p,
 .titlePage blockquote,
@@ -1629,7 +1624,6 @@ i .title,
 
 li.witness {
   list-style: square;
-  font-size: 90%;
 }
 
 .witness label,
@@ -1975,10 +1969,6 @@ blockquote .sc,
 
 .sc.i {
   font-style: italic;
-}
-
-.small {
-  font-size: 70%;
 }
 
 h1.sub {

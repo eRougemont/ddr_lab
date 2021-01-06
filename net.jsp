@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="prelude.jsp" %>
+<%@ include file="jsp/prelude.jsp" %>
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.io.InputStream" %>
@@ -138,7 +138,7 @@ static class Node implements Comparable<Node>
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8"/>
+    <%@ include file="ddr_head.jsp" %>
     <title>Graphe de texte</title>
     <script src="<%=hrefHome%>vendor/sigma/sigma.min.js">//</script>
     <script src="<%=hrefHome%>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
@@ -223,6 +223,8 @@ input.nb {
   <body>
 
   <%
+JspTools tools = new JspTools(pageContext);
+Alix alix = alix(pageContext);
     final String fieldName = "text";
       boolean first;
       final int ntopmax = 50;

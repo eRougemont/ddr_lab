@@ -77,7 +77,7 @@ if (doc != null) title = ML.detag(doc.doc().get("scope"));
 SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
 %>
 <!DOCTYPE html>
-<html>
+<html class="document">
   <head>
     <%@ include file="ddr_head.jsp" %>
     <title>Livres</title>
@@ -91,7 +91,7 @@ if (doc != null) { // document id is verified, give it to javascript
 %>
     </script>
   </head>
-  <body>
+  <body class="document">
     <header>
       <%@ include file="tabs.jsp" %>
     </header>
@@ -120,14 +120,14 @@ if (doc != null) { // document id is verified, give it to javascript
         
         <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
          -->
-        <label>Filtrer par catégorie grammaticale
-        <br/><select name="cat" onchange="this.form.submit()">
+        Mots spécifiques —
+        <label>Filtrer <select name="cat" onchange="this.form.submit()">
             <option/>
             <%= pars.cat.options() %>
          </select>
         </label>
-        <br/><label>Algorithme d’ordre
-        <br/><select name="ranking" onchange="this.form.submit()">
+        <label>Ordonner
+        <select name="ranking" onchange="this.form.submit()">
             <option/>
             <%= pars.ranking.options() %>
          </select>
@@ -161,9 +161,10 @@ if (doc != null) {
   int no = 1;
   while (forms.hasNext()) {
     forms.next();
-    out.print("<div>");
+    out.print("<div class=\"form\">");
     // out.print(dfscore.format(forms.score()) + " ");
     out.print(forms.label());
+    out.print(" <small>(" + forms.freq() + ")</small>");
     out.println("</div>");
   }
 }
@@ -190,7 +191,6 @@ if (doc != null) {
         </div>
       </div>
     </main>
-    <a href="#" id="gotop">▲</a>
     <% out.println("<!-- time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>
     <script src="<%= hrefHome %>static/alix.js">//</script>
   </body>

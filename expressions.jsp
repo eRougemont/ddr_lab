@@ -20,7 +20,7 @@
     </header>
     <main>
 <%
- /** Data structure to record expression by a pair of ints */
+  /** Data structure to record expression by a pair of ints */
 /*
   TagFilter tagfilter = new TagFilter()
 	.setGroup(Tag.SUB).setGroup(Tag.ADJ)
@@ -36,16 +36,14 @@ Top<IntPair> top = rail.expressions(200);
 for (Top.Entry<IntPair> entry: top) {
   IntPair pair = entry.value();
   out.print("<li>");
-  out.print(field.term(pair.x()));
+  out.print(field.label(pair.x()));
   out.print(" ");
-  out.print(field.term(pair.y()));
+  out.print(field.label(pair.y()));
   out.print(" (");
   out.print((int)entry.score());
   out.print(")");
   out.println("</li>");
 }
-
-
 %>
       
     </main>

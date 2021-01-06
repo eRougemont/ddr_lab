@@ -4,38 +4,6 @@
 <%@ page import="alix.lucene.search.HiliteFormatter" %>
 <%@include file="jsp/prelude.jsp"%>
 <%!
-public enum Sim implements Option {
-  chi2("Chi2") {
-    @Override
-    public Similarity similarity() {
-      return new SimilarityChi2();
-    }
-  },
-  bm25("BM25") {
-    @Override
-    public Similarity similarity() {
-      return new BM25Similarity();
-    }
-  },
-  
-
-
-
-  
-  ;
-
-  abstract public Similarity similarity();
-
-  
-  private Sim(final String label) {  
-    this.label = label ;
-  }
-
-  // Repeating myself
-  final public String label;
-  public String label() { return label; }
-  public String hint() { return null; }
-}
 
 %>
 <%
@@ -58,7 +26,7 @@ String[] forms = alix.forms(q);
   <head>
     <%@ include file="ddr_head.jsp" %>
     
-    <title>Livres</title>
+    <title>Chapitres de Rougemont</title>
   </head>
   <body>
     <header>
@@ -150,7 +118,7 @@ for (ScoreDoc hit: hits) {
   out.print("<td class=\"num\">");
   out.print(doc.get("year"));
   out.println("</td> ");
-  out.print("<td class=\"title\">");
+  out.print("<td class=\"title\" title=\"" + doc.get("title") + "\">");
   out.print("<em class=\"title\">");
   out.print(doc.get("title"));
   out.println("</em>");

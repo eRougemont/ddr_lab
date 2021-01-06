@@ -43,10 +43,7 @@ TopDocsCollector<?> collector = null;
 SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
 Sort sort2 = new Sort(sf2);
 
-/*
-out.print(pars.sort.sort());
-out.close();
-*/
+
 if (pars.sort != null && pars.sort.sort() != null) {
   collector = TopFieldCollector.create(pars.sort.sort(), numHits, totalHitsThreshold);
 }

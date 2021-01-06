@@ -22,6 +22,20 @@
 /**
  * Colors and fonts
  */
+ 
+html {
+  scrollbar-color: var(--red) #fff;
+}
+
+body::-webkit-scrollbar {
+  background: #fff;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--red);
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid transparent;  /* creates padding around scroll thumb */
+}
 
 body {
   background-color: #fff;
@@ -68,11 +82,17 @@ nav.tabs a:hover {
  * Global HTML 
  */
 * {
-  font-size: inherit;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+table,
+select,
+textarea,
+input {
+  font-size: inherit;
 }
 
 html,
@@ -246,8 +266,7 @@ div.text {
   top: 0;
   order: -1;
   overflow-y: auto;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 1rem 1rem 2rem 0;
   height: 100vh;
   width: 15rem;
 }
@@ -258,7 +277,7 @@ div.text {
 
 td.title em {
   display: block;
-  width: 20ex;
+  width: 25ex;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -338,6 +357,7 @@ article.snip mark {
  */
 table.sortable {
   border-spacing: 0;
+  border-bottom: 2px solid var(--red);
 }
 
 .sortable thead td,
@@ -408,6 +428,15 @@ td.num {
 td.num {
   font-family: monospace;
 }
+td.num small {
+  font-family: sans-serif;
+}
+
+td.num small.docs {
+  display: inline-block;
+  width: 4ex;
+}
+
 td.no.left {
   text-align: right;
   padding-right: 5px;
@@ -549,17 +578,6 @@ select {
   background-color: #FFFFFF;
 }
 
-#ruloccs a {
-  background-color: rgba(120, 105, 101, 0.2);
-}
-
-#ruloccs a:hover {
-  background-color: rgba(120, 105, 101, 1);
-}
-
-#ruloccs {
-  background-color: rgba(255, 255, 255, 0.7);
-}
 
 .keywords a,
 .mark a.prev,
@@ -715,6 +733,62 @@ article.kwic mark {
   background: #FFF;
   font-weight: bold;
 }
+
+/** Liseuse */
+
+
+div.form small {
+  float: right;
+}
+
+#ruloccs {
+  position: fixed;
+  z-index: 4;
+  right: 0;
+  background-color: #fff;
+  border-left: 1px solid #000;
+  top: 0;
+  bottom: 0;
+  width: 2rem;
+}
+#ruloccs div {
+  /* ?? */
+  margin-top: 2.2rem;
+  position: relative;
+  height: 100%;
+}
+
+
+#ruloccs a {
+  background-color: var(--redalpha);
+}
+
+#ruloccs a:hover {
+  background-color: var(--red);
+}
+
+#rulhi a,
+#ruloccs a {
+  display: block;
+  text-decoration: none;
+  border-bottom: none;
+  color: white;
+  width: 2rem;
+  font-size: 1px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 5px;
+}
+
+#rulhi a:hover,
+#ruloccs a:hover {
+  text-decoration: none;
+}
+
+#ruloccs a {
+  position: absolute;
+}
+
 
 /** Chapters */
 

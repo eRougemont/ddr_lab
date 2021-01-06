@@ -51,6 +51,14 @@ static final DecimalFormat dfscore = new DecimalFormat("0.00000", ensyms);
 final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
 final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, Alix.ID, "year", "title", "analytic", "pages"}));
 
+final static String bookYear = "year";
+final static Sort bookSort = new Sort(
+  new SortField[] {
+    new SortField(bookYear, SortField.Type.INT),
+    new SortField(Alix.BOOKID, SortField.Type.STRING),
+  }
+);
+
 
 /** Field name containing canonized text */
 final static String TEXT = "text";
@@ -61,31 +69,6 @@ public static String CORPUS_ = "corpus_";
 /** A filter for documents */
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
 
-/**
- * Options for filters by grammatical types
- */
-static public enum Cat implements Option {
-  
-  ALL("Tout", null),
-  NOSTOP("Mots pleins", new TagFilter().setAll().noStop(true)), 
-  SUB("Substantifs", new TagFilter().setGroup(Tag.SUB)), 
-  NAME("Noms propres", new TagFilter().setGroup(Tag.NAME)),
-  VERB("Verbes", new TagFilter().setGroup(Tag.VERB)),
-  ADJ("Adjectifs", new TagFilter().setGroup(Tag.ADJ)),
-  ADV("Adverbes", new TagFilter().setGroup(Tag.ADV)),
-  STOP("Mots vides", new TagFilter().setAll().clearGroup(Tag.SUB).clearGroup(Tag.NAME).clearGroup(Tag.VERB).clearGroup(Tag.ADJ).clear(0)), 
-  NULL("Mots inconnus", new TagFilter().set(0)), 
-  ;
-  final public String label;
-  final public TagFilter tags;
-  private Cat(final String label, final TagFilter tags) {  
-    this.label = label ;
-    this.tags = tags;
-  }
-  public TagFilter tags(){ return tags; }
-  public String label() { return label; }
-  public String hint() { return null; }
-}
 
 static public enum Order implements Option {
   top("Score, haut"), 

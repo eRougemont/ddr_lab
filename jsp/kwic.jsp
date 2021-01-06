@@ -65,7 +65,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
   ByteRunAutomaton include = null;
   if (pars.forms != null) {
     Automaton automaton = WordsAutomatonBuilder.buildFronStrings(pars.forms);
-    include = new ByteRunAutomaton(automaton);
+    if (automaton != null) include = new ByteRunAutomaton(automaton);
   }
   // get the index in results
   ScoreDoc[] scoreDocs = topDocs.scoreDocs;
@@ -84,12 +84,12 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
 
   while (i < max) {
     final int docId = scoreDocs[i].doc;
+    i++; // loop now
     final Doc doc = new Doc(alix, docId);
     String type = doc.doc().get(Alix.TYPE);
     // TODO Enenum
     if (type.equals(DocType.book.name())) continue;
     if (doc.doc().get(pars.fieldName) == null) continue;
-    i++; // is now a public start
     String href = pars.href + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
     // show simple metadata
@@ -111,7 +111,8 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
       continue;
     }
     
-    String[] lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression);
+    String[] lines = null;
+    lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression);
     if (lines == null || lines.length < 1) continue;
     // doc.kwic(field, include, 50, 50, 100);
     out.println("<article class=\"kwic\">");

@@ -57,6 +57,14 @@ String[] search = alix.forms(q);
     
 <%
 FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
+// if no word searched, sort by date, not well optimized here
+if (search == null || search.length < 1) {
+  // get docIds of books sorted by a query
+  int[] books = alix.books(bookSort);
+  // take a facteId for these books to set a sorter
+  for (int i = 0, length = books.length; i < length; i++) books[i] = facet.facetId(books[i]);
+  dic.sorter(books);
+}
 /* 
 // Hack to use facet as a navigator in results, cache results in the facet order
 TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
@@ -64,17 +72,15 @@ int[] nos = facet.nos(topDocs);
 dic.setNos(nos);
 */
 // build a resizable href link
-final String href = "kwic.jsp?q=" + q + "&amp;book=";
+final String href = "kwic.jsp?q=" + JspTools.escape(q)+ "&amp;book=";
 // resend a query somewhere ?
 boolean zero = false;
 int no = 1;
 while (dic.hasNext()) {
   dic.next();
   // n = dic.n();
-  final int docs = dic.docsMatching();
-  final long occs = dic.occsMatching();
   //in alpha order, do something if no match ?
-  if (docs < 1) {
+  if (dic.hits() < 1) {
     // continue;
   }
   // a link should here send a query by book, isnt t ?
@@ -107,15 +113,17 @@ while (dic.hasNext()) {
   out.print("</a>");
   out.println("</td>");
   out.print("    <td class=\"num\">");
-  if (occs > 0) out.print(occs);
+  if (dic.freq() > 0) out.print(dic.freq());
+  // out.print("<small>/" + dic.formOccs() + "</small>");
   out.println("</td>");
   out.print("    <td class=\"num\">");
-  if (docs > 0) out.print(docs);
+  if (dic.hits() > 0) out.print(dic.hits());
+  out.print("<small class=\"docs\">/" + dic.formDocs() + "</small>");
   out.println("</td>");
   // fréquence
   // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
   out.print("    <td class=\"num\">");
-  out.print(dfscore.format(dic.score()));
+  if (dic.score() != 0) out.print(dfscore.format(dic.score()));
   out.println("</td>");
   out.println("    <td></td>");
 /*
@@ -127,9 +135,10 @@ while (dic.hasNext()) {
   out.println("</tr>");
   no++;
 }
-%>
+            %>
         </tbody>
       </table>
+      <p> </p>
     </main>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>
     <% out.println("<!-- time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>

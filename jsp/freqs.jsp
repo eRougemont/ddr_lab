@@ -18,8 +18,6 @@
 <%@ page import="alix.web.*" %>
 <%@include file="prelude.jsp"%>
 <%!
-/** Uded to sort books, good place ? */
-static String bookYear = "year";
 static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 static final DecimalFormat formatDec3 = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
@@ -75,14 +73,6 @@ public Pars pars(final PageContext page)
   return pars;
 }
 
-
-
-final static Sort bookSort = new Sort(
-  new SortField[] {
-    new SortField(bookYear, SortField.Type.INT),
-    new SortField(Alix.BOOKID, SortField.Type.STRING),
-  }
-);
 
 private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
@@ -143,10 +133,10 @@ private static void htmlLine(StringBuilder sb, final FormEnum forms, final int n
   sb.append(Tag.label(forms.tag()));
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(forms.occsMatching()) ;
+  sb.append(forms.freq()) ;
   sb.append("</td>\n");
   sb.append("    <td class=\"num\">");
-  sb.append(forms.docsMatching()) ;
+  sb.append(forms.hits()) ;
   sb.append("</td>\n");
   // fréquence
   // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
@@ -162,8 +152,8 @@ private static void csvLine(StringBuilder sb, final FormEnum forms, final int no
 {
   sb.append(forms.label().replaceAll("\t\n", " "));
   sb.append("\t").append(Tag.label(forms.tag())) ;
-  sb.append("\t").append(forms.docsMatching()) ;
-  sb.append("\t").append(forms.occsMatching()) ;
+  sb.append("\t").append(forms.hits()) ;
+  sb.append("\t").append(forms.freq()) ;
   sb.append("\n");
 }
 
@@ -209,7 +199,4 @@ else if (Mime.csv.equals(mime)) {
   out.println();
   out.print( lines(forms, mime, q));
 }
-*/
-
-
-%>
+*/%>
