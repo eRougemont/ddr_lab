@@ -139,7 +139,8 @@ for (ScoreDoc hit: hits) {
   out.print(doc.get("pages"));
   out.println("</td>");
   out.print("<td class=\"num\">");
-  out.println(dfscore.format(hit.score));
+  double score = hit.score;
+  if (!Double.isNaN(score)) out.println(dfscore.format(score));
   out.println("</td>");
   /*
   if (fragments[no - 1] != null) {
