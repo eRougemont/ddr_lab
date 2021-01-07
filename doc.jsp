@@ -115,7 +115,7 @@ if (doc != null) { // document id is verified, give it to javascript
           <div class="progress"><div></div></div>
           <div class="suggest"></div>
         </label>
-        <input style="float: right;"" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
+        <input style="float: right;" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
         <!-- 
         
         <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>

@@ -4,7 +4,6 @@
 long time = System.nanoTime();
 Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
-Properties props = props(pageContext);
 IndexReader reader = alix.reader();
 
 // get default parameters from request
@@ -60,7 +59,7 @@ else {
           <form id="sortForm">
              <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
              <br/><select name="book" onchange="this.form.submit()">
-                  <option value="">TOUT</option>
+                  <option value=""></option>
                   <%
 int[] books = alix.books(sortYear);
 for (int docId: books) {
@@ -98,7 +97,7 @@ for (int docId: books) {
              <br/><label>Direction
              <br/><select name="order" onchange="this.form.submit()">
                  <option/>
-                 <%= pars.order.options() %>
+                 <%= pars.order.options()  %>
               </select>
              </label>
              <button type="submit">▶</button>
@@ -119,27 +118,49 @@ for (int docId: books) {
         <tbody>
           <% 
           // todo, book selector
-          StringBuilder href = new StringBuilder();
-          href.append("");
-          boolean first =  true;
-          for (String par: new String[]{"left", "right", "cat", "ranking"}) {
-            String value = request.getParameter(par);
-            if (value == null) continue;
-            if (first) {
-              first = false;
-              href.append("?");
-            }
-            else {
-              href.append("&amp;");
-            }
-            href.append(par).append("=").append(value);
+          String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
+          // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
+          int no = 0;
+          while (dic.hasNext()) {
+            dic.next();
+            no++;
+            String term = dic.label();
+            // .replace('_', ' ') ?
+            out.println("  <tr>");
+            out.println("    <td class=\"no left\">"  + no + "</td>");
+            out.println("    <td class=\"form\">");
+            out.print("      <a");
+            out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
+            out.print(">");
+            out.print(term);
+            out.print("</a>");
+            out.println("</td>");
+            
+            out.print("    <td>");
+            out.print(Tag.label(dic.tag()));
+            out.println("</td>");
+            
+            out.println("    <td class=\"num\">");
+            // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
+            out.print(dic.freq()) ;
+            // out.println("</a>");
+            out.println("    </td>");
+            out.print("    <td class=\"num\">");
+            out.print(dic.hits()) ;
+            out.println("</td>");
+            // fréquence
+            // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+            out.print("    <td class=\"num\">");
+            out.print(formatScore.format(dic.score()));
+            out.println("</td>");
+            out.println("    <td></td>");
+            out.println("    <td class=\"no right\">" + no + "</td>");
+            out.println("  </tr>");
           }
-          href.append("&amp;q=");
-          out.println(lines(dic, pars.mime, href.toString()));
-          
           %>
         </tbody>
       </table>
+      <p> </p>
     </main>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>
   </body>

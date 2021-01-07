@@ -13,7 +13,6 @@ final static HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new S
 long time = System.nanoTime();
 Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
-Properties props = props(pageContext);
 
 String q = tools.getString("q", null);
 int limit = tools.getInt("limit", 100);
@@ -36,7 +35,6 @@ if (q != null) {
 
 Marker marker = null;
 if (q != null) marker = new Marker(ANAMET, q);
-
 
 IndexSearcher searcher = alix.searcher();
 // searcher.setSimilarity(sim.similarity());

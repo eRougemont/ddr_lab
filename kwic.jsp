@@ -2,10 +2,11 @@
 <%@ include file="jsp/kwic.jsp" %>
 <%@ include file="jsp/prelude.jsp" %>
 <%
+
 long time = System.nanoTime();
 Alix alix = alix(pageContext);
+IndexReader reader = alix.reader();
 JspTools tools = new JspTools(pageContext);
-Properties props = props(pageContext);
 
 
 Pars pars = pars(pageContext);
@@ -80,6 +81,25 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
           oninput="this.form['start'].value='';"
         />
         </label>
+        <br/><label>Filtrer par livre
+        <br/><select name="book" onchange="this.form.submit()">
+             <option value=""></option>
+             <%
+int[] books = alix.books(sortYear);
+for (int docId: books) {
+  Document doc = reader.document(docId, BOOK_FIELDS);
+  String abid = doc.get(Alix.BOOKID);
+  out.print("<option value=\"" + abid + "\"");
+  if (abid.equals(pars.book)) out.print(" selected=\"selected\"");
+  out.print(">");
+  out.print(doc.get("year"));
+  out.print(", ");
+  out.print(doc.get("title"));
+  out.println("</option>");
+}
+                  %>
+          </select>
+        </label>
         <br/><select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
           <option/>
           <%= pars.sort.options() %>
@@ -109,7 +129,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
         %>
         
        </form> 
-            
+       <pre><%= query %></pre>
        <% 
        pars.href = "doc.jsp?";
        kwic(pageContext, alix, topDocs, pars); 
@@ -132,7 +152,7 @@ if (topDocs != null) {
 }
     */
         %>
-      </form>
+      <p> </p>
     </main>
   </body>
   <!-- <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->

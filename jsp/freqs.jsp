@@ -80,7 +80,7 @@ private static final int OUT_JSON = 2;
 private static int limitMax = 500;
 
 
-private static String lines(final FormEnum forms, final Mime mime, final String href)
+private static String lines(final FormEnum forms, final Mime mime)
 {
   StringBuilder sb = new StringBuilder();
 
@@ -104,7 +104,7 @@ private static String lines(final FormEnum forms, final Mime mime, final String 
         break;
       default:
         // sb.append(entry+"<br/>");
-        htmlLine(sb, forms, no, href);
+        // htmlLine(sb, forms, no, href);
     }
     no++;
     first = false;
@@ -113,40 +113,6 @@ private static String lines(final FormEnum forms, final Mime mime, final String 
   return sb.toString();
 }
 
-/**
- * An html table row &lt;tr&gt; for lexical frequence result.
- */
-private static void htmlLine(StringBuilder sb, final FormEnum forms, final int no, final String href)
-{
-  String term = forms.label();
-  // .replace('_', ' ') ?
-  sb.append("  <tr>\n");
-  sb.append("    <td class=\"no left\">").append(no).append("</td>\n");
-  sb.append("    <td class=\"form\">");
-  sb.append("    <a");
-  if (href != null) sb.append(" href=\"" + href + JspTools.escUrl(term) + "\"");
-  sb.append(">");
-  sb.append(term);
-  sb.append("</a>");
-  sb.append("</td>\n");
-  sb.append("    <td>");
-  sb.append(Tag.label(forms.tag()));
-  sb.append("</td>\n");
-  sb.append("    <td class=\"num\">");
-  sb.append(forms.freq()) ;
-  sb.append("</td>\n");
-  sb.append("    <td class=\"num\">");
-  sb.append(forms.hits()) ;
-  sb.append("</td>\n");
-  // fréquence
-  // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-  sb.append("    <td class=\"num\">");
-  sb.append(formatScore.format(forms.score()));
-  sb.append("</td>\n");
-  sb.append("    <td></td>\n");
-  sb.append("    <td class=\"no right\">").append(no).append("</td>\n");
-  sb.append("  </tr>\n");
-}
 
 private static void csvLine(StringBuilder sb, final FormEnum forms, final int no)
 {

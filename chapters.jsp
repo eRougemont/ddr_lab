@@ -15,7 +15,7 @@ IndexReader reader = alix.reader();
 // Params for the page
 final String fieldName = TEXT;
 String q = tools.getString("q", null);
-Sim sim = (Sim)tools.getEnum("sim", Sim.chi2);
+Sim sim = (Sim)tools.getEnum("sim", Sim.g);
 
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, fieldName);

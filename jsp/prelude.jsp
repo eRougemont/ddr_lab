@@ -1,8 +1,10 @@
 <%@ page language="java" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.File" %>
 <%@ page import="java.io.FileInputStream" %>
 <%@ page import="java.io.FileNotFoundException"%>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="java.lang.invoke.MethodHandles" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="java.util.ArrayList" %>
@@ -32,6 +34,7 @@
 <%@ page import="alix.lucene.Alix.FSDirectoryType" %>
 <%@ page import="alix.lucene.DocType" %>
 <%@ page import="alix.lucene.analysis.FrAnalyzer" %>
+<%@ page import="alix.lucene.analysis.FrDics" %>
 <%@ page import="alix.lucene.search.*" %>
 
 <%@ page import="alix.lucene.search.FieldRail" %>
@@ -40,6 +43,33 @@
 <%@ page import="alix.web.*" %>
 <%!
 static String baseName = "rougemont";
+/** Properties for this installation */
+final static Properties props = new Properties();
+static 
+{
+  // load properties and local dictionnary
+  // Class cls = MethodHandles.lookup().lookupClass();
+  // File thisClass = new File(cls.getProtectionDomain().getCodeSource().getLocation().getPath());
+  // = props.loadFromXML(new FileInputStream(zejar));
+  // File localdic = new File(zejar.getParentFile(), "alix-cloud.csv");
+  // if (localdic.exists()) load(localdic, LOCAL);
+  File zejar = new File(FrDics.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+  File webinf = zejar.getParentFile().getParentFile();
+  File propsFile = new File(webinf, baseName + ".xml");
+  try {
+    System.out.println("[Alix] static LOAD props: " + propsFile);
+    props.loadFromXML(new FileInputStream(propsFile));
+    String dic = props.getProperty("dicfile");
+    if (dic != null) {
+      File dicFile = new File(dic);
+      if (!dicFile.isAbsolute()) dicFile = new File(propsFile.getParentFile(), dic);
+      if (dicFile.exists()) FrDics.load(dicFile);
+    }
+  }
+  catch (Exception e) {
+    e.printStackTrace();
+  }
+}
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
@@ -64,9 +94,10 @@ final static String TEXT = "text";
 /** Field Name with int date */
 final static String YEAR = "year";
 /** Key prefix for current corpus in session */
-public static String CORPUS_ = "corpus_";
+final static String CORPUS_ = "corpus_";
 /** A filter for documents */
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
+
 
 
 static public enum Order implements Option {
@@ -123,12 +154,5 @@ public static Alix alix(final PageContext pageContext) throws IOException
   return alix;
 }
 
-public static Properties props(final PageContext pageContext) throws IOException, FileNotFoundException, InvalidPropertiesFormatException
-{
-  final String baseDir = pageContext.getServletContext().getRealPath("WEB-INF") ;
-  final Properties props = new Properties();
-  props.loadFromXML(new FileInputStream(baseDir + "/" + baseName + ".xml"));
-  return props;
-}
 
 %>
