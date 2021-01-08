@@ -81,6 +81,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
           oninput="this.form['start'].value='';"
         />
         </label>
+        <label>Filtrer les expressions <input type="checkbox" name="expression" value="true" <%= (pars.expression)?"checked=\"checked\"":"" %>/></label>
         <br/><label>Filtrer par livre
         <br/><select name="book" onchange="this.form.submit()">
              <option value=""></option>

@@ -44,7 +44,7 @@ public Pars pars(final PageContext page)
   pars.expression = tools.getBoolean("expression", false);
   pars.hpp = tools.getInt("hpp", hppDefault);
   if (pars.hpp > hppMax || pars.hpp < 1) pars.hpp = hppDefault;
-  pars.sort = (DocSort)tools.getEnum("sort", DocSort.score);
+  pars.sort = (DocSort)tools.getEnum("sort", DocSort.year);
   pars.start = tools.getInt("start", 1);
   if (pars.start < 1) pars.start = 1;
   
@@ -60,7 +60,6 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
   if (topDocs == null) return;
   JspWriter out = page.getOut();
 
-  boolean expression = false;
   
   ByteRunAutomaton include = null;
   if (pars.forms != null) {
@@ -76,11 +75,13 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
   else if (i > max) i = 0;
   // loop on docs
   int docs = 0;
-  final int gap = 3;
+  final int gap = 5;
   
 
   // be careful, if one term, no expression possible, this will loop till the end of corpus
+  boolean expression = false;
   if (pars.forms == null || pars.forms.length < 2) expression = false;
+  else expression = pars.expression;
 
   while (i < max) {
     final int docId = scoreDocs[i].doc;

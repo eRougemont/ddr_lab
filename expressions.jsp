@@ -35,10 +35,13 @@ Top<IntPair> top = rail.expressions(200);
 
 for (Top.Entry<IntPair> entry: top) {
   IntPair pair = entry.value();
+  String x = field.label(pair.x());
+  String y = field.label(pair.y());
   out.print("<li>");
-  out.print(field.label(pair.x()));
+  out.print("<a href=\"kwic.jsp?expression=true&amp;q=%2B" + JspTools.escape(x) +"+%2B" + JspTools.escape(y) +"\">");
+  out.print(x);
   out.print(" ");
-  out.print(field.label(pair.y()));
+  out.print(y);
   out.print(" (");
   out.print((int)entry.score());
   out.print(")");
