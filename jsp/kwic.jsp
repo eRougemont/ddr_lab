@@ -91,7 +91,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     // TODO Enenum
     if (type.equals(DocType.book.name())) continue;
     if (doc.doc().get(pars.fieldName) == null) continue;
-    String href = pars.href + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
+    String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
     // show simple metadata
     out.println("<!-- docId=" + docId + " -->");
