@@ -8,6 +8,11 @@
 
 
 %>
+<%
+JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
+
+%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -28,7 +33,7 @@
 	.setGroup(Tag.NAME).set(Tag.NULL)
 	;
 */
-Alix alix = alix(pageContext);
+
 FieldText field = alix.fieldText(TEXT);
 FieldRail rail = alix.fieldRail(TEXT);
 Top<IntPair> top = rail.expressions(200);
