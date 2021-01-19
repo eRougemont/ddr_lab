@@ -93,11 +93,11 @@ for (int docId: books) {
                  <%= pars.cat.options() %>
               </select>
              </label>
-             <br/><label>Algorithme d’ordre
+             <br/><label>Algorithme de score
              <br/><select name="ranking" onchange="this.form.submit()">
                  <option/>
                  <% 
-                 if (pars.book == null) out.println (pars.ranking.options("occs bm25 tfidf"));
+                 if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
                  // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
                  else out.println (pars.ranking.options()); 
                  %>

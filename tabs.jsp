@@ -5,7 +5,7 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "ranking", "q"}) {
+  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "q"}) {
   },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },
@@ -74,7 +74,7 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  <form >
+  <form>Base
     <select  name="base" oninput="this.form.submit();">
     <%
     JspTools retools = new JspTools(pageContext);

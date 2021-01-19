@@ -115,7 +115,7 @@ if (doc != null) { // document id is verified, give it to javascript
           <div class="progress"><div></div></div>
           <div class="suggest"></div>
         </label>
-        <input style="float: right;" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
+        <input style="float: right;" type="hidden" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
         <!-- 
         
         <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
@@ -126,7 +126,7 @@ if (doc != null) { // document id is verified, give it to javascript
             <%= pars.cat.options() %>
          </select>
         </label>
-        <label>Ordonner
+        <label>Score
         <select name="ranking" onchange="this.form.submit()">
             <option/>
             <%= pars.ranking.options() %>
