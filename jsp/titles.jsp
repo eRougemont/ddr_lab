@@ -11,8 +11,8 @@ final static HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new S
 <%
 // list titles of chapters in alphabetic order
 long time = System.nanoTime();
-Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 
 String q = tools.getString("q", null);
 int limit = tools.getInt("limit", 100);

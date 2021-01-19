@@ -8,7 +8,7 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
 // Params for the page
 String q = tools.getString("q", null);
-Ranking ranking = (Ranking)tools.getEnum("ranking", null);
+Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.alpha);
 
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
@@ -28,7 +28,7 @@ String[] search = alix.forms(q);
     <main>
       <table class="sortable" width="100%">
         <caption>
-          <form id="qform"  class="query">
+          <form id="qform"  class="search">
             <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
             <label>Classer les livres selon un ou plusieurs mots
             <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
