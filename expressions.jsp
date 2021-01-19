@@ -24,6 +24,9 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
       <%@ include file="tabs.jsp" %>
     </header>
     <main>
+    <div class="row">
+      <div class="text">
+        <ol>
 <%
   /** Data structure to record expression by a pair of ints */
 /*
@@ -36,7 +39,7 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 
 FieldText field = alix.fieldText(TEXT);
 FieldRail rail = alix.fieldRail(TEXT);
-Top<IntPair> top = rail.expressions(200);
+Top<IntPair> top = rail.expressions(500);
 
 for (Top.Entry<IntPair> entry: top) {
   IntPair pair = entry.value();
@@ -53,7 +56,9 @@ for (Top.Entry<IntPair> entry: top) {
   out.println("</li>");
 }
 %>
-      
+          </ol>
+        </div>
+      </div>
     </main>
   </body>
 </html>
