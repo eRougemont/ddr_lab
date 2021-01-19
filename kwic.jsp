@@ -40,7 +40,6 @@ int totalHitsThreshold = Integer.MAX_VALUE;
 final int numHits = alix.reader().maxDoc();
 TopDocsCollector<?> collector = null;
 
-
 if (pars.sort != null && pars.sort.sort() != null) {
   collector = TopFieldCollector.create(pars.sort.sort(), numHits, totalHitsThreshold);
 }

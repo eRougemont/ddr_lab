@@ -100,8 +100,11 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
       out.println("<header>");
       out.println("<small>"+(i)+".</small> ");
       out.print("<a href=\"" + href + "\">");
-      out.print(doc.get("year"));
-      out.print(", ");
+      String year = doc.get("year");
+      if (year != null) {
+        out.print(doc.get("year"));
+        out.print(", ");
+      }
       out.print(doc.get("title"));
       out.print(". ");
       out.print(doc.get("analytic"));
@@ -121,8 +124,11 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     out.println("<small>"+(i)+"</small> ");
 
     out.print("<a href=\""+href+"\">");
-    out.print(doc.get("year"));
-    out.print(", ");
+    String year = doc.get("year");
+    if (year != null) {
+      out.print(doc.get("year"));
+      out.print(", ");
+    }
     out.print(doc.get("title"));
     out.print(". ");
     out.print(doc.get("analytic"));
