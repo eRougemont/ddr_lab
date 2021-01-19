@@ -246,7 +246,7 @@ Alix alix = alix(pageContext);
       if (corpus != null) filter = corpus.bits();
       
       FieldText fstats = alix.fieldText(fieldName);
-      Rail rail = alix.rail(fieldName);
+      FieldRail rail = alix.fieldRail(fieldName);
       long[] freqs = rail.freqs(filter); // term frequencies for this query
       BytesRef bytes = new BytesRef();
 

@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="jsp/freqs.jsp" %>
 <%
-long time = System.nanoTime();
-Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
+
+
+long time = System.nanoTime();
 IndexReader reader = alix.reader();
 
 // get default parameters from request
@@ -46,18 +48,21 @@ else {
 <!DOCTYPE html>
 <html>
   <head>
-   <%@ include file="ddr_head.jsp" %>
-   <title><%=props.get("label")%> [Alix]</title>
+    <jsp:include page="ddr_head.jsp" flush="true"/>
+   <title><%= alix.props.get("label")%> [Alix]</title>
   </head>
   <body>
     <header>
-    <%@ include file="tabs.jsp" %>
+      <% long time2 = System.nanoTime(); %>
+       <jsp:include page="tabs.jsp"/>
+         <!-- <%= ((System.nanoTime() - time2) / 1000000.0) %> ms  -->
+       
     </header>
     <main>
       <table class="sortable" width="100%">
         <caption>
-          <form id="sortForm">
-             <label>Sélectionner un livre de Rougemont (ou bien tous les livres)
+          <form  class="search">
+             <label>Sélectionner un livre
              <br/><select name="book" onchange="this.form.submit()">
                   <option value=""></option>
                   <%
@@ -68,8 +73,8 @@ for (int docId: books) {
   out.print("<option value=\"" + abid + "\"");
   if (abid.equals(pars.book)) out.print(" selected=\"selected\"");
   out.print(">");
-  out.print(doc.get("year"));
-  out.print(", ");
+  String year = doc.get("year");
+  if (year != null) out.print(year + ", ");
   out.print(doc.get("title"));
   out.println("</option>");
 }
@@ -91,7 +96,11 @@ for (int docId: books) {
              <br/><label>Algorithme d’ordre
              <br/><select name="ranking" onchange="this.form.submit()">
                  <option/>
-                 <%= pars.ranking.options() %>
+                 <% 
+                 if (pars.book == null) out.println (pars.ranking.options("occs bm25 tfidf"));
+                 // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
+                 else out.println (pars.ranking.options()); 
+                 %>
               </select>
              </label>
              <br/><label>Direction

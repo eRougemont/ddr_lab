@@ -7,6 +7,7 @@
 <%@ page import="alix.lucene.Alix.FSDirectoryType" %>
 <%@ page import="alix.lucene.analysis.FrAnalyzer" %>
 <%@ page import="alix.util.Dir" %>
+<%@ page import="alix.web.Webinf" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
   <head>
@@ -33,16 +34,19 @@ for (String s: new String[] {
   out.println("<li>"+s+"="+request.getAttribute(s)+"</li>");
 }
         out.println("</ul>");
+        out.println("<p>Webinf.bases =" + Webinf.bases + "</p>");
+        Webinf.bases();
+        out.println("<pre>" + Alix.pool + "</pre>");
         out.println("<dl>");
         List<File> ls = Dir.ls(baseDir+"*.xml");
         for (File file : ls) {
           String name = file.getName();
           if (name.equals("web.xml")) continue;
           String base = name.replaceFirst("[.][^.]+$", "");
-          out.println("<dt>"+name+"</dt>");
+          out.println("<dt>"+base+"</dt>");
           out.println("<dd><pre>");
           try {
-            Alix alix = Alix.instance(baseDir +base, new FrAnalyzer());
+            Alix alix = Alix.instance(base);
             out.println(alix);
           } catch (Exception e) {
             out.println(e);

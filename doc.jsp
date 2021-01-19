@@ -19,8 +19,8 @@ class Pars {
 %>
 <%
 long time = System.nanoTime();
-Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
 
 // params for the page

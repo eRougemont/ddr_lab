@@ -4,9 +4,9 @@
 <%
 
 long time = System.nanoTime();
-Alix alix = alix(pageContext);
-IndexReader reader = alix.reader();
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
+IndexReader reader = alix.reader();
 
 
 Pars pars = pars(pageContext);
@@ -41,10 +41,6 @@ final int numHits = alix.reader().maxDoc();
 TopDocsCollector<?> collector = null;
 
 
-SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
-Sort sort2 = new Sort(sf2);
-
-
 if (pars.sort != null && pars.sort.sort() != null) {
   collector = TopFieldCollector.create(pars.sort.sort(), numHits, totalHitsThreshold);
 }
@@ -62,18 +58,18 @@ out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" 
 <!DOCTYPE html>
 <html>
   <head>
-   <%@ include file="ddr_head.jsp" %>
-   <title><%=props.get("label")%> [Alix]</title>
+   <jsp:include page="ddr_head.jsp" flush="true" />
+   <title><%= alix.props.get("label")%> [Alix]</title>
    <style>
 span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.left * 1.0)%>ex; padding-right: 1ex;}
     </style>
   </head>
   <body>
     <header>
-    <%@ include file="tabs.jsp" %>
+     <jsp:include page="tabs.jsp" flush="true" />
     </header>
     <main>
-      <form>
+      <form  class="search">
         <label>Chercher un ou plusieurs mots
         <button style="position: absolute; left: -9999px" type="submit">▶</button>
         <br/><input id="q" name="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 

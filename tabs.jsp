@@ -1,5 +1,8 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page import="alix.lucene.Alix" %>
+<%@ page import="alix.web.JspTools" %>
 <%@ page import="java.nio.file.Paths" %>
+<%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
   freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "ranking", "q"}) {
@@ -40,7 +43,7 @@ static public enum Tab {
   public void a(final StringBuilder sb, final HttpServletRequest request)
   {
     String here = request.getRequestURI();
-    here = here.substring(here.lastIndexOf('/'));
+    here = here.substring(here.lastIndexOf('/')+1);
 
     sb.append("<a");
     sb.append(" href=\"").append(this.href);
@@ -60,8 +63,8 @@ static public enum Tab {
     sb.append("\"");
     if (hint != null) sb.append(" title=\"").append(hint).append("\"");
     sb.append(" class=\"tab");
-    if (here.equals("") && this.href.startsWith("index"))  sb.append(" selected");
-    else if (this.href.equals("index")) sb.append(" selected");
+    if (this.href.equals(here)) sb.append(" selected");
+    else if (here.equals("") && this.href.startsWith("index"))  sb.append(" selected");
     sb.append("\"");
     sb.append(">");
     sb.append(label);
@@ -71,5 +74,19 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
+  <form >
+    <select  name="base" oninput="this.form.submit();">
+    <%
+    JspTools retools = new JspTools(pageContext);
+    String base = retools.getString("base", "rougemont", "alixBase");
+    for (Map.Entry<String, Alix> entry : Alix.pool.entrySet()) {
+      String value = entry.getKey();
+      out.print("<option value=\"" + value + "\"");
+      if (value.equals(base)) out.print(" selected=\"selected\"");
+      out.println(">" + entry.getValue().props.get("label") + "</option>");
+    }
+    %>
+    </select>
+  </form>
   <%= Tab.nav(request) %>
 </nav>

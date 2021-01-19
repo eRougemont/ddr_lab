@@ -43,7 +43,8 @@ body {
 }
 
 
-form {
+
+form.search {
   background: var(--red);
   color: #fff;
   padding: 1rem 30px;
@@ -77,6 +78,9 @@ nav.tabs a:hover {
   color: #000;
 }
 
+nav.tabs form {
+  display: inline-block;
+}
 
 /** 
  * Global HTML 

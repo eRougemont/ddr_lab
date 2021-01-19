@@ -48,7 +48,7 @@ public Pars pars(final PageContext page)
   pars.q = tools.getString("q", null);
   //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
   pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
-  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.chi2);
+  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.bm25);
   String format = tools.getString("format", null);
   //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
   pars.mime = (Mime)tools.getEnum("format", Mime.html);

@@ -42,31 +42,14 @@
 <%@ page import="alix.util.TopArray" %>
 <%@ page import="alix.web.*" %>
 <%!
-static String baseName = "rougemont";
-/** Properties for this installation */
-final static Properties props = new Properties();
-static 
-{
-  // load properties and local dictionnary
-  // Class cls = MethodHandles.lookup().lookupClass();
-  // File thisClass = new File(cls.getProtectionDomain().getCodeSource().getLocation().getPath());
-  // = props.loadFromXML(new FileInputStream(zejar));
-  // File localdic = new File(zejar.getParentFile(), "alix-cloud.csv");
-  // if (localdic.exists()) load(localdic, LOCAL);
-  File zejar = new File(FrDics.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-  File webinf = zejar.getParentFile().getParentFile();
-  File propsFile = new File(webinf, baseName + ".xml");
+
+// do it on time
+static {
   try {
-    System.out.println("[Alix] static LOAD props: " + propsFile);
-    props.loadFromXML(new FileInputStream(propsFile));
-    String dic = props.getProperty("dicfile");
-    if (dic != null) {
-      File dicFile = new File(dic);
-      if (!dicFile.isAbsolute()) dicFile = new File(propsFile.getParentFile(), dic);
-      if (dicFile.exists()) FrDics.load(dicFile);
-    }
+    if (!Webinf.bases) Webinf.bases();
   }
-  catch (Exception e) {
+  catch(Exception e) {
+    // better log here ?
     e.printStackTrace();
   }
 }
@@ -114,7 +97,6 @@ static public enum Order implements Option {
 }
 
 
-
 /**
  * Build a filtering query with a corpus
  */
@@ -133,7 +115,6 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
 
 
 
-
 /**
  * Get a bitSet of a query. Seems quite fast (2ms), no cache needed.
  */
@@ -147,12 +128,9 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
   return collector.bits();
 }
 */
-public static Alix alix(final PageContext pageContext) throws IOException
-{
-  final String baseDir = pageContext.getServletContext().getRealPath("WEB-INF") ;
-  final Alix alix = Alix.instance(baseDir + "/bases/" + baseName, new FrAnalyzer());
-  return alix;
-}
 
+
+public static String BASE = "rougemont";
+static String hrefHome = "";
 
 %>

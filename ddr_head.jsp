@@ -1,7 +1,5 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
-<%!
-static String hrefHome = "";
-%>
+    <% String hrefHome = ""; %>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
     <meta name="theme-color" content="#cf1308"/>

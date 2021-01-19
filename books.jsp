@@ -3,12 +3,12 @@
 
 <%
 long time = System.nanoTime();
-Alix alix = alix(pageContext);
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
 // Params for the page
 String q = tools.getString("q", null);
-Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.alpha);
+Ranking ranking = (Ranking)tools.getEnum("ranking", null);
 
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
@@ -17,18 +17,18 @@ String[] search = alix.forms(q);
 <!DOCTYPE html>
 <html>
   <head>
-    <%@ include file="ddr_head.jsp" %>
+   <jsp:include page="ddr_head.jsp" flush="true" />
     <title>Livres</title>
   </head>
   <body>
     <header>
-      <%@ include file="tabs.jsp" %>
+       <jsp:include page="tabs.jsp" flush="true" />
     </header>
   
     <main>
       <table class="sortable" width="100%">
         <caption>
-          <form id="qform" target="_self">
+          <form id="qform"  class="query">
             <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
             <label>Classer les livres selon un ou plusieurs mots
             <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>

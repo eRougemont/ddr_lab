@@ -7,46 +7,47 @@
 
 %>
 <%
-long time = System.nanoTime();
-Alix alix = alix(pageContext);
+long time = System.nanoTime(); 
 JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
 
 // Params for the page
 final String fieldName = TEXT;
 String q = tools.getString("q", null);
 Sim sim = (Sim)tools.getEnum("sim", Sim.g);
+DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
+
 
 //global variables
-FieldFacet facet = alix.fieldFacet(Alix.BOOKID, fieldName);
 String[] forms = alix.forms(q);
 %>
 <!DOCTYPE html>
 <html>
   <head>
-    <%@ include file="ddr_head.jsp" %>
-    
+   <jsp:include page="ddr_head.jsp" flush="true" />    
     <title>Chapitres de Rougemont</title>
   </head>
   <body>
     <header>
-      <%@ include file="tabs.jsp" %>
+       <jsp:include page="tabs.jsp" flush="true" />
     </header>
   
     <main>
       <div>
         <table class="sortable" width="100%">
           <caption>
-            <form id="qform" target="_self">
+            <form id="qform"  class="search">
               <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
               <label>Trouver un chapitre (selon un ou plusieurs mots)
               <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
               </label>
               <br/><label>Algorithme d’ordre
-              <br/><select name="sim" onchange="this.form.submit()">
+              <br/><select name="sort" onchange="this.form.submit()">
                   <option/>
-                  <%= sim.options() %>
-               </select>
+<option/>
+          <%= sort.options() %>
+                         </select>
               </label>
               <button type="submit">▶</button>
             </form>
@@ -67,31 +68,21 @@ String[] forms = alix.forms(q);
         
     
 <%
-Sort sort = null;
+
 int len = 500;
 Query query = alix.query("text", q);
 if (query == null) {
   query = QUERY_CHAPTER;
-  sort = sortYear;
 }
 IndexSearcher searcher = alix.searcher();
 searcher.setSimilarity(sim.similarity());
 TopDocs topDocs;
-if (sort != null) topDocs = searcher.search(query, len, sort);
+
+
+if (sort != null && sort.sort() != null) topDocs = searcher.search(query, len, sort.sort());
 else topDocs = searcher.search(query, len);
 ScoreDoc[] hits = topDocs.scoreDocs;
 
-/*
-UnifiedHighlighter uHiliter = new UnifiedHighlighter(searcher, alix.analyzer());
-uHiliter.setMaxLength(500000); // biggest text size to process
-uHiliter.setFormatter(new  HiliteFormatter());
-int docIds[] = new int[len];
-for (int i = 0; i < len; i++) {
-  docIds[i] = hits[i].doc;
-}
-Map<String, String[]> res = uHiliter.highlightFields(new String[]{fieldName}, query, docIds, new int[]{3});
-String[] fragments = res.get(fieldName);
-*/
 
 
 final String href = "doc.jsp?q=" + q + "&amp;id="; // href link
@@ -122,7 +113,8 @@ for (ScoreDoc hit: hits) {
   out.println("<td class=\"no left\">" + no + "</td>");
   
   out.print("<td class=\"num\">");
-  out.print(doc.get("year"));
+  String year = doc.get("year");
+  if (year != null) out.print(year);
   out.println("</td> ");
   out.print("<td class=\"title\" title=\"" + doc.get("title") + "\">");
   out.print("<em class=\"title\">");
