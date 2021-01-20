@@ -421,6 +421,10 @@ td.form {
 td.no {
   vertical-align: middle;
   font-size: 80%;
+
+}
+table.sortable tr:hover {
+  box-shadow: 0px 0px 5px 0px var(--red);
 }
 
 table.sortable th.num,
@@ -453,7 +457,20 @@ td.form {
   white-space: nowrap;
 }
 
+td.stats {
+  width: 100px;
+  text-align: left;
+  padding-left: 1ex;
+  padding-right: 1ex;
+  font-family: monospace;
+  position: relative;
+}
 
+td.stats span.bar {
+  position: absolute;
+  left:0;
+  background-color: var(--redalpha);
+}
 
 
 /** ???? */

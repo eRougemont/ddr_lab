@@ -1,7 +1,7 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="org.apache.lucene.search.uhighlight.UnifiedHighlighter" %>
 <%@ page import="org.apache.lucene.search.uhighlight.DefaultPassageFormatter" %>
-<%@ page import="alix.lucene.search.HiliteFormatter" %>
+<%@ page import="alix.lucene.search.FieldText.DocStats" %>
 <%@include file="jsp/prelude.jsp"%>
 <%!
 
@@ -14,13 +14,11 @@ IndexReader reader = alix.reader();
 
 // Params for the page
 final String fieldName = TEXT;
+FieldText fstats = alix.fieldText(fieldName);
 String q = tools.getString("q", null);
 Sim sim = (Sim)tools.getEnum("sim", Sim.g);
 DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
 
-
-//global variables
-String[] forms = alix.forms(q);
 %>
 <!DOCTYPE html>
 <html>
@@ -45,8 +43,7 @@ String[] forms = alix.forms(q);
               <br/><label>Algorithme d’ordre
               <br/><select name="sort" onchange="this.form.submit()">
                   <option/>
-<option/>
-          <%= sort.options() %>
+          <%= sort.options("score year year_inv") %>
                          </select>
               </label>
               <button type="submit">▶</button>
@@ -55,11 +52,11 @@ String[] forms = alix.forms(q);
           <thead>
             <tr>
               <td/>
-              <th/>
-              <th style="width: 15ex;">Titre</th>
-              <th>Chapitre</th>
+              <th>Score</th>
+              <th>Année</th>
+              <th style="width: 15ex;">Livre</th>
+              <th>Texte</th>
               <th>page</th>
-              <th>score</th>
               <th/>
               <th/>
              </tr>
@@ -69,48 +66,51 @@ String[] forms = alix.forms(q);
     
 <%
 
-int len = 500;
-Query query = alix.query("text", q);
+final int len = 2000;
+Query query = alix.query(fieldName, q);
 if (query == null) {
   query = QUERY_CHAPTER;
 }
 IndexSearcher searcher = alix.searcher();
-searcher.setSimilarity(sim.similarity());
+// searcher.setSimilarity(sim.similarity()); // test has been done, BM25 is the best
 TopDocs topDocs;
-
-
 if (sort != null && sort.sort() != null) topDocs = searcher.search(query, len, sort.sort());
 else topDocs = searcher.search(query, len);
 ScoreDoc[] hits = topDocs.scoreDocs;
 
-
+// get stats by doc
+DocStats docStats = null;
+double scoreMax = 1;
+double scoreMin = 0;
+if (q != null) {
+  String[] forms = alix.forms(q);
+  docStats = fstats.docStats(forms, null, null);
+  if (docStats != null) {
+    scoreMax = docStats.scoreMax();
+    scoreMin = docStats.scoreMin();
+  }
+}
 
 final String href = "doc.jsp?q=" + q + "&amp;id="; // href link
 boolean zero = false;
 int no = 1;
 for (ScoreDoc hit: hits) {
-  // System.out.println(doc.score +" — " + alix.reader().document(doc.doc));
   final int docId = hit.doc;
-  // n = dic.n();
-  // a link should here send a query by book, isnt t ?
-  // rebuild link from href prefix
-  /*
-   // could help to send a query according to this cursor
-   href.append("&amp;start=" + (n+1)); // parenthesis for addition!
-   href.append("&amp;hpp=");
-   if (filtered || queried) href.append(hits);
-   else href.append(docs);
-  */
-  /*
-  if (!zero && dic.score() <= 0) {
-    out.println("<hr/>");
-    zero = true;
-  }
-  */
   Document doc = reader.document(docId, CHAPTER_FIELDS);
   out.println("<tr class=\"snip\">");
   // hits[i].doc
   out.println("<td class=\"no left\">" + no + "</td>");
+  if (docStats != null) {
+    out.println("<td class=\"stats\">");
+    out.println("<span class=\"bar\" style=\"width:" + dfdec1.format(100 * (docStats.score(docId) - scoreMin) / (scoreMax - scoreMin)) + "%\"> </span>");
+    out.println(docStats.occs(docId));
+    // out.println(" (" + docStats.score(docId) + ")");
+    
+    out.println("</td>");
+  }
+  else {
+    out.println("<td/>");
+  }
   
   out.print("<td class=\"num\">");
   String year = doc.get("year");
@@ -128,19 +128,10 @@ for (ScoreDoc hit: hits) {
   out.print("</a>");
   out.println("</td>");
   out.print("<td>");
-  out.print(doc.get("pages"));
+  String pages = doc.get("pages");
+  if (pages != null) out.print(pages);
   out.println("</td>");
-  out.print("<td class=\"num\">");
-  double score = hit.score;
-  if (!Double.isNaN(score)) out.println(dfscore.format(score));
-  out.println("</td>");
-  /*
-  if (fragments[no - 1] != null) {
-    out.print("<p class=\"frags\">");
-    out.println(fragments[no - 1]);
-    out.println("</p>");
-  }
-  */
+  out.println("<td/>");
   out.println("<td/><td class=\"no right\">" + no + "</td>");
   out.println("</tr>");
   no++;
@@ -148,6 +139,8 @@ for (ScoreDoc hit: hits) {
 %>
           </tbody>
         </table>
+        <p> </p>
+        <p> </p>
       </div>
     </main>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>

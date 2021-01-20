@@ -66,6 +66,8 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     Automaton automaton = WordsAutomatonBuilder.buildFronStrings(pars.forms);
     if (automaton != null) include = new ByteRunAutomaton(automaton);
   }
+  boolean repetitions = false;
+  if (pars.forms.length == 1) repetitions = true;
   // get the index in results
   ScoreDoc[] scoreDocs = topDocs.scoreDocs;
   // where to start loop ?
@@ -80,7 +82,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
 
   // be careful, if one term, no expression possible, this will loop till the end of corpus
   boolean expression = false;
-  if (pars.forms == null || pars.forms.length < 2) expression = false;
+  if (pars.forms == null) expression = false;
   else expression = pars.expression;
 
   while (i < max) {
@@ -116,7 +118,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     }
     
     String[] lines = null;
-    lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression);
+    lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression, repetitions);
     if (lines == null || lines.length < 1) continue;
     // doc.kwic(field, include, 50, 50, 100);
     out.println("<article class=\"kwic\">");
