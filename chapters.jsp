@@ -55,7 +55,7 @@ DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
               <th>Score</th>
               <th>Année</th>
               <th style="width: 15ex;">Livre</th>
-              <th>Texte</th>
+              <th class="q"><% if (q != null) out.print("requête : <i>" + q + "</i>"); %></th>
               <th>page</th>
               <th/>
               <th/>

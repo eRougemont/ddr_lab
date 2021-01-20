@@ -22,7 +22,28 @@
 /**
  * Colors and fonts
  */
- 
+
+a:hover,
+#gotop:hover,
+div.term a:hover,
+#q,
+.mark,
+article.snip mark,
+table.sortable th,
+button.magnify,
+a.reset,
+.sortable td.title a:hover,
+article.res header a:hover, /* title in short result */
+article.res div.line a, /* pivot word in kwic */
+#chapters mark, /* hilite in chapter research */
+a.delete,
+body.facet .active,
+h4 .occs,
+a.xred,
+.term .occs {
+  color: var(--red);
+}
+
 html {
   scrollbar-color: var(--red) #fff;
 }
@@ -386,7 +407,7 @@ table.sortable caption {
 }
 
 table.sortable th {
-  color: #000 !important;
+  color: #000;
   text-align: left;
   font-weight: bold;
 }
@@ -472,6 +493,13 @@ td.stats span.bar {
   background-color: var(--redalpha);
 }
 
+table.sortable th.q {
+  font-weight: 300;
+}
+table.sortable th.q i {
+  color: var(--red);
+  font-weight: bold;
+}
 
 /** ???? */
 
@@ -574,26 +602,6 @@ body.facet,
 
 }
 
-a:hover,
-#gotop:hover,
-div.term a:hover,
-#q,
-.mark,
-article.snip mark,
-table.sortable th,
-button.magnify,
-a.reset,
-.sortable td.title a:hover,
-article.res header a:hover, /* title in short result */
-article.res div.line a, /* pivot word in kwic */
-#chapters mark, /* hilite in chapter research */
-a.delete,
-body.facet .active,
-h4 .occs,
-a.xred,
-.term .occs {
-  color: #cf1308;
-}
 
 select {
   background-color: #FFFFFF;
