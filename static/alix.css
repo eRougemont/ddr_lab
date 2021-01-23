@@ -291,10 +291,37 @@ div.text {
   top: 0;
   order: -1;
   overflow-y: auto;
-  padding: 1rem 1rem 2rem 0;
   height: 100vh;
-  width: 15rem;
 }
+
+nav.terms,
+nav.seealso {
+  font-size: 16px;
+  width: 20rem;
+  padding: 0 1rem 2rem 1rem;
+}
+
+nav.terms {
+  width: 13rem;
+}
+
+
+nav.seealso div.bibl {
+  text-align: left;
+  line-height: 120%;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px #fff solid;
+}
+
+.seealso .analytic {
+  color: #000;
+  font-weight: 500;
+}
+.seealso .byline {
+  display: none;
+}
+
 
 /**
  * Snips
@@ -337,6 +364,7 @@ article.snip mark {
 .suggest .bibl:hover {
   background: #fff;
 }
+
 
 
 .suggest {
@@ -464,6 +492,11 @@ td.num small {
 td.num small.docs {
   display: inline-block;
   width: 4ex;
+}
+td.target {
+  cursor: pointer;
+  background: var(--red);
+  color: #fff;
 }
 
 td.no.left {
@@ -765,9 +798,13 @@ article.kwic mark {
 
 /** Liseuse */
 
+a.form {
+  display: block;
+}
 
-div.form small {
+.form small {
   float: right;
+  color: #000;
 }
 
 #ruloccs {
@@ -900,6 +937,28 @@ body.cloud #filter {
  * Dygraph (chronology)
  */
 /** Chart in chrono */
+
+
+
+#chart {
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+body.chapters #chart {
+  height: 400px;
+  width: 100%;
+}
+
+#chartframe {
+  background: #eee;
+  padding: 20px;
+}
+
+body.chapters .dygraph-legend {
+  background: rgba(200, 200, 200, 0.5) !important;
+}
+
 body.chrono {
   overflow: hidden;
   /*
@@ -913,19 +972,12 @@ body.chrono form {
   right: 0;
 }
 
-#chart {
-  font-family: sans-serif;
-  width: 99%;
-  height: 100%;
-  cursor: pointer;
-}
-
 .dygraph-annotation, .dygraph-legend {
   overflow: hidden
 }
 
 .dygraph-legend {
-  background-color: rgba(255, 255, 255, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.3);
   font-weight: normal;
   position: absolute;
   pointer-events: none;
@@ -938,10 +990,9 @@ body.chrono form {
   background: #fff;
   line-height: normal;
   text-align: left;
-  padding: 4px;
-  border: 1px solid #000;
+  padding: 10px;
+  border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 4px 4px 4px #888;
 }
 
 .dygraph-legend-dash, .dygraph-legend-line {
@@ -979,19 +1030,21 @@ body.chrono form {
   font-size: 12pt;
 }
 
-.dygraph-title {
-  color: #000;
-  padding-top: 3px;
-  font-weight: 100;
-  z-index: 10;
-  text-align: center
-}
-
 .dygraph-label {
   color: #000;
   font-size: 13px;
   white-space: nowrap;
 }
+
+.dygraph-title {
+  color: #000;
+  padding-top: 3px;
+  font-weight: bold;
+  z-index: 10;
+  text-align: center;
+  font-size: 18px;
+}
+
 
 .dygraph-xlabel {
   text-align: center

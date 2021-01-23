@@ -26,9 +26,9 @@ IndexReader reader = alix.reader();
 // params for the page
 Pars pars = new Pars();
 pars.fieldName = TEXT;
-pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.chi2);
+pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.g);
 pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
-pars.limit = tools.getInt("docid", 100);
+pars.limit = tools.getInt("limit", 50);
 
 int docId = tools.getInt("docid", -1); // get doc by lucene internal docId or persistant String id
 String id = tools.getString("id", "");
@@ -36,7 +36,10 @@ String q = tools.getString("q", null); // if no doc, get params to navigate in a
 
 Doc doc = null;
 try { // load full document
-  if (!id.isEmpty()) doc = new Doc(alix, id);
+  if (!id.isEmpty()) {
+    doc = new Doc(alix, id);
+    docId = doc.docId();
+  }
   else if (docId >= 0) {
     doc = new Doc(alix, docId);
     id = doc.id();
@@ -96,7 +99,7 @@ if (doc != null) { // document id is verified, give it to javascript
       <%@ include file="tabs.jsp" %>
     </header>
     <main>
-      <form class="search" id="search" autocomplete="off" onsubmit="return false;" action="#" role="search">
+      <form class="search" id="search" autocomplete="off" action="#" role="search">
       <!-- 
         <button name="magnify" type="button">
           <svg viewBox="0 0 24 24"  width="24px" height="24px">
@@ -115,20 +118,20 @@ if (doc != null) { // document id is verified, give it to javascript
           <div class="progress"><div></div></div>
           <div class="suggest"></div>
         </label>
-        <input style="float: right;" type="hidden" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
-        <!-- 
-        
-        <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
-         -->
-        Mots spécifiques —
-        <label>Filtrer <select name="cat" onchange="this.form.submit()">
-            <option/>
+        <input type="hidden" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
+        <label>Surligner des mots
+          <br/>
+          <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
+        </label>
+        <br/>Mots spécifiques
+        <br/><label>Filtrer <select name="cat" onchange="this.form.submit()">
+            <option></option>
             <%= pars.cat.options() %>
          </select>
         </label>
         <label>Score
         <select name="ranking" onchange="this.form.submit()">
-            <option/>
+            <option></option>
             <%= pars.ranking.options() %>
          </select>
         </label>
@@ -156,27 +159,39 @@ if (doc != null) { // document id is verified, give it to javascript
       <div class="row">
         <nav class="terms" id="sidebar">
         <%
+Query mlt = null;
 if (doc != null) {
+  out.println(" <h5>Mots clés</h5>");
+  BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
   FormEnum forms = doc.iterator(TEXT, pars.limit, pars.ranking.specif(), pars.cat.tags(), false);
   int no = 1;
   while (forms.hasNext()) {
     forms.next();
-    out.print("<div class=\"form\">");
+    out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(forms.label()) + "\" class=\"form\">");
     // out.print(dfscore.format(forms.score()) + " ");
     out.print(forms.label());
     out.print(" <small>(" + forms.freq() + ")</small>");
-    out.println("</div>");
+    out.println("</a>");
+    if (no < 30) {
+      Query tq = new TermQuery(new Term(TEXT, forms.label()));
+      qBuilder.add(tq, BooleanClause.Occur.SHOULD);
+    }
+    no++;
   }
+  mlt = qBuilder.build();
 }
         
         %>
         </nav>
         <div class="text">
     <%
-      if (doc != null) {
+    if (doc != null) {
       out.println("<div class=\"heading\">");
       out.println(doc.doc().get("bibl"));
       out.println("</div>");
+      // mlt
+      
+		  
       // hilite
       if (!"".equals(q)) {
         String[] terms = alix.forms(q);
@@ -189,6 +204,30 @@ if (doc != null) {
     %>
         
         </div>
+        <nav class="seealso">
+          <%
+if (mlt != null) {
+  out.println("<h5>Sur les mêmes sujets…</h5>");
+  IndexSearcher searcher = alix.searcher();
+  // searcher.setSimilarity(sim.similarity()); // test has been done, BM25 is the best
+  TopDocs topDocs;
+  topDocs = searcher.search(mlt, 20);
+  ScoreDoc[] hits = topDocs.scoreDocs;
+  final String href = "?id=";
+  final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Alix.ID, Alix.BOOKID, "bibl"}));
+  for (ScoreDoc hit: hits) {
+    if (hit.doc == docId) continue;
+    Document aDoc = reader.document(hit.doc, DOC_SHORT);
+    out.print("<div class=\"bibl\">");
+    out.print("<a href=\"" + href + aDoc.get(Alix.ID) +"\">");
+    out.print(aDoc.get("bibl"));
+    out.print("</a>");
+    out.print("</div>");
+  }
+}
+          %>
+          
+        </nav>
       </div>
     </main>
     <% out.println("<!-- time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>

@@ -23,32 +23,103 @@ DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
 <!DOCTYPE html>
 <html>
   <head>
-   <jsp:include page="ddr_head.jsp" flush="true" />    
-    <title>Chapitres de Rougemont</title>
+    <title><%= alix.props.get("label") %>, Chapitres</title>
+    <jsp:include page="ddr_head.jsp" flush="true" />
+    <script src="vendor/dygraph.min.js">//</script>
+    <script src="vendor/dyxtras.js">//</script>
   </head>
-  <body>
+  <body class="chapters">
     <header>
        <jsp:include page="tabs.jsp" flush="true" />
     </header>
+    <form id="qform"  class="search">
+      <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
+      <label>Trouver un chapitre (selon un ou plusieurs mots)
+      <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
+      </label>
+      <br/><label>Algorithme d’ordre
+      <br/><select name="sort" onchange="this.form.submit()">
+          <option/>
+  <%= sort.options("score year year_inv") %>
+          </select>
+      </label>
+      <button type="submit">▶</button>
+    </form>
   
     <main>
+      <div id="chartframe">
+        <div id="chart" class="dygraph"></div>
+      </div>
+      
+      <script>
+const xClick = function(event, x, points) {
+  var el = document.getElementById(x);
+  el.scrollIntoView();
+  window.scrollBy(0, -100);
+  el.classList.add("target");
+  el.addEventListener('click', event => {
+	  el.classList.remove("target");
+	});
+}
+var json = <jsp:include page="jsp/chronojson.jsp" flush="true" />;
+var barCount = json.labels.length - 2;
+var attrs = {
+  title : "Occurrences par années",
+  labels: json.labels,
+  legend: "always",
+  labelsSeparateLines: true,
+  ylabel: "occurrences",
+  y2label: "Taille des textes",
+  // logscale: true,
+  // xlabel: "Répartition des années en nombre de mots",
+  clickCallback: xClick,
+  logscale: true,
+  plotter: Dygraph.plotHoles,
+  strokeWidth: 0.5,
+  drawPoints: true,
+  pointSize: 8,
+  series: {
+    "Taille des textes": {
+       axis: (json.labels.length > 2)?'y2':null,
+       plotter: Dygraph.plotBar,
+       /*
+       drawPoints: false,
+       strokeWidth: 3,
+       fillGraph: true,
+       */
+    },
+  },
+  
+  colors:['rgba(255, 255, 255, 0.8)', 'rgba(255, 26, 26, 0.7)', 'rgba(26, 26, 192, 0.7)', 'rgba(26, 128, 26, 0.7)', 'rgba(0, 128, 192, 0.7)', 'rgba(146,137,127, 0.7)', 'rgba(192, 128, 0, 0.7)'],
+
+  // logscale: true,
+  axes : {
+    x: {
+      drawGrid: true,
+      gridLineColor: "rgba(160, 160, 160, 0.2)",
+      gridLineWidth: 3,
+    },
+    y:{
+      drawGrid: true,
+      gridLineColor: "rgba(192, 192, 192, 0.7)",
+      gridLineWidth: 1,
+    },
+    y2:{
+      independentTicks: true,
+      drawGrid: false,
+      labelsKMB: true,
+        // gridLineColor: "rgba( 128, 128, 128, 0.1)",
+        // gridLineWidth: 1,
+    },
+  },
+};
+var div = document.getElementById("chart");
+g = new Dygraph(div, json.data, attrs);
+
+      </script>
+      
       <div>
         <table class="sortable" width="100%">
-          <caption>
-            <form id="qform"  class="search">
-              <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
-              <label>Trouver un chapitre (selon un ou plusieurs mots)
-              <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
-              </label>
-              <br/><label>Algorithme d’ordre
-              <br/><select name="sort" onchange="this.form.submit()">
-                  <option/>
-          <%= sort.options("score year year_inv") %>
-                         </select>
-              </label>
-              <button type="submit">▶</button>
-            </form>
-          </caption>
           <thead>
             <tr>
               <td/>
@@ -94,6 +165,7 @@ if (q != null) {
 final String href = "doc.jsp?q=" + q + "&amp;id="; // href link
 boolean zero = false;
 int no = 1;
+int lastYear = Integer.MIN_VALUE;
 for (ScoreDoc hit: hits) {
   final int docId = hit.doc;
   Document doc = reader.document(docId, CHAPTER_FIELDS);
@@ -112,10 +184,21 @@ for (ScoreDoc hit: hits) {
     out.println("<td/>");
   }
   
-  out.print("<td class=\"num\">");
   String year = doc.get("year");
-  if (year != null) out.print(year);
-  out.println("</td> ");
+  if (year != null) {
+    out.print("<td class=\"num\"");
+    int i=Integer.parseInt(year);
+    if (i != lastYear) {
+      lastYear = i;
+      out.print(" id=\"" + i + "\"");
+    }
+    out.print(">");
+    out.print(year);
+    out.println("</td>");
+  }
+  else {
+    out.println("<td/>");
+  }
   out.print("<td class=\"title\" title=\"" + doc.get("title") + "\">");
   out.print("<em class=\"title\">");
   out.print(doc.get("title"));
@@ -132,7 +215,7 @@ for (ScoreDoc hit: hits) {
   if (pages != null) out.print(pages);
   out.println("</td>");
   out.println("<td/>");
-  out.println("<td/><td class=\"no right\">" + no + "</td>");
+  out.println("<td/>\n<td class=\"no right\">" + no + "</td>");
   out.println("</tr>");
   no++;
 }
@@ -144,6 +227,6 @@ for (ScoreDoc hit: hits) {
       </div>
     </main>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>
-    <% out.println("<!-- time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>
+    <% out.println("<!-- duration\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\" -->"); %>
   </body>
 </html>

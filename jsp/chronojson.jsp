@@ -1,94 +1,71 @@
 <%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@include file="prelude.jsp" %>
-<%@ page import="alix.lucene.search.Scale" %>
-<%@ page import="alix.lucene.search.Scale.Tick" %>
-<%@ page import="alix.lucene.search.TermList" %>
+<%@ page import="alix.lucene.Alix" %>
+<%@ page import="alix.lucene.search.*" %>
+<%@ page import="alix.lucene.search.FieldInt.IntEnum" %>
+<%@ page import="alix.web.*" %>
 
 <%!
-/** A record used to sort docid by date */
-
-/**
- * Return a json view of ticks for 
- */
-public String ticks(Scale scale) throws IOException  {
-  
-  StringBuilder sb = new StringBuilder();
-  int min = scale.min();
-  int max = scale.max();
-  int span = max - min;
-  int yearStep = 5;
-  if (span > 400) yearStep = 10;
-  else if (span > 50) yearStep = 5;
-  else yearStep = 1;
-  long total = scale.length();
-  // calculate an hypothetic width to avoid too much labels ine dense sections
-  long labelWidth = (long)Math.ceil((float) total / 30);
-  sb.append("[\n");
-  // give the first year
-  int label = min - min % yearStep;
-  // int label = min;
-  sb.append("    {\"v\": 0, \"label\": " + min + "}");
-  // get Axis data, but resort it in cumulate order
-  Tick[] axis = scale.axis();
-  
-  
-  long cumulLast = 0;
-  boolean first = true;
-  int lastYear = Integer.MIN_VALUE;
-  long cumul = 0;
-  for (int i = 0, length = axis.length; i < length; i++) {
-    if (axis[i].length == 0) continue; // A deleted doc
-    int year = axis[i].value;
-    if (year < lastYear) {
-      sb.append("\nBUG\n");
-    }
-    if (year == lastYear) continue;
-    lastYear = year;
-    if (year < label) continue;
-    label = year - year % yearStep;
-   
-    sb.append(",\n");
-    cumul = axis[i].cumul;
-    sb.append("    {");
-    sb.append("\"v\": "+cumul);
-    // let space between labels
-    if (cumul - cumulLast > labelWidth) {
-      sb.append(", \"label\": "+label);
-      cumulLast = cumul;
-    }
-    sb.append("}");
-    lastYear = year;
-    label = label + yearStep;
-  }
-  // give the last year ?
-  // if (cumul != total) sb.append("\n    {\"v\": "+ total+", \"label\": " + max + "}");
-  sb.append("\n  ]");
-  return sb.toString();
-}%>
+%>
 <%
-// parameters
-final String q = tools.getString("q", null);
-
-// global variables
-Corpus corpus = (Corpus)session.getAttribute(corpusKey);
-BitSet bits = bits(alix, corpus, q);
-Scale scale = new Scale(alix, bits, YEAR, TEXT);
-// number of fots by curve, could be a parameter
-int dots = tools.getInt("dots", 200);
-
-
+final String YEAR = "year";
+final String TEXT = "text";
+final String BASE = "rougemont";
+final String COOKIE_BASE = "alixBase";
 
 out.println("{");
-if (q != null) out.print( "  \"q\": \""+q.replace("\"", "\\\"")+"\",\n");
+long time = System.nanoTime(); 
+JspTools tools = new JspTools(pageContext);
+Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, COOKIE_BASE);
+FieldInt fint = alix.fieldInt(YEAR, TEXT);
+IntEnum iterator = fint.iterator();
+// get a query
+final String q = tools.getString("q", null);
+String formsLabel = "";
+String[] forms = null;
+int formsLenght = 0;
+if (q != null) {
+  out.print( "  \"q\": \""+q.replace("\"", "\\\"")+"\",\n");
+  // get words in the query
+  forms = alix.forms(q);
+  // get the count of occurrences found by year
+  for (String form: forms) {
+    fint.form(iterator, form);
+    formsLabel += ", \"" + form.replace("\"", "\\\"") + "\"";
+  }
+  formsLenght = forms.length;
+}
+
+out.println("  labels: [\"Date\", \"Taille des textes\"" + formsLabel + "],");
+
+out.println("  \"data\": [");
+boolean first = true;
+while (iterator.hasNext()) {
+  iterator.next();
+  if (first) first = false;
+  else out.print(",\n");
+  out.print("    [" + iterator.value() + ", " + iterator.occs());
+  for (int i = 0; i < formsLenght; i++) {
+    final String form = forms[i];
+    long occs = iterator.occs(form);
+    if (occs > 0)  out.print(", " + occs);
+    else out.print(", null");
+  }
+  out.print("]");
+}
+out.println();
+out.println("  ]"); // data end
+out.print("}");
+
+
+
+
+/*
 // display ticks
 long partial = System.nanoTime();
 out.print( "  \"ticks\": "+ticks(scale)+",\n");
 out.println("  \"time\" : \"" + (System.nanoTime() - partial) / 1000000.0 + "ms\",");
 
 
-
-//parse the query by line
-TermList terms = alix.qTermList(TEXT, q);
 if (terms.size() > 0) {
   terms.sortByRowFreq(); // sort query lines by freq
   out.print("  \"labels\": [\"\"");
@@ -107,7 +84,6 @@ if (terms.size() > 0) {
   int rows = data[0].length;
   int cols = data.length;
   
-  out.println("  \"data\": [");
   first = true;
   for (int row = 0; row < rows; row++) {
     // do not print empty rows (easier for curve display)
@@ -156,4 +132,5 @@ if (terms.size() > 0) {
 }
 out.println("  \"time\" : \"" + (System.nanoTime() - time) / 1000000.0 + "ms\"");
 out.println("\n}");
+*/
 %>

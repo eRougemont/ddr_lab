@@ -43,16 +43,11 @@
 <%@ page import="alix.web.*" %>
 <%!
 
-// do it on time
+// do it one time
 static {
-  try {
-    if (!Webinf.bases) Webinf.bases();
-  }
-  catch(Exception e) {
-    // better log here ?
-    e.printStackTrace();
-  }
+  if (!Webinf.bases) Webinf.bases();
 }
+static final String COOKIE_BASE = "alixBase";
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
@@ -130,7 +125,7 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
 */
 
 
-public static String BASE = "rougemont";
+public static final String BASE = "rougemont";
 static String hrefHome = "";
 
 %>
