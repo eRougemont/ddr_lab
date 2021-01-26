@@ -32,12 +32,15 @@ if (pars.q != null) {
   dic.filter = filter; // limit to some documents
   dic.tags = pars.cat.tags(); // limit word list by tags
   long found = rail.coocs(dic);
-  if (found > 0) { // nothing found, what should I do here ?
+  if (found > 0) {
     // parameters for sorting
     dic.limit = pars.limit;
     dic.specif = pars.ranking.specif();
     dic.reverse = reverse;
     rail.score(dic);
+  }
+  else {
+    // if nothing found, what should be done ?
   }
 }
 else {
