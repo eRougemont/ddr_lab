@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page import="java.util.Arrays" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="org.apache.lucene.search.ScoreDoc" %>
 <%@ page import="org.apache.lucene.search.TopDocs" %>
@@ -92,7 +93,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     String type = doc.doc().get(Alix.TYPE);
     // TODO Enenum
     if (type.equals(DocType.book.name())) continue;
-    if (doc.doc().get(pars.fieldName) == null) continue;
+    // if (doc.doc().get(pars.fieldName) == null) continue; // not a good test, field may be indexed but not store
     String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
     // show simple metadata

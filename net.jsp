@@ -52,7 +52,7 @@ private final int STAR = 1;
 private final int NOVA = 2;
 private final int PLANET = -1;
 
-public static TopArray top(FieldText fstats, final int pivotId, final long[] cooc, int limit, final Distance distance)
+public static TopArray top(FieldText fstats, final int pivotId, final long[] cooc, int limit, final MI distance)
 {
   TopArray top = new TopArray(limit);
   for (int formId = 0, length = cooc.length; formId < length; formId++) {
@@ -223,86 +223,86 @@ input.nb {
   <body>
 
   <%
-JspTools tools = new JspTools(pageContext);
-Alix alix = alix(pageContext);
-    final String fieldName = "text";
-      boolean first;
-      final int ntopmax = 50;
-      int ntop = tools.getInt("words", hubsDefault);
-      if (ntop < 1) ntop = hubsDefault;
-      else if (ntop > ntopmax) ntop = ntopmax;
-      String words = tools.getString("words", null);
-      int width = tools.getInt("width", 10, baseName+"Width");
-      if (width < 3) width = 3;
+    JspTools tools = new JspTools(pageContext);
+  Alix alix = alix(pageContext);
+      final String fieldName = "text";
+    boolean first;
+    final int ntopmax = 50;
+    int ntop = tools.getInt("words", hubsDefault);
+    if (ntop < 1) ntop = hubsDefault;
+    else if (ntop > ntopmax) ntop = ntopmax;
+    String words = tools.getString("words", null);
+    int width = tools.getInt("width", 10, baseName+"Width");
+    if (width < 3) width = 3;
+    
+    final int planetMax = 50;
+    final int planetMid = 10;
+    int planets = tools.getInt("planets", planetMid, baseName+"Planets");
+    if (planets > planetMax) planets = planetMax;
+    if (planets < 1) planets = planetMid;
+
+    BitSet filter = null;
+    Corpus corpus = (Corpus)session.getAttribute(corpusKey);
+    if (corpus != null) filter = corpus.bits();
+    
+    FieldText fstats = alix.fieldText(fieldName);
+    FieldRail rail = alix.fieldRail(fieldName);
+    long[] freqs = rail.freqs(filter); // term frequencies for this query
+    BytesRef bytes = new BytesRef();
+
+    MI distance = (MI)tools.getEnum("distance", MI.none, baseName+"Distance");
+
+
+    // if we add nodes here, we wil have to take a copy of the 
+    ArrayList<String> alist = new ArrayList<String>();
+    // get the focus nodes from query
+    if (words != null) {
+      String[] terms = alix.forms(words); // parse query as a set of terms
+      first = true;
+      int count = 0;
+      // rewrite queries, with only known terms
+      for (String w: terms) {
+    int formId = fstats.formId(w);
+    if (formId < 0) continue;
+    long freq = freqs[formId];
+    if (freq < 1) continue;
+    if (first) first = false;
+    alist.add(w);
+    if (++count >= ntopmax) break;
+      }
+      if (alist.size() > 0) {
+      }
       
-      final int planetMax = 50;
-      final int planetMid = 10;
-      int planets = tools.getInt("planets", planetMid, baseName+"Planets");
-      if (planets > planetMax) planets = planetMax;
-      if (planets < 1) planets = planetMid;
-
-      BitSet filter = null;
-      Corpus corpus = (Corpus)session.getAttribute(corpusKey);
-      if (corpus != null) filter = corpus.bits();
+    }
+    // if no nodes found, get the first non stop word for the field
+    // filter for the corpus
+    if (alist.size() < 1) {
+      TopArray top = new TopArray(ntop);
+      CharsAtt chars = new CharsAtt();
+      for (int formId = 0, length = freqs.length; formId < length; formId++) {
+    if (freqs[formId] < FREQ_FLOOR) continue;
+    if (fstats.isStop(formId)) continue;
+    // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
+    fstats.term(formId, bytes);
+    chars.copy(bytes);
+    FrDics.LexEntry entry = FrDics.word(chars);
+    if (entry != null) {
+      if (!tagSem.accept(entry.tag)) continue;
+    }
+    top.push(formId, freqs[formId]);
+      }
+      first = true;
+      int count = 0;
       
-      FieldText fstats = alix.fieldText(fieldName);
-      FieldRail rail = alix.fieldRail(fieldName);
-      long[] freqs = rail.freqs(filter); // term frequencies for this query
-      BytesRef bytes = new BytesRef();
-
-      Distance distance = (Distance)tools.getEnum("distance", Distance.none, baseName+"Distance");
-
-
-      // if we add nodes here, we wil have to take a copy of the 
-      ArrayList<String> alist = new ArrayList<String>();
-      // get the focus nodes from query
-      if (words != null) {
-    String[] terms = alix.forms(words); // parse query as a set of terms
-    first = true;
-    int count = 0;
-    // rewrite queries, with only known terms
-    for (String w: terms) {
-      int formId = fstats.formId(w);
-      if (formId < 0) continue;
-      long freq = freqs[formId];
-      if (freq < 1) continue;
-      if (first) first = false;
-      alist.add(w);
-      if (++count >= ntopmax) break;
-    }
-    if (alist.size() > 0) {
-    }
+      for (TopArray.Entry entry: top) {
+    final String w = fstats.term(entry.id(), bytes).utf8ToString();
+    alist.add(w);
     
       }
-      // if no nodes found, get the first non stop word for the field
-      // filter for the corpus
-      if (alist.size() < 1) {
-    TopArray top = new TopArray(ntop);
-    CharsAtt chars = new CharsAtt();
-    for (int formId = 0, length = freqs.length; formId < length; formId++) {
-      if (freqs[formId] < FREQ_FLOOR) continue;
-      if (fstats.isStop(formId)) continue;
-      // test tag against dic, needs some gymnastics between utf8 bytes -> utf16 chars
-      fstats.term(formId, bytes);
-      chars.copy(bytes);
-      FrDics.LexEntry entry = FrDics.word(chars);
-      if (entry != null) {
-    if (!tagSem.accept(entry.tag)) continue;
-      }
-      top.push(formId, freqs[formId]);
     }
-    first = true;
-    int count = 0;
-    
-    for (TopArray.Entry entry: top) {
-      final String w = fstats.term(entry.id(), bytes).utf8ToString();
-      alist.add(w);
-      
-    }
-      }
-      String[] stars = alist.toArray(new String[alist.size()]);
-      words = String.join(", ", stars);
-      //
+    String[] stars = alist.toArray(new String[alist.size()]);
+    words = String.join(", ", stars);
+    //
   %>
 	  <div id="graphcont">
        <form id="form">

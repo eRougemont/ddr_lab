@@ -14,7 +14,7 @@ Corpus corpus = null;
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
 
-final String fieldName = TEXT; // the field to process
+final String fieldName = tools.getString("f", TEXT); 
 
 FieldText fieldText = alix.fieldText(fieldName);
 
@@ -42,6 +42,7 @@ if (pars.q != null) {
 }
 else {
   // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
+  // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
   dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
 }
 %>
@@ -58,14 +59,12 @@ else {
          <!-- <%= ((System.nanoTime() - time2) / 1000000.0) %> ms  -->
        
     </header>
-    <main>
-      <table class="sortable" width="100%">
-        <caption>
-          <form  class="search">
-             <label>Sélectionner un livre
-             <br/><select name="book" onchange="this.form.submit()">
-                  <option value=""></option>
-                  <%
+    <form  class="search">
+      <input type="hidden" name="f" value="<%= JspTools.escape(fieldName) %>"/>
+       <label>Sélectionner un livre
+       <br/><select name="book" onchange="this.form.submit()">
+            <option value=""></option>
+            <%
 int[] books = alix.books(sortYear);
 for (int docId: books) {
   Document doc = reader.document(docId, BOOK_FIELDS);
@@ -79,39 +78,40 @@ for (int docId: books) {
   out.println("</option>");
 }
                   %>
-               </select>
-             </label>
-            <br/><label>Cooccurrents fréquents autour d’un ou plusieurs mots
-            <br/><input name="q" value="<%= JspTools.escape(pars.q) %>"/>
-            </label>
-            <label><input name="left" value="<%= pars.left %>" size="1" class="num3"/> mots à gauche</label>
-            <label><input name="right" value="<%= pars.right %>" size="1" class="num3"/> mots à droite</label>
-            
-             <br/><label>Filtrer par catégorie grammaticale
-             <br/><select name="cat" onchange="this.form.submit()">
-                 <option/>
-                 <%= pars.cat.options() %>
-              </select>
-             </label>
-             <br/><label>Algorithme de score
-             <br/><select name="ranking" onchange="this.form.submit()">
-                 <option/>
-                 <% 
-                 if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
-                 // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
-                 else out.println (pars.ranking.options()); 
-                 %>
-              </select>
-             </label>
-             <br/><label>Direction
-             <br/><select name="order" onchange="this.form.submit()">
-                 <option/>
-                 <%= pars.order.options()  %>
-              </select>
-             </label>
-             <button type="submit">▶</button>
-          </form>
-        </caption>
+         </select>
+       </label>
+      <br/><label>Cooccurrents fréquents autour d’un ou plusieurs mots
+      <br/><input name="q" value="<%= JspTools.escape(pars.q) %>"/>
+      </label>
+      <label><input name="left" value="<%= pars.left %>" size="1" class="num3"/> mots à gauche</label>
+      <label><input name="right" value="<%= pars.right %>" size="1" class="num3"/> mots à droite</label>
+      
+       <br/><label>Filtrer par catégorie grammaticale
+       <br/><select name="cat" onchange="this.form.submit()">
+           <option/>
+           <%= pars.cat.options() %>
+        </select>
+       </label>
+       <br/><label>Algorithme de score
+       <br/><select name="ranking" onchange="this.form.submit()">
+           <option/>
+           <% 
+           if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
+           // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
+           else out.println (pars.ranking.options()); 
+           %>
+        </select>
+       </label>
+       <br/><label>Direction
+       <br/><select name="order" onchange="this.form.submit()">
+           <option/>
+           <%= pars.order.options()  %>
+        </select>
+       </label>
+       <button type="submit">▶</button>
+    </form>
+    <main>
+      <table class="sortable" width="100%">
         <thead>
           <tr>
             <td/>
@@ -143,13 +143,13 @@ for (int docId: books) {
             out.print(">");
             out.print(term);
             out.print("</a>");
-            out.println("</td>");
+            out.println("    </td>");
             
             out.print("    <td>");
             out.print(Tag.label(dic.tag()));
             out.println("</td>");
             
-            out.println("    <td class=\"num\">");
+            out.print("    <td class=\"num\">");
             // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
             out.print(dic.freq()) ;
             // out.println("</a>");

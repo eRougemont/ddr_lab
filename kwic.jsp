@@ -11,7 +11,7 @@ IndexReader reader = alix.reader();
 
 Pars pars = pars(pageContext);
 pars.forms = alix.forms(pars.q);
-pars.fieldName = TEXT;
+pars.fieldName = tools.getString("f", TEXT); 
 
 // build query and get results
 long nanos = System.nanoTime();
@@ -19,7 +19,7 @@ Query query = null;
 Query qWords = null;
 Query qFilter = null;
 if (pars.q != null) {
-  qWords = alix.query(TEXT, pars.q);
+  qWords = alix.query(pars.fieldName, pars.q);
 }
 if (pars.book != null) {
   qFilter = new TermQuery(new Term(Alix.BOOKID, pars.book));
@@ -69,6 +69,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.
     </header>
     <main>
       <form  class="search">
+        <input type="hidden" name="f" value="<%= JspTools.escape(pars.fieldName) %>"/>
         <label>Chercher un ou plusieurs mots
         <button style="position: absolute; left: -9999px" type="submit">▶</button>
         <br/><input id="q" name="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
