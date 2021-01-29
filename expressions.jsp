@@ -14,6 +14,7 @@
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 int limit = tools.getInt("limit", 500);
+int floor = tools.getInt("floor", 0);
 String book = tools.getString("book", null);
 MI mi = (MI)tools.getEnum("mi", MI.none);
 
@@ -49,11 +50,15 @@ for (int docId: books) {
                   %>
          </select>
        </label>
-         <label>Algorithme de score
-         <br/><select name="mi" onchange="this.form.submit()">
+       <br/>
+       <label>Algorithme de score
+         <select name="mi" onchange="this.form.submit()">
              <option/>
              <%= mi.options() %>
           </select>
+         </label>
+         <label>Fréquence minimale
+            <input name="floor" size="1" class="num3" value="<%= (floor > 0)?floor:"" %>"/>
          </label>
       </form>
       <table class="sortable">
@@ -62,10 +67,10 @@ for (int docId: books) {
           <tr>
             <td/>
             <th>Couple (ab)</th>
-            <th>ab</th>
-            <th>a</th>
-            <th>b</th>
-            <th>Score</th>
+            <th class="num">ab</th>
+            <th class="num">a</th>
+            <th class="num">b</th>
+            <th class="num">Score</th>
             <th width="100%"/>
             <td/>
           <tr>
@@ -97,6 +102,7 @@ final int pun1 = field.formId(",");
 final int pun2 = field.formId(".");
 final int pun3 = field.formId("§");
 for (Bigram bigram: dic.values()) {
+  if (bigram.count <= floor) continue;
   // if (field.isStop(bigram.a) || field.isStop(bigram.b)) continue;
   // if (bigram.a == 0 || bigram.a == pun1 || bigram.a == pun2 || bigram.a == pun3) continue;
   // if (bigram.b == 0 || bigram.b == pun1 || bigram.b == pun2 || bigram.b == pun3) continue;

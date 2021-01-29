@@ -159,28 +159,27 @@ if (doc != null) { // document id is verified, give it to javascript
       <div class="row">
         <nav class="terms" id="sidebar">
         <%
-Query mlt = null;
-if (doc != null) {
-  out.println(" <h5>Mots clés</h5>");
-  BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
-  FormEnum forms = doc.iterator(TEXT, pars.limit, pars.ranking.specif(), pars.cat.tags(), false);
-  int no = 1;
-  while (forms.hasNext()) {
-    forms.next();
-    out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(forms.label()) + "\" class=\"form\">");
-    // out.print(dfscore.format(forms.score()) + " ");
-    out.print(forms.label());
-    out.print(" <small>(" + forms.freq() + ")</small>");
-    out.println("</a>");
-    if (no < 30) {
-      Query tq = new TermQuery(new Term(TEXT, forms.label()));
-      qBuilder.add(tq, BooleanClause.Occur.SHOULD);
-    }
-    no++;
-  }
-  mlt = qBuilder.build();
-}
-        
+          Query mlt = null;
+        if (doc != null) {
+          out.println(" <h5>Mots clés</h5>");
+          BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
+          FormEnum forms = doc.iterator(TEXT, pars.limit, pars.ranking.specif(), pars.cat.tags(), false);
+          int no = 1;
+          while (forms.hasNext()) {
+            forms.next();
+            out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(forms.form()) + "\" class=\"form\">");
+            // out.print(dfscore.format(forms.score()) + " ");
+            out.print(forms.form());
+            out.print(" <small>(" + forms.freq() + ")</small>");
+            out.println("</a>");
+            if (no < 30) {
+          Query tq = new TermQuery(new Term(TEXT, forms.form()));
+          qBuilder.add(tq, BooleanClause.Occur.SHOULD);
+            }
+            no++;
+          }
+          mlt = qBuilder.build();
+        }
         %>
         </nav>
         <div class="text">

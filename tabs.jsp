@@ -7,13 +7,15 @@
 static public enum Tab {
   freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "q"}) {
   },
+  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"book", "q"}) {
+  },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },
   chapters("Chapitres", "chapters.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },
-  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"book", "ranking", "q"}) {
+  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"q", "book", "ranking"}) {
   },
-  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "ranking", "q"}) {
+  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q", "ranking"}) {
   },
   ;
   

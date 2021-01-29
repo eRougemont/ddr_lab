@@ -56,85 +56,85 @@ String[] search = alix.forms(q);
         
     
 <%
-FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
-// if no word searched, sort by date, not well optimized here
-if (search == null || search.length < 1) {
-  // get docIds of books sorted by a query
-  int[] books = alix.books(sortYear);
-  // take a facteId for these books to set a sorter
-  for (int i = 0, length = books.length; i < length; i++) books[i] = facet.facetId(books[i]);
-  dic.sorter(books);
-}
-/* 
-// Hack to use facet as a navigator in results, cache results in the facet order
-TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
-int[] nos = facet.nos(topDocs);
-dic.setNos(nos);
-*/
-// build a resizable href link
-final String href = "kwic.jsp?q=" + JspTools.escape(q)+ "&amp;book=";
-// resend a query somewhere ?
-boolean zero = false;
-int no = 1;
-while (dic.hasNext()) {
-  dic.next();
-  // n = dic.n();
-  //in alpha order, do something if no match ?
-  if (dic.hits() < 1) {
-    // continue;
-  }
-  // a link should here send a query by book, isnt t ?
-  // rebuild link from href prefix
-  /*
-   // could help to send a query according to this cursor
-   href.append("&amp;start=" + (n+1)); // parenthesis for addition!
-   href.append("&amp;hpp=");
-   if (filtered || queried) href.append(hits);
-   else href.append(docs);
-  */
-  /*
-  if (!zero && dic.score() <= 0) {
-    out.println("<hr/>");
-    zero = true;
-  }
-  */
-  String id = dic.label();
-  out.println("  <tr>");
-  out.println("    <td class=\"no left\">" + no + "</td>");
-  out.print("    <td class=\"form\">");
-  out.print("<a href=\""+href+id+"\">");
-  // out.print(dic.label());
-  int docId = alix.getDocId(id);
-  Document doc = reader.document(docId, BOOK_FIELDS);
-  out.print(doc.get("year"));
-  out.print(", ");
-  out.print(doc.get("title"));
+              FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
+            // if no word searched, sort by date, not well optimized here
+            if (search == null || search.length < 1) {
+              // get docIds of books sorted by a query
+              int[] books = alix.books(sortYear);
+              // take a facteId for these books to set a sorter
+              for (int i = 0, length = books.length; i < length; i++) books[i] = facet.facetId(books[i]);
+              dic.sorter(books);
+            }
+            /* 
+            // Hack to use facet as a navigator in results, cache results in the facet order
+            TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
+            int[] nos = facet.nos(topDocs);
+            dic.setNos(nos);
+            */
+            // build a resizable href link
+            final String href = "kwic.jsp?q=" + JspTools.escape(q)+ "&amp;book=";
+            // resend a query somewhere ?
+            boolean zero = false;
+            int no = 1;
+            while (dic.hasNext()) {
+              dic.next();
+              // n = dic.n();
+              //in alpha order, do something if no match ?
+              if (dic.hits() < 1) {
+                // continue;
+              }
+              // a link should here send a query by book, isnt t ?
+              // rebuild link from href prefix
+              /*
+               // could help to send a query according to this cursor
+               href.append("&amp;start=" + (n+1)); // parenthesis for addition!
+               href.append("&amp;hpp=");
+               if (filtered || queried) href.append(hits);
+               else href.append(docs);
+              */
+              /*
+              if (!zero && dic.score() <= 0) {
+                out.println("<hr/>");
+                zero = true;
+              }
+              */
+              String id = dic.form();
+              out.println("  <tr>");
+              out.println("    <td class=\"no left\">" + no + "</td>");
+              out.print("    <td class=\"form\">");
+              out.print("<a href=\""+href+id+"\">");
+              // out.print(dic.label());
+              int docId = alix.getDocId(id);
+              Document doc = reader.document(docId, BOOK_FIELDS);
+              out.print(doc.get("year"));
+              out.print(", ");
+              out.print(doc.get("title"));
 
-  out.print("</a>");
-  out.println("</td>");
-  out.print("    <td class=\"num\">");
-  if (dic.freq() > 0) out.print(dic.freq());
-  // out.print("<small>/" + dic.formOccs() + "</small>");
-  out.println("</td>");
-  out.print("    <td class=\"num\">");
-  if (dic.hits() > 0) out.print(dic.hits());
-  out.print("<small class=\"docs\">/" + dic.formDocs() + "</small>");
-  out.println("</td>");
-  // fréquence
-  // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-  out.print("    <td class=\"num\">");
-  if (dic.score() != 0) out.print(dfscore.format(dic.score()));
-  out.println("</td>");
-  out.println("    <td></td>");
-/*
-    if (filtered || queried) out.print(" <span class=\"docs\">("+hits+" / "+docs+")</span>    ");
-    else out.print(" <span class=\"docs\">("+docs+")</span>    ");
-    out.println("</div>");
-  */
-  out.println("    <td class=\"no right\">" + no + "</td>");
-  out.println("</tr>");
-  no++;
-}
+              out.print("</a>");
+              out.println("</td>");
+              out.print("    <td class=\"num\">");
+              if (dic.freq() > 0) out.print(dic.freq());
+              // out.print("<small>/" + dic.formOccs() + "</small>");
+              out.println("</td>");
+              out.print("    <td class=\"num\">");
+              if (dic.hits() > 0) out.print(dic.hits());
+              out.print("<small class=\"docs\">/" + dic.formDocs() + "</small>");
+              out.println("</td>");
+              // fréquence
+              // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+              out.print("    <td class=\"num\">");
+              if (dic.score() != 0) out.print(dfscore.format(dic.score()));
+              out.println("</td>");
+              out.println("    <td></td>");
+            /*
+                if (filtered || queried) out.print(" <span class=\"docs\">("+hits+" / "+docs+")</span>    ");
+                else out.print(" <span class=\"docs\">("+docs+")</span>    ");
+                out.println("</div>");
+              */
+              out.println("    <td class=\"no right\">" + no + "</td>");
+              out.println("</tr>");
+              no++;
+            }
             %>
         </tbody>
       </table>

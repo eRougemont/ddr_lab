@@ -306,11 +306,11 @@
     var height = zediv.offsetHeight;
     // adjust maxnode size to screen height
     // var scale = Math.max( height, 150) / 700;
-    if ( !maxNodeSize ) maxNodeSize = height/50;
+    if ( !maxNodeSize ) maxNodeSize = height / 30;
     else maxNodeSize = maxNodeSize * scale;
     var width = zediv.offsetWidth;
     
-    console.log(maxNodeSize);
+    // console.log(maxNodeSize);
 
     
     var s = new sigma({
@@ -333,7 +333,7 @@
         defaultEdgeColor: 'rgba(245, 245, 245, 0.6)',
         edgeColor: "default",
         drawLabels: true,
-        defaultLabelSize: 10,
+        defaultLabelSize: 15,
         defaultLabelColor: "rgba( 0, 0, 0, 0.8)",
         // labelStrokeStyle: "rgba(255, 255, 255, 0.7)",
         labelThreshold: 0,
@@ -356,7 +356,7 @@
         defaultNodeBorderColor: '#000000',
         defaultNodeOuterBorderColor: 'rgb(236, 81, 72)', // stroke color of active nodes
         drawNodes: false,
-        zoomingRatio: 1.1,
+        // zoomingRatio: 1.1,
         mouseWheelEnabled: false,
         edgeHoverColor: 'edge',
         defaultEdgeHoverColor: '#000000',
@@ -444,7 +444,7 @@
     if (el) {
       el.onclick = function() {
         s.configNoverlap({
-          // gridSize: 100,
+          row: 10,
         });
         s.startNoverlap();
       };

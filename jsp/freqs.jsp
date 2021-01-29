@@ -17,8 +17,7 @@
 <%@ page import="alix.util.Char" %>
 <%@ page import="alix.web.*" %>
 <%@include file="prelude.jsp"%>
-<%!
-static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+<%!static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 static final DecimalFormat formatDec3 = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
 /**
@@ -116,7 +115,7 @@ private static String lines(final FormEnum forms, final Mime mime)
 
 private static void csvLine(StringBuilder sb, final FormEnum forms, final int no)
 {
-  sb.append(forms.label().replaceAll("\t\n", " "));
+  sb.append(forms.form().replaceAll("\t\n", " "));
   sb.append("\t").append(Tag.label(forms.tag())) ;
   sb.append("\t").append(forms.hits()) ;
   sb.append("\t").append(forms.freq()) ;
@@ -126,7 +125,7 @@ private static void csvLine(StringBuilder sb, final FormEnum forms, final int no
 static private void jsonLine(StringBuilder sb, final FormEnum forms, final int no)
 {
   sb.append("    {\"word\" : \"");
-  sb.append(forms.label().replace( "\"", "\\\"" ).replace('_', ' ')) ;
+  sb.append(forms.form().replace( "\"", "\\\"" ).replace('_', ' ')) ;
   sb.append("\"");
   sb.append(", \"weight\" : ");
   sb.append(formatDec3.format(forms.score()));

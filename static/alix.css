@@ -7,7 +7,7 @@
   --redalpha: rgba(207, 19, 8, 0.5);
   --light: #f5f4f5;
   --black: #212529;
-  --gray: #6c757d;
+  --gray: #4c555d;
 }
 
 
@@ -63,14 +63,6 @@ body {
   font-family: sans-serif;
 }
 
-
-
-form.search {
-  background: var(--red);
-  color: #fff;
-  padding: 1rem 30px;
-}
-
 td.no {
   color: var(--red);
 }
@@ -82,6 +74,7 @@ td.no {
 
 nav.tabs {
   background-color: var(--gray);
+  padding: 0 15px;
 }
 
 nav.tabs a,
@@ -143,6 +136,11 @@ a:focus, a:active {
   outline: unset;
 }
 
+strong,
+.b {
+  font-weight: bold;
+}
+
 sub, sup {
   font-size: 75%;
   line-height: 0;
@@ -174,31 +172,60 @@ table {
 /**
  * Forms
  */
-input.year {
-  width: 10ex;
-}
-input.num1 {
-  width: 1ex;
-}
-input.num2 {
-  width: 2ex;
 
+form.search {
+  background: var(--red);
+  color: #fff;
+  padding: 10px 2px 10px 0px;
 }
-input.num3 {
-  width: 5ex;
-  text-align: right;
+label {
+  padding-left: 15px;
+  padding-right: 5px;
 }
 
+
+select {
+  background-color: #FFFFFF;
+}
+
+.button,
+input[type=text],
 button,
 select {
-  border: 1px solid rgba(255, 255, 255, .5);
+  margin: 1px;
+  outline: none;
   border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, .5);
   /*
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
   */
+}
+
+.button,
+button,
+select,
+input[type=text] {
+  font-size: 120%;
+}
+
+.button,
+button,
+select {
   cursor: pointer;
+}
+
+.button {
+  font-weight: bold;
+  line-height: 1.2;
+  color: #fff;
+  padding: 0 10px;
+}
+
+.button:hover {
+  color: #000;
+  background: #fff;
 }
 
 select {
@@ -220,8 +247,39 @@ select {
   */
 }
 
+input[type=text]:focus,
+textarea:focus {
+  box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
+}
+
+input.start {
+  text-align: right;
+}
+
+ 
+input.year {
+  width: 10ex;
+}
+input.num1 {
+  width: 1ex;
+}
+input.num2 {
+  width: 2ex;
+
+}
+input.num3 {
+  width: 5ex;
+  text-align: right;
+}
+
+a.help,
+button[type="submit"].right {
+  float: right;
+}
+
 button[type="submit"] {
-background: transparent;
+  background: transparent;
+  color: #fff;
   /*
   outline: unset;
   padding: 0.1em 0.3em;
@@ -234,6 +292,7 @@ background: transparent;
 
 button[type="submit"]:hover {
   background: var(--light);
+  color: #000;
 }
 
 /*
@@ -603,16 +662,6 @@ mark:target b {
   */
 }
 
-input[type=text] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-input[type=text]:focus,
-textarea:focus {
-  box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
-}
-
 #header .base mark,
 #rulhi {
   border-color: rgba(146, 137, 127, 0.3);
@@ -636,9 +685,7 @@ body.facet,
 }
 
 
-select {
-  background-color: #FFFFFF;
-}
+
 
 
 .keywords a,
@@ -656,30 +703,7 @@ select {
   margin-left: calc(15vw + 100px);
 }
 
-input.start,
-input[type=text] {
-  -webkit-appearance: none;
-  outline: none;
-  font-size: 120%;
-  margin: 1px;
-  outline: 1px solid #CCC;
-  border: none;
-  border-width: 1px;
-}
 
-input.start {
-  text-align: right;
-}
-
-
-#q {
-  font-size: 1.3rem;
-  padding: 2px 1rem;
-  font-weight: bold;
-  min-width: 8rem;
-  max-width: 55rem;
-  width: 90%;
-}
 
 main.right {
   margin-right: 2rem;
@@ -1066,6 +1090,67 @@ body.chrono form {
   -moz-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg)
+}
+
+/** Word net */
+
+
+body.wordnet {
+}
+
+#graphcont {
+  background-color: var(--gray);
+  display: flex;
+  flex-direction: column;
+  height:100%;
+}
+#graph {
+  position: relative;
+  flex-grow: 4;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+form .line {
+  display: flex;
+  align-items: center;
+}
+
+form .line .elastic {
+  flex-grow: 4;
+}
+form .line .elastic input {
+  width: 100%;
+}
+
+input.nb {
+  text-align: right;
+  width: 3rem;
+}
+.butbar {
+  text-align: right;
+}
+.butbar button {
+  cursor: pointer;
+  display: inline-block;
+  border: none;
+  width: 2.5rem;
+  margin: 0;
+  text-decoration: none;
+  background: #FFFFFF;
+  color: #000000;
+  font-family: sans-serif;
+  font-size: 1.3rem;
+  text-align: center;
+  transition: background 250ms ease-in-out, transform 150ms ease;
+  /*
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  */
 }
 
 

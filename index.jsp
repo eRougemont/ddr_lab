@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="jsp/freqs.jsp" %>
 <%
-JspTools tools = new JspTools(pageContext);
+  JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 
 
@@ -53,62 +53,59 @@ else {
 <html>
   <head>
     <jsp:include page="ddr_head.jsp" flush="true"/>
-   <title><%= alix.props.get("label")%> [Alix]</title>
+    <title><%=alix.props.get("label")%> [Alix]</title>
   </head>
   <body>
     <header>
-      <% long time2 = System.nanoTime(); %>
-       <jsp:include page="tabs.jsp"/>
-         <!-- <%= ((System.nanoTime() - time2) / 1000000.0) %> ms  -->
-       
+      <jsp:include page="tabs.jsp"/>
     </header>
     <form  class="search">
-      <input type="hidden" name="f" value="<%= JspTools.escape(fieldName) %>"/>
+      <input type="hidden" name="f" value="<%=JspTools.escape(fieldName)%>"/>
        <label>Sélectionner un livre
        <br/><select name="book" onchange="this.form.submit()">
             <option value=""></option>
             <%
-int[] books = alix.books(sortYear);
-for (int docId: books) {
-  Document doc = reader.document(docId, BOOK_FIELDS);
-  String abid = doc.get(Alix.BOOKID);
-  out.print("<option value=\"" + abid + "\"");
-  if (abid.equals(pars.book)) out.print(" selected=\"selected\"");
-  out.print(">");
-  String year = doc.get("year");
-  if (year != null) out.print(year + ", ");
-  out.print(doc.get("title"));
-  out.println("</option>");
-}
-                  %>
+              int[] books = alix.books(sortYear);
+            for (int docId: books) {
+              Document doc = reader.document(docId, BOOK_FIELDS);
+              String abid = doc.get(Alix.BOOKID);
+              out.print("<option value=\"" + abid + "\"");
+              if (abid.equals(pars.book)) out.print(" selected=\"selected\"");
+              out.print(">");
+              String year = doc.get("year");
+              if (year != null) out.print(year + ", ");
+              out.print(doc.get("title"));
+              out.println("</option>");
+            }
+            %>
          </select>
        </label>
       <br/><label>Cooccurrents fréquents autour d’un ou plusieurs mots
-      <br/><input name="q" value="<%= JspTools.escape(pars.q) %>"/>
+      <br/><input name="q" value="<%=JspTools.escape(pars.q)%>"/>
       </label>
-      <label><input name="left" value="<%= pars.left %>" size="1" class="num3"/> mots à gauche</label>
-      <label><input name="right" value="<%= pars.right %>" size="1" class="num3"/> mots à droite</label>
+      <label><input name="left" value="<%=pars.left%>" size="1" class="num3"/> mots à gauche</label>
+      <label><input name="right" value="<%=pars.right%>" size="1" class="num3"/> mots à droite</label>
       
        <br/><label>Filtrer par catégorie grammaticale
        <br/><select name="cat" onchange="this.form.submit()">
            <option/>
-           <%= pars.cat.options() %>
+           <%=pars.cat.options()%>
         </select>
        </label>
        <br/><label>Algorithme de score
        <br/><select name="ranking" onchange="this.form.submit()">
            <option/>
-           <% 
-           if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
-           // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
-           else out.println (pars.ranking.options()); 
+           <%
+             if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
+                  // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
+                  else out.println (pars.ranking.options());
            %>
         </select>
        </label>
        <br/><label>Direction
        <br/><select name="order" onchange="this.form.submit()">
            <option/>
-           <%= pars.order.options()  %>
+           <%=pars.order.options()%>
         </select>
        </label>
        <button type="submit">▶</button>
@@ -128,47 +125,47 @@ for (int docId: books) {
           <tr>
         </thead>
         <tbody>
-          <% 
-          // todo, book selector
-          String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
-          // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
-          int no = 0;
-          while (dic.hasNext()) {
-            dic.next();
-            no++;
-            String term = dic.label();
-            // .replace('_', ' ') ?
-            out.println("  <tr>");
-            out.println("    <td class=\"no left\">"  + no + "</td>");
-            out.println("    <td class=\"form\">");
-            out.print("      <a");
-            out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
-            out.print(">");
-            out.print(term);
-            out.print("</a>");
-            out.println("    </td>");
-            
-            out.print("    <td>");
-            out.print(Tag.label(dic.tag()));
-            out.println("</td>");
-            
-            out.print("    <td class=\"num\">");
-            // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
-            out.print(dic.freq()) ;
-            // out.println("</a>");
-            out.println("    </td>");
-            out.print("    <td class=\"num\">");
-            out.print(dic.hits()) ;
-            out.println("</td>");
-            // fréquence
-            // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-            out.print("    <td class=\"num\">");
-            out.print(formatScore.format(dic.score()));
-            out.println("</td>");
-            out.println("    <td></td>");
-            out.println("    <td class=\"no right\">" + no + "</td>");
-            out.println("  </tr>");
-          }
+          <%
+            // todo, book selector
+                String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
+                // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
+                int no = 0;
+                while (dic.hasNext()) {
+                  dic.next();
+                  no++;
+                  String term = dic.form();
+                  // .replace('_', ' ') ?
+                  out.println("  <tr>");
+                  out.println("    <td class=\"no left\">"  + no + "</td>");
+                  out.println("    <td class=\"form\">");
+                  out.print("      <a");
+                  out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
+                  out.print(">");
+                  out.print(term);
+                  out.print("</a>");
+                  out.println("    </td>");
+                  
+                  out.print("    <td>");
+                  out.print(Tag.label(dic.tag()));
+                  out.println("</td>");
+                  
+                  out.print("    <td class=\"num\">");
+                  // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
+                  out.print(dic.freq()) ;
+                  // out.println("</a>");
+                  out.println("    </td>");
+                  out.print("    <td class=\"num\">");
+                  out.print(dic.hits()) ;
+                  out.println("</td>");
+                  // fréquence
+                  // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+                  out.print("    <td class=\"num\">");
+                  out.print(formatScore.format(dic.score()));
+                  out.println("</td>");
+                  out.println("    <td></td>");
+                  out.println("    <td class=\"no right\">" + no + "</td>");
+                  out.println("  </tr>");
+                }
           %>
         </tbody>
       </table>
