@@ -129,7 +129,7 @@ else if (starsCount > starsMax) starsCount = starsMax;
 
 
 final int planetMax = 50;
-final int planetMid = 10;
+final int planetMid = 5;
 int planets = tools.getInt("planets", planetMid, alix.name()+"Planets");
 if (planets > planetMax) planets = planetMax;
 if (planets < 1) planets = planetMid;
