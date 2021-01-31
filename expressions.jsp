@@ -16,7 +16,7 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 int limit = tools.getInt("limit", 500);
 int floor = tools.getInt("floor", 0);
 String book = tools.getString("book", null);
-MI mi = (MI)tools.getEnum("mi", MI.none);
+MI mi = (MI)tools.getEnum("mi", MI.g);
 
 %>
 <!DOCTYPE html>
