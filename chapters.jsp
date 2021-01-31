@@ -11,13 +11,10 @@ long time = System.nanoTime();
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
-
 // Params for the page
-final String fieldName = TEXT;
-FieldText fstats = alix.fieldText(fieldName);
-String q = tools.getString("q", null);
-Sim sim = (Sim)tools.getEnum("sim", Sim.g);
-DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
+Pars pars = pars(pageContext);
+FieldText fstats = alix.fieldText(pars.fieldName);
+
 
 %>
 <!DOCTYPE html>
@@ -33,14 +30,12 @@ DocSort sort = (DocSort)tools.getEnum("sort", DocSort.year);
        <jsp:include page="tabs.jsp" flush="true" />
     </header>
     <form id="qform"  class="search">
-      <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
-      <label>Trouver un chapitre (selon un ou plusieurs mots)
-      <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
+      <label>Rechercher <input id="q" name="q" value="<%=JspTools.escape(pars.q)%>" width="100" autocomplete="off"/>
       </label>
-      <br/><label>Algorithme d’ordre
-      <br/><select name="sort" onchange="this.form.submit()">
+      <label>Ordonner
+         <select name="sort" onchange="this.form.submit()">
           <option/>
-  <%= sort.options("score year year_inv") %>
+  <%= pars.sort.options("score year year_inv") %>
           </select>
       </label>
       <button type="submit">▶</button>
@@ -78,6 +73,8 @@ var attrs = {
   strokeWidth: 0.5,
   drawPoints: true,
   pointSize: 8,
+  yRangePad : 8,
+  xRangePad : 16,
   series: {
     "Taille des textes": {
        axis: (json.labels.length > 2)?'y2':null,
@@ -126,7 +123,7 @@ g = new Dygraph(div, json.data, attrs);
               <th>Score</th>
               <th>Année</th>
               <th style="width: 15ex;">Livre</th>
-              <th class="q"><% if (q != null) out.print("requête : <i>" + q + "</i>"); %></th>
+              <th class="q"><% if (pars.q != null) out.print("requête : <i>" + pars.q + "</i>"); %></th>
               <th>page</th>
               <th/>
               <th/>
@@ -138,14 +135,14 @@ g = new Dygraph(div, json.data, attrs);
 <%
 
 final int len = 2000;
-Query query = alix.query(fieldName, q);
+Query query = alix.query(pars.fieldName, pars.q);
 if (query == null) {
   query = QUERY_CHAPTER;
 }
 IndexSearcher searcher = alix.searcher();
 // searcher.setSimilarity(sim.similarity()); // test has been done, BM25 is the best
 TopDocs topDocs;
-if (sort != null && sort.sort() != null) topDocs = searcher.search(query, len, sort.sort());
+if (pars.sort != null && pars.sort.sort() != null) topDocs = searcher.search(query, len, pars.sort.sort());
 else topDocs = searcher.search(query, len);
 ScoreDoc[] hits = topDocs.scoreDocs;
 
@@ -153,8 +150,8 @@ ScoreDoc[] hits = topDocs.scoreDocs;
 DocStats docStats = null;
 double scoreMax = 1;
 double scoreMin = 0;
-if (q != null) {
-  String[] forms = alix.forms(q);
+if (pars.q != null) {
+  String[] forms = alix.forms(pars.q);
   docStats = fstats.docStats(forms, null, null);
   if (docStats != null) {
     scoreMax = docStats.scoreMax();
@@ -162,7 +159,7 @@ if (q != null) {
   }
 }
 
-final String href = "doc.jsp?q=" + q + "&amp;id="; // href link
+final String href = "doc.jsp?q=" + pars.q + "&amp;id="; // href link
 boolean zero = false;
 int no = 1;
 int lastYear = Integer.MIN_VALUE;

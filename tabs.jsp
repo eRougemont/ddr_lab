@@ -5,9 +5,9 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "q"}) {
+  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "q", "cat", "ranking", "context"}) {
   },
-  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"book", "q"}) {
+  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"book", "q", "cat", "ranking", "right", "left"}) {
   },
   books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
   },

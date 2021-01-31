@@ -43,10 +43,10 @@ static int starsDefault = 15;
 
 
 
-private final int STAR = 2; // confirmed star
-private final int NEBULA = 1; // candidate star
-private final int COMET = -1; // floating corp
-private final int PLANET = -2; // linked corp
+private static final int STAR = 2; // confirmed star
+private static final int NEBULA = 1; // candidate star
+private static final int COMET = -1; // floating corp
+private static final int PLANET = -2; // linked corp
 
 
 static class Node implements Comparable<Node>
@@ -120,34 +120,33 @@ static class Node implements Comparable<Node>
 // global data handlers
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-// page parameters
-final String fieldName = "text";
+Pars pars = pars(pageContext);
 /*
 int starsCount = tools.getInt("stars", starsDefault);
 if (starsCount < 1) starsCount = starsDefault;
 else if (starsCount > starsMax) starsCount = starsMax;
 */
-String q = tools.getString("q", null);
-int width = tools.getInt("width", 20, alix.name()+"Width");
-if (width < 3) width = 3;
+
+
 final int planetMax = 50;
 final int planetMid = 10;
 int planets = tools.getInt("planets", planetMid, alix.name()+"Planets");
 if (planets > planetMax) planets = planetMax;
 if (planets < 1) planets = planetMid;
-String book = tools.getString("book", null);
 
 // local data object, to build from parameters
 BitSet filter = null;
-if (book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{book});
-final FieldText ftext = alix.fieldText(fieldName);
-final FieldRail frail = alix.fieldRail(fieldName);
-final int context = (width + 1) / 2;
+if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
+final FieldText ftext = alix.fieldText(pars.fieldName);
+final FieldRail frail = alix.fieldRail(pars.fieldName);
+final int context = (pars.context + 1) / 2;
 FormEnum coocs = new FormEnum(ftext); // build a wrapper to have results
 coocs.left = context; // left context
 coocs.right = context; // right context
 coocs.filter = filter; // limit to some documents
-coocs.tags = Cat.STRONG.tags(); // limit word list to SUB, NAME, adj
+coocs.tags = pars.cat.tags(); // limit word list to SUB, NAME, adj
+//coocs.specif = Ranking.occs.specif(); // too compact
+// coocs.specif = Ranking.chi2.specif(); // may isolate
 coocs.specif = Ranking.g.specif(); // best ranking for coocs
 boolean first;
 
@@ -180,14 +179,13 @@ boolean first;
 
 // keep nodes in insertion order (especially for query)
 Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
-final int nodeMax = 100;
 
 // Find here the stars around which add coocs
-if (q != null && !q.trim().isEmpty()) { // words requested, search for them
+if (pars.q != null && !pars.q.trim().isEmpty()) { // words requested, search for them
   long[] freqs;
-  if (book != null) freqs = ftext.formOccs(filter);
+  if (pars.book != null) freqs = ftext.formOccs(filter);
   else freqs = ftext.formAllOccs;
-  String[] forms = alix.forms(q); // parse query as a set of terms
+  String[] forms = alix.forms(pars.q); // parse query as a set of terms
   // rewrite queries, with only known terms
   int nodeCount = 0;
   for (String form: forms) {
@@ -197,7 +195,7 @@ if (q != null && !q.trim().isEmpty()) { // words requested, search for them
     if (freq < 1) continue;
     // keep query words as stars
     nodeMap.put(formId, new Node(formId, form).count(freq).type(STAR));
-    if (++nodeCount >= nodeMax) break;
+    if (++nodeCount >= pars.nodes) break;
   }
   final int starCount = nodeCount;
   // reloop on nodes found in query, add coocs
@@ -205,12 +203,12 @@ if (q != null && !q.trim().isEmpty()) { // words requested, search for them
   // try to add quite same node to on an another
   int i = 1;
   Node[] toloop = nodeMap.values().toArray(new Node[nodeMap.size()]);
-  q = "";
-  coocs.limit = nodeMax + starCount; // take more coccs we need
+  pars.q = "";
+  coocs.limit = pars.nodes + starCount; // take more coccs we need
   for (Node src: toloop) {
     if (first) first = false;
-    else q += " ";
-    q += src.form;
+    else pars.q += " ";
+    pars.q += src.form;
     coocs.search = new String[]{src.form}; // parse query as terms
     long found = frail.coocs(coocs);
     if (found < 0) continue;
@@ -219,7 +217,7 @@ if (q != null && !q.trim().isEmpty()) { // words requested, search for them
     final int srcId = src.formId;
     final long srcFreq = src.count; // local freq
 
-    final int countMax = (int)((double)nodeMax * i / starCount);
+    final int countMax = (int)((double)pars.nodes * i / starCount);
     i++;
     while (coocs.hasNext()) {
       coocs.next();
@@ -236,12 +234,12 @@ else { //
 
   FormEnum top = null;
   // a book selected, g test seems better, with no stops
-  if (book != null) {
-    top = ftext.iterator(nodeMax, Ranking.g.specif(), filter, Cat.STRONG.tags(), false);
+  if (pars.book != null) {
+    top = ftext.iterator(pars.nodes, pars.ranking.specif(), filter, pars.cat.tags(), false);
   }
   // global base, best selection is BM25 scoring with no stop words
   else {
-    top = ftext.iterator(nodeMax, Ranking.bm25.specif(), null, Cat.STRONG.tags(), false);
+    top = ftext.iterator(pars.nodes, pars.ranking.specif(), null,  pars.cat.tags(), false);
   }
   while (top.hasNext()) {
     top.next();
@@ -253,22 +251,37 @@ else { //
 }
   %>
        <form id="form" class="search">
-         <div class="line">
-           <label for="width" title="Largeur du contexte, en nombre de mots, dont sont extraits les co-occurrents">Contexte</label>
-           <input type="text" name="width" value="<%=width%>" class="nb" size="2"/>
+           <label for="nodes" title="Nombre de nœuds sur l’écran">Mots</label>
+           <input name="nodes" type="text" value="<%= pars.nodes %>" class="nb" size="2"/>
+           <label for="cat">Catégories</label>
+           <select name="cat" onchange="this.form.submit()">
+             <option/>
+             <%=pars.cat.options()%>
+           </select>
+           <label for="ranking">Score</label>
+           <select name="ranking" onchange="this.form.submit()">
+             <option/>
+             <%
+             if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
+             // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
+             else out.println (pars.ranking.options());
+             %>
+           </select>
+           <label for="context" title="Largeur du contexte, en nombre de mots, dont sont extraits les liens">Contexte</label>
+           <input name="context" type="text" value="<%= pars.context %>" class="nb" size="2"/>
            <label for="planets" title="Compacité du réseau, en nombre maximal de liens par nœuds">Compacité</label>
            <input type="text" name="planets" value="<%=planets%>" class="nb" size="2"/>
-           <label for="words">Pivots</label>
-           <div class="elastic">
-             <input type="text" name="q" value="<%=tools.escape(q)%>" size="100"  />
-           </div>
-         </div>
+           <button type="submit">▶</button>
+           <br/>
+           <label for="words">Chercher</label>
+           <input type="text" name="q" value="<%=tools.escape(pars.q)%>" size="40" />
          <label for="book">Livre</label>
          <select name="book" onchange="this.form.submit()">
            <option value=""></option>
             <%
 int[] books = alix.books(sortYear);
 String title = "";
+final int width = 40;
 for (int docId: books) {
   Document doc = alix.reader().document(docId, BOOK_FIELDS);
   String txt = "";
@@ -276,18 +289,18 @@ for (int docId: books) {
   if (txt != null) txt += ", ";
   txt += doc.get("title");
   String abid = doc.get(Alix.BOOKID);
-  out.print("<option value=\"" + abid + "\"");
-  if (abid.equals(book)) {
+  out.print("<option value=\"" + abid + "\" title=\"" + txt + "\"" );
+  if (abid.equals(pars.book)) {
     out.print(" selected=\"selected\"");
     title = doc.get("title");
   }
   out.print(">");
-  out.print(txt);
+  if (txt.length() > width) out.print(txt.substring(0, width));
+  else out.print(txt);
   out.println("</option>");
 }
                   %>
           </select>
-          <button type="submit">▶</button>
           <a class="help button" href="#aide">?</a>
         </form>
       <div id="graph" class="graph" oncontextmenu="return false">
@@ -318,7 +331,7 @@ for (int docId: books) {
 out.println("var data = {");
 out.println("  edges: [");
 
-Node tester = new Node(0, null);
+// Node tester = new Node(0, null);
 
 // reloop to get cooc
 first = true;
@@ -368,9 +381,9 @@ for (Node node: nodeMap.values()) {
    if (node.type() == STAR) color = "rgba(255, 0, 0, 1)";
    else if (Tag.isSub(tag)) color = "rgba(255, 255, 255, 1)";
    else if (Tag.isName(tag)) color = "rgba(0, 255, 0, 1)";
-   else if (Tag.isVerb(tag)) color = "rgba(0, 0, 128, 1)";
+   else if (Tag.isVerb(tag)) color = "rgba(128, 128, 255, 1)";
    else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-   else color = "rgba(0, 0, 0, 0.8)";
+   else color = "rgba(192, 192, 192, 0.8)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
    out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + dfdec2.format(10 * node.count) // node.count
    + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
@@ -392,20 +405,20 @@ var graph = new sigmot('graph', data);
     <main>
       <div class="row">
         <div class="text" id="aide">
-          <p>Ce réseau relie des mots qui apparaissent ensemble dans un contexte de <%= width %> mots de large,
+          <p>Ce réseau relie des mots qui apparaissent ensemble dans un contexte de <%= pars.context %> mots de large,
 <%
-if (book != null) {
+if (pars.book != null) {
   out.println("dans <i>" + title + "</i>.");
 }
 else {
   out.println("dans la base <i>" + alix.props.getProperty("label") + "</i>.");
 }
-if (q == null && book != null) {
+if (pars.q == null && pars.book != null) {
   out.println(
       " Les mots reliés sont les plus significatifs du livre relativement au reste de la base,"
     + " selon un calcul de distance statistique "
     + " (<i><a href=\"https://en.wikipedia.org/wiki/G-test\">G-test</a></i>, "
-    + " voir <a class=\"b\" href=\"index.jsp?book=" + book + "&amp;cat=STRONG&amp;ranking=g\">les résultats</a>)."
+    + " voir <a class=\"b\" href=\"index.jsp?book=" + pars.book + "&amp;cat=STRONG&amp;ranking=g\">les résultats</a>)."
   );
 }
 else {

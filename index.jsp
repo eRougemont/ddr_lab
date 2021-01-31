@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="jsp/freqs.jsp" %>
+<%@ include file="jsp/prelude.jsp" %>
 <%
   JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
@@ -160,7 +160,7 @@ else {
                   // fréquence
                   // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
                   out.print("    <td class=\"num\">");
-                  out.print(formatScore.format(dic.score()));
+                  out.print(formatScore(dic.score()));
                   out.println("</td>");
                   out.println("    <td></td>");
                   out.println("    <td class=\"no right\">" + no + "</td>");

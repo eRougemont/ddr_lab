@@ -1114,7 +1114,7 @@ body.wordnet {
   margin-right: auto;
 }
 
-
+/*
 form .line {
   display: flex;
   align-items: center;
@@ -1126,6 +1126,7 @@ form .line .elastic {
 form .line .elastic input {
   width: 100%;
 }
+*/
 
 input.nb {
   text-align: right;

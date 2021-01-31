@@ -17,66 +17,18 @@
 <%@ page import="alix.util.Char" %>
 <%@ page import="alix.web.*" %>
 <%@include file="prelude.jsp"%>
-<%!static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-static final DecimalFormat formatDec3 = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+<%!
+static final DecimalFormat formatScore = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
 /**
  * Specific pars for this display
  */
-class Pars {
-  String fieldName;
-  Cat cat;
-  Ranking ranking;
-  Mime mime;
-  int limit;
-  Order order;
-  String q;
-  int left;
-  int right;
-  String book;
-}
 
-/**
- * Get default pars 
- */
-public Pars pars(final PageContext page)
-{
-  Pars pars = new Pars();
-  JspTools tools = new JspTools(page);
-  //parameters
-  pars.q = tools.getString("q", null);
-  //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
-  pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
-  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.bm25);
-  String format = tools.getString("format", null);
-  //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
-  pars.mime = (Mime)tools.getEnum("format", Mime.html);
-  pars.order = (Order)tools.getEnum("order", Order.top);
-  
-  // limit to a book
-  pars.book = tools.getString("book", null);
-
-  
-  pars.limit = tools.getInt("limit", limitMax);
-  //limit a bit if not csv
-  if (pars.mime == Mime.csv);
-  else if (pars.limit < 1 || pars.limit > limitMax) pars.limit = limitMax;
-  
-  // coocs
-  pars.left = tools.getInt("left", 5);
-  if (pars.left < 0) pars.left = 0;
-  else if (pars.left > 10) pars.left = 50;
-  pars.right = tools.getInt("right", 5);
-  if (pars.right < 0) pars.right = 0;
-  else if (pars.right > 10) pars.right = 50;
-  return pars;
-}
 
 
 private static final int OUT_HTML = 0;
 private static final int OUT_CSV = 1;
 private static final int OUT_JSON = 2;
-private static int limitMax = 500;
 
 
 private static String lines(final FormEnum forms, final Mime mime)
@@ -128,7 +80,7 @@ static private void jsonLine(StringBuilder sb, final FormEnum forms, final int n
   sb.append(forms.form().replace( "\"", "\\\"" ).replace('_', ' ')) ;
   sb.append("\"");
   sb.append(", \"weight\" : ");
-  sb.append(formatDec3.format(forms.score()));
+  sb.append(formatScore(forms.score()));
   sb.append(", \"attributes\" : {\"class\" : \"");
   sb.append(Tag.label(Tag.group(forms.tag())));
   sb.append("\"}");

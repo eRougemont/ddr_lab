@@ -1,6 +1,100 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="jsp/kwic.jsp" %>
+<%@ page import="org.apache.lucene.util.automaton.Automaton" %>
+<%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton" %>
+<%@ page import="alix.lucene.util.WordsAutomatonBuilder" %>
 <%@ include file="jsp/prelude.jsp" %>
+<%!
+public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs, Pars pars) throws IOException, NoSuchFieldException
+{
+  if (topDocs == null) return;
+  JspWriter out = page.getOut();
+
+  
+  ByteRunAutomaton include = null;
+  if (pars.forms != null) {
+    Automaton automaton = WordsAutomatonBuilder.buildFronStrings(pars.forms);
+    if (automaton != null) include = new ByteRunAutomaton(automaton);
+  }
+  boolean repetitions = false;
+  if (pars.forms.length == 1) repetitions = true;
+  // get the index in results
+  ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+  // where to start loop ?
+  int i = pars.start - 1; // private index in results start at 0
+  int max = scoreDocs.length;
+  if (i < 0) i = 0;
+  else if (i > max) i = 0;
+  // loop on docs
+  int docs = 0;
+  final int gap = 5;
+  
+
+  // be careful, if one term, no expression possible, this will loop till the end of corpus
+  boolean expression = false;
+  if (pars.forms == null) expression = false;
+  else expression = pars.expression;
+
+  while (i < max) {
+    final int docId = scoreDocs[i].doc;
+    i++; // loop now
+    final Doc doc = new Doc(alix, docId);
+    String type = doc.doc().get(Alix.TYPE);
+    // TODO Enenum
+    if (type.equals(DocType.book.name())) continue;
+    // if (doc.doc().get(pars.fieldName) == null) continue; // not a good test, field may be indexed but not store
+    String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
+    
+    // show simple metadata
+    out.println("<!-- docId=" + docId + " -->");
+    if (pars.forms == null || pars.forms.length == 0) {
+      out.println("<article class=\"kwic\">");
+      out.println("<header>");
+      out.println("<small>"+(i)+".</small> ");
+      out.print("<a href=\"" + href + "\">");
+      String year = doc.get("year");
+      if (year != null) {
+        out.print(doc.get("year"));
+        out.print(", ");
+      }
+      out.print(doc.get("title"));
+      out.print(". ");
+      out.print(doc.get("analytic"));
+      out.print("</a>");
+      out.println("</header>");
+      out.println("</article>");
+      if (++docs >= pars.hpp) break;
+      continue;
+    }
+    
+    String[] lines = null;
+    lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression, repetitions);
+    if (lines == null || lines.length < 1) continue;
+    // doc.kwic(field, include, 50, 50, 100);
+    out.println("<article class=\"kwic\">");
+    out.println("<header>");
+    out.println("<small>"+(i)+"</small> ");
+
+    out.print("<a href=\""+href+"\">");
+    String year = doc.get("year");
+    if (year != null) {
+      out.print(doc.get("year"));
+      out.print(", ");
+    }
+    out.print(doc.get("title"));
+    out.print(". ");
+    out.print(doc.get("analytic"));
+    out.println("</a></header>");
+    for (String l: lines) {
+      out.println("<div class=\"line\">"+l+"</div>");
+    }
+    out.println("</article>");
+    if (++docs >= pars.hpp) break;
+  }
+
+}
+
+
+%>
 <%
 
 long time = System.nanoTime();
@@ -11,7 +105,10 @@ IndexReader reader = alix.reader();
 
 Pars pars = pars(pageContext);
 pars.forms = alix.forms(pars.q);
-pars.fieldName = tools.getString("f", TEXT); 
+// local param
+pars.left = 50;
+pars.right = 70;
+
 
 // build query and get results
 long nanos = System.nanoTime();
@@ -103,7 +200,7 @@ for (int docId: books) {
         </select>
         <% // prev / next nav
         if (pars.start > 1 && pars.q != null) {
-          int n = Math.max(1, pars.start-hppDefault);
+          int n = Math.max(1, pars.start - pars.hpp);
           out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
         }
         if (topDocs != null) {

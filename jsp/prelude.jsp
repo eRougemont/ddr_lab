@@ -43,18 +43,23 @@
 <%@ page import="alix.web.*" %>
 <%!
 
+
+
 // do it one time
 static {
   if (!Webinf.bases) Webinf.bases();
 }
 static final String COOKIE_BASE = "alixBase";
 
+
+
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
-static final DecimalFormat dfdec3 = new DecimalFormat("0.###", ensyms);
-static final DecimalFormat dfdec2 = new DecimalFormat("0.##", ensyms);
+static final DecimalFormat dfdec3 = new DecimalFormat("0.000", ensyms);
+static final DecimalFormat dfdec2 = new DecimalFormat("0.00", ensyms);
 static final DecimalFormat dfdec1 = new DecimalFormat("0.0", ensyms);
-static final DecimalFormat dfscore = new DecimalFormat("0.00000", ensyms);
+static final DecimalFormat dfdec5 = new DecimalFormat("0.0000E0", ensyms);
+static final DecimalFormat dfScore = new DecimalFormat( "0.00000", ensyms);
 /** Fields to retrieve in document for a book */
 final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
 final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, Alix.ID, "year", "title", "analytic", "pages"}));
@@ -76,7 +81,17 @@ final static String CORPUS_ = "corpus_";
 /** A filter for documents */
 final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
 
-
+static String formatScore(double real)
+{
+  if (real == 0) return "0";
+  if (real == (int)real) return ""+(int)real;
+  int offset = (int)Math.log10(real);
+  if (offset < -3) return dfdec5.format(real);
+  if (offset > 4) return ""+(int)real;
+  
+  // return String.format("%,." + (digits - offset) + "f", real)+" "+offset;
+  return dfdec2.format(real);
+}
 
 static public enum Order implements Option {
   top("Score, haut"), 
@@ -107,6 +122,116 @@ public static Query corpusQuery(Corpus corpus, Query query) throws IOException
   .build();
 }
 
+/** 
+ * All pars for all page 
+ */
+public class Pars {
+  String fieldName; // field to search
+  String book; // restrict to a book
+  String q; // word query
+  Cat cat; // word categories to filter
+  Ranking ranking; // ranking algorithm
+  Mime mime; // mime type for output
+  int limit; // results, limit of result to show
+  int nodes; // number of nodes in wordnet
+  Order order;// results, reverse
+  int context; // coocs, context width in words
+  int left; // coocs, left context in words
+  int right; // coocs, right context in words
+  boolean expression; // kwic, filter multi word expression
+  
+  int start; // start record in search results
+  int hpp; // hits per page
+  String href;
+  String[] forms;
+  DocSort sort;
+  
+  Sim sim; // ?? TODO, better logic
+
+}
+
+public Pars pars(final PageContext page)
+{
+  Pars pars = new Pars();
+  JspTools tools = new JspTools(page);
+  
+  pars.fieldName = tools.getString("f", TEXT);
+  pars.q = tools.getString("q", null);
+  pars.book = tools.getString("book", null); // limit to a book
+  // Words
+  pars.cat = (Cat)tools.getEnum("cat", Cat.STRONG); // 
+  
+  // ranking, sort… TODO unify
+  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.bm25);
+  pars.sim = (Sim)tools.getEnum("sim", Sim.g);
+  pars.sort = (DocSort)tools.getEnum("sort", DocSort.year);
+  //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
+  pars.order = (Order)tools.getEnum("order", Order.top);
+  
+  
+  
+  String format = tools.getString("format", null);
+  //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
+  pars.mime = (Mime)tools.getEnum("format", Mime.html);
+  
+
+  final int limitMax = 500;
+  pars.limit = tools.getInt("limit", limitMax);
+  if (pars.limit < 1) pars.limit = limitMax;
+  
+  final int nodesMax = 300;
+  final int nodesMid = 100;
+  pars.nodes = tools.getInt("nodes", nodesMid);
+  if (pars.nodes < 1) pars.nodes = nodesMid;
+  if (pars.nodes > nodesMax) pars.nodes = nodesMax;
+  
+  // limit a bit if not csv
+  if (pars.mime == Mime.csv);
+  else if (pars.limit < 1 || pars.limit > limitMax) pars.limit = limitMax;
+  
+  // coocs
+  pars.left = tools.getInt("left", -1);
+  pars.right = tools.getInt("right", -1);
+  /*
+  if (pars.left < 0) pars.left = 0;
+  else if (pars.left > 10) pars.left = 50;
+  pars.right = tools.getInt("right", 5);
+  if (pars.right < 0) pars.right = 0;
+  else if (pars.right > 10) pars.right = 50;
+  */
+  pars.context = tools.getInt("context", -1);
+  if (pars.context > 0 ) {
+    if (pars.context < 3) pars.context = 3;
+    pars.left = pars.context / 2;
+    pars.right = pars.context / 2;
+  }
+  else if (pars.left > 1 || pars.right > 1) {
+    pars.context = 1 + pars.left + pars.right;
+  }
+  else {
+    pars.context = 50;
+    pars.left = 5;
+    pars.right = 5;
+  }
+  
+  // paging
+  final int hppDefault = 100;
+  final int hppMax = 1000;
+  pars.expression = tools.getBoolean("expression", false);
+  pars.hpp = tools.getInt("hpp", hppDefault);
+  if (pars.hpp > hppMax || pars.hpp < 1) pars.hpp = hppDefault;
+  pars.sort = (DocSort)tools.getEnum("sort", DocSort.year);
+  pars.start = tools.getInt("start", 1);
+  if (pars.start < 1) pars.start = 1;
+  
+
+
+  return pars;
+}
+
+/**
+ * Get default pars 
+ */
 
 
 

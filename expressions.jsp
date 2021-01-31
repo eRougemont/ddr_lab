@@ -142,7 +142,7 @@ for (Top.Entry<Bigram> entry: top) {
   out.print(formOccs[bigram.b]);
   out.println("</td>");
   out.print("    <td class=\"num\">");
-  out.print(dfscore.format(bigram.score));
+  out.print(formatScore(bigram.score));
   out.println("</td>");  
   out.println("    <td></td>");
   out.println("    <td class=\"no right\">" + no + "</td>");

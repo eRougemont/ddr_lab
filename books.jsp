@@ -123,7 +123,7 @@ String[] search = alix.forms(q);
               // fréquence
               // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
               out.print("    <td class=\"num\">");
-              if (dic.score() != 0) out.print(dfscore.format(dic.score()));
+              if (dic.score() != 0) out.print(formatScore(dic.score()));
               out.println("</td>");
               out.println("    <td></td>");
             /*
