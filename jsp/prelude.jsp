@@ -130,7 +130,9 @@ public class Pars {
   String book; // restrict to a book
   String q; // word query
   Cat cat; // word categories to filter
-  Ranking ranking; // ranking algorithm
+  Ranking ranking; // ranking algorithm, tf-idf like
+  MI mi; // proba kind of scoring, not tf-idf
+  Sim sim; // ?? TODO, better logic
   Mime mime; // mime type for output
   int limit; // results, limit of result to show
   int nodes; // number of nodes in wordnet
@@ -146,7 +148,6 @@ public class Pars {
   String[] forms;
   DocSort sort;
   
-  Sim sim; // ?? TODO, better logic
 
 }
 
@@ -159,12 +160,13 @@ public Pars pars(final PageContext page)
   pars.q = tools.getString("q", null);
   pars.book = tools.getString("book", null); // limit to a book
   // Words
-  pars.cat = (Cat)tools.getEnum("cat", Cat.STRONG); // 
+  pars.cat = (Cat)tools.getEnum("cat", Cat.NOSTOP); // 
   
   // ranking, sort… TODO unify
   pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.bm25);
   pars.sim = (Sim)tools.getEnum("sim", Sim.g);
   pars.sort = (DocSort)tools.getEnum("sort", DocSort.year);
+  pars.mi = (MI)tools.getEnum("mi", MI.g);
   //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
   pars.order = (Order)tools.getEnum("order", Order.top);
   

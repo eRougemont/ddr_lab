@@ -395,35 +395,35 @@
       var center= e.data.node;
       var nodes = e.data;
       var neighbors = {};
-	    s.graph.edges().forEach( function(e) {
+      s.graph.edges().forEach( function(e) {
         if ( e.source != center.id && e.target != center.id ) {
           e.hidden = true;
           return;
         }
         neighbors[e.source] = 1;
         neighbors[e.target] = 1;
-	    });
+      });
       s.graph.nodes().forEach( function(n) {
-	      if( neighbors[n.id] ) {
+        if( neighbors[n.id] ) {
           n.hidden = 0;
-	      } else {
+        } else {
           n.hidden = 1;
-	      }
-	    });
+        }
+      });
       s.refresh( );
       workOver = false;
     } ).bind('outNode', function() {
       if (workOut) return;
       workOut = true;
       s.graph.edges().forEach( function(e) {
-	      e.hidden = 0;
-	    } );
+        e.hidden = 0;
+      } );
       s.graph.nodes().forEach( function(n) {
-	      n.hidden = 0;
-	    });
+        n.hidden = 0;
+      });
       s.refresh();
       workOut = false;
-	  } );
+    } );
 
     var el = document.querySelector('.but.FR');
     if (el) {
@@ -444,7 +444,7 @@
     if (el) {
       el.onclick = function() {
         s.configNoverlap({
-          row: 10,
+          // row: 10,
         });
         s.startNoverlap();
       };
@@ -593,24 +593,27 @@
       // cristallin
       // strongGravityMode: true, scalingRatio: 200,
       
-      // edgeWeightInfluence: 1, // cristal confus
-      // cristallin
-      // outboundAttractionDistribution: true,
+      // edgeWeightInfluence: 0.1, // cristal confus
+      // outboundAttractionDistribution: true, // cristallin
       // instable si gravity >  2 * scalingRatio
-      gravity: 10, 
-      scalingRatio: 10, 
-      // ??
       
-      // linLogMode: true, 
-      // adjustSizes: true, // instable sans barnes
-      // barnesHutOptimize: true, // avec linlog
-      // barnesHutTheta: 0.3,  // pas trop petit
-      // scalingRatio: 0.3, // pour adjustSizes ?
-      
-      // startingIterations : 100,
-      // slowDown: 1, // NON
+      // /* correct
+      // gravity: 10, // corrélation inverse au scaling
+      scalingRatio: 0.4,
+      startingIterations : 1000,
+      slowDown: 10, // éviter de trop bouger
+      // iterationsPerRender : 100, // en fait non
+      // */
+
+      /*
+      linLogMode: true,
+      iterationsPerRender : 100,
+      adjustSizes: true, // instable sans barnes
+      barnesHutOptimize: true, // avec linlog
+      barnesHutTheta: 0.3,  // pas trop petit
+      // scalingRatio: 10, // pour adjustSizes ?
+      // */
       worker: true, // OUI !
-      iterationsPerRender : 100, // important
     };
     this.s.startForceAtlas2(pars);
     var myO = this;

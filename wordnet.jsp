@@ -145,9 +145,7 @@ coocs.left = context; // left context
 coocs.right = context; // right context
 coocs.filter = filter; // limit to some documents
 coocs.tags = pars.cat.tags(); // limit word list to SUB, NAME, adj
-//coocs.specif = Ranking.occs.specif(); // too compact
-// coocs.specif = Ranking.chi2.specif(); // may isolate
-coocs.specif = Ranking.g.specif(); // best ranking for coocs
+coocs.mi = pars.mi; // best ranking for coocs
 boolean first;
 
 %>
@@ -253,24 +251,28 @@ else { //
        <form id="form" class="search">
            <label for="nodes" title="Nombre de nœuds sur l’écran">Mots</label>
            <input name="nodes" type="text" value="<%= pars.nodes %>" class="nb" size="2"/>
-           <label for="cat">Catégories</label>
+           <label title="Filtrer les mots par catégories grammaticales" for="cat">Catégories</label>
            <select name="cat" onchange="this.form.submit()">
              <option/>
              <%=pars.cat.options()%>
            </select>
-           <label for="ranking">Score</label>
+           <label title="Algorithme d’ordre des mots pivots" for="ranking">Score</label>
            <select name="ranking" onchange="this.form.submit()">
              <option/>
              <%
              if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
-             // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
-             else out.println (pars.ranking.options());
+             else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
              %>
            </select>
            <label for="context" title="Largeur du contexte, en nombre de mots, dont sont extraits les liens">Contexte</label>
            <input name="context" type="text" value="<%= pars.context %>" class="nb" size="2"/>
-           <label for="planets" title="Compacité du réseau, en nombre maximal de liens par nœuds">Compacité</label>
+           <label for="planets" title="Nombre maximum de liens sortants par nœud">Compacité</label>
            <input type="text" name="planets" value="<%=planets%>" class="nb" size="2"/>
+           <label for="mi" title="Algorithme de score pour les liens">Dépendance</label>
+           <select name="mi" onchange="this.form.submit()">
+             <option/>
+             <%= pars.mi.options() %>
+           </select>
            <button type="submit">▶</button>
            <br/>
            <label for="words">Chercher</label>
@@ -326,6 +328,32 @@ for (int docId: books) {
          -->
        </div>
     </div>
+    <%
+    /* debug
+    coocs.limit = nodeMap.size() * 2; // collect enough edges
+    for (Node src: nodeMap.values()) {
+      coocs.search = new String[]{src.form}; // set pivot of the coocs
+      long found = frail.coocs(coocs);
+      if (found < 0) continue;
+      // score the coocs found before loop on it
+      frail.score(coocs);
+      final int srcId = src.formId;
+      int count = 0;
+      while (coocs.hasNext()) {
+        coocs.next();
+        final int dstId = coocs.formId();
+        if (srcId == dstId) continue;
+        // link only selected nodes
+        final Node dst = nodeMap.get(dstId);
+        if (dst == null) continue;
+        out.print("<li>" + ftext.form(srcId) + " => " + ftext.form(dstId) + "(" + coocs.freq() + ") " + coocs.score() + " partOccs=" + coocs.partOccs + " dst frq=" 
+        + coocs.formOccs() + " N=" + coocs.N +"</li>"); 
+        if (src.type() != STAR &&  count == planets) break;
+        count++;
+      }
+    }
+    */ 
+    %>
     <script>
 <%first = true;
 out.println("var data = {");
@@ -359,7 +387,7 @@ for (Node src: nodeMap.values()) {
     if (dst.type() == COMET) dst.type(PLANET);
     if (first) first = false;
     else out.println(", ");
-    out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + coocs.freq() 
+    out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + coocs.score() 
     + ", color:'rgba(0, 0, 0, 0.2)'"
     + "}");
     if (src.type() != STAR &&  count == planets) break;

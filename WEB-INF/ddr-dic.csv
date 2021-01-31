@@ -1,5 +1,6 @@
 GRAPH,CAT,ORTH,LEM
 # état,,État,
+personne,SUB,,
 suisse,NAME,,Suisse
 suisses,NAME,,Suisse
 Suisses,NAME,,Suisse
