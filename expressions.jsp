@@ -83,17 +83,14 @@ FieldText field = alix.fieldText(fieldName);
 FieldRail rail = alix.fieldRail(fieldName);
 
 
-long N = field.occsAll;
-long[] formOccs;
+final long N = field.occsAll;
+final long[] formOccs = field.formAllOccs;;
 
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (book != null) {
   filter = Corpus.bits(alix, Alix.BOOKID, new String[]{book});
-  formOccs = field.formOccs(filter);
-  N = formOccs[0];
-}
-else {
-  formOccs = field.formAllOccs;
+  // formOccs = field.formOccs(filter);
+  // N = formOccs[0];
 }
 
 Map<IntPair, Bigram> dic = rail.expressions(filter);

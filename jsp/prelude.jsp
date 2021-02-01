@@ -232,25 +232,34 @@ public Pars pars(final PageContext page)
 }
 
 /**
- * Get default pars 
+ * Book selector 
  */
-
-
-
-/**
- * Get a bitSet of a query. Seems quite fast (2ms), no cache needed.
- */
-/*
- public BitSet bits(Alix alix, Corpus corpus, String q) throws IOException
+public String selectBook(final Alix alix, final Pars pars) throws IOException
 {
-  Query query = buildQuery(alix, q, corpus);
-  IndexSearcher searcher = alix.searcher();
-  CollectorBits collector = new CollectorBits(searcher);
-  searcher.search(query, collector);
-  return collector.bits();
+  StringBuilder sb = new StringBuilder();
+  sb.append("<select name=\"book\" onchange=\"this.form.submit()\">\n");
+  sb.append("  <option value=\"\"></option>\n");
+  int[] books = alix.books(sortYear);
+  final int width = 40;
+  for (int docId: books) {
+    Document doc = alix.reader().document(docId, BOOK_FIELDS);
+    String txt = "";
+    txt = doc.get("year");
+    if (txt != null) txt += ", ";
+    txt += doc.get("title");
+    String abid = doc.get(Alix.BOOKID);
+    sb.append("<option value=\"" + abid + "\" title=\"" + txt + "\"" );
+    if (abid.equals(pars.book)) {
+      sb.append(" selected=\"selected\"");
+    }
+    sb.append(">");
+    if (txt.length() > width) sb.append(txt.substring(0, width));
+    else sb.append(txt);
+    sb.append("</option>\n");
+  }
+  sb.append("</select>\n");
+  return sb.toString();
 }
-*/
-
 
 public static final String BASE = "rougemont";
 static String hrefHome = "";

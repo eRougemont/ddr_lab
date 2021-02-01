@@ -2,29 +2,16 @@
 <%@include file="jsp/prelude.jsp" %>
 <%@ page import="alix.lucene.search.Doc" %>
 <%@ page import="alix.util.Top" %>
-
-<%!
-/**
- * Specific pars for this display
- */
-class Pars {
-  String fieldName;
-  Cat cat;
-  Ranking ranking;
-  Order order;
-  int limit;
-  String q;
-}
-
-%>
 <%
 long time = System.nanoTime();
+
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
+Pars pars = pars(pageContext);
+
 IndexReader reader = alix.reader();
 
 // params for the page
-Pars pars = new Pars();
 pars.fieldName = TEXT;
 pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.g);
 pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);

@@ -33,7 +33,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
   boolean expression = false;
   if (pars.forms == null) expression = false;
   else expression = pars.expression;
-
+  int occ = 0;
   while (i < max) {
     final int docId = scoreDocs[i].doc;
     i++; // loop now
@@ -72,7 +72,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     // doc.kwic(field, include, 50, 50, 100);
     out.println("<article class=\"kwic\">");
     out.println("<header>");
-    out.println("<small>"+(i)+"</small> ");
+    out.println("<b>"+(i)+"</b> ");
 
     out.print("<a href=\""+href+"\">");
     String year = doc.get("year");
@@ -85,7 +85,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     out.print(doc.get("analytic"));
     out.println("</a></header>");
     for (String l: lines) {
-      out.println("<div class=\"line\">"+l+"</div>");
+      out.println("<div class=\"line\"><small>"+ ++occ +"</small>"+l+"</div>");
     }
     out.println("</article>");
     if (++docs >= pars.hpp) break;

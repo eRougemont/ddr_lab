@@ -600,8 +600,8 @@
       // /* correct
       // gravity: 10, // corrélation inverse au scaling
       scalingRatio: 0.4,
-      startingIterations : 1000,
-      slowDown: 10, // éviter de trop bouger
+      startingIterations : 500,
+      slowDown: 5, // éviter de trop bouger
       // iterationsPerRender : 100, // en fait non
       // */
 

@@ -207,7 +207,7 @@ select {
 button,
 select,
 input[type=text] {
-  font-size: 120%;
+  font-size: 100%;
 }
 
 .button,
@@ -268,7 +268,7 @@ input.num2 {
 
 }
 input.num3 {
-  width: 5ex;
+  width: 4ex;
   text-align: right;
 }
 
@@ -778,9 +778,10 @@ article.kwic header {
 article.kwic header a {
   color: #000;
 }
-
+article.kwic header b,
 article.kwic header small {
   float: left;
+  color: var(--red);
   margin: 0.3ex 1ex 0 0;
 }
 

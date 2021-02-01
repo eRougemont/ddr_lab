@@ -8,7 +8,7 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 IndexReader reader = alix.reader();
 // Params for the page
 String q = tools.getString("q", null);
-Ranking ranking = (Ranking)tools.getEnum("ranking", Ranking.alpha);
+Ranking ranking = (Ranking)tools.getEnum("ranking", null);
 
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
