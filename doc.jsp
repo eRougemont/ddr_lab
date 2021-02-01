@@ -154,7 +154,9 @@ if (doc != null) { // document id is verified, give it to javascript
           int no = 1;
           while (forms.hasNext()) {
             forms.next();
-            out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(forms.form()) + "\" class=\"form\">");
+            String form = forms.form();
+            if (form.trim().isEmpty()) continue;
+            out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(form) + "\" class=\"form\">");
             // out.print(dfscore.format(forms.score()) + " ");
             out.print(forms.form());
             out.print(" <small>(" + forms.freq() + ")</small>");
