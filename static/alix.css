@@ -928,7 +928,7 @@ body.cloud #filter {
 }
 
 #wordcloud2 {
-  height: 100%;
+  height: 80vh;
 }
 
 #wordcloud2 a {

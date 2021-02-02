@@ -78,12 +78,12 @@ for (int docId: books) {
         <tbody>
 
 <%
-final String fieldName = TEXT + "_orth";
+  final String fieldName = TEXT + "_orth";
 FieldText field = alix.fieldText(fieldName);
 FieldRail rail = alix.fieldRail(fieldName);
 
 
-final long N = field.occsAll;
+final long N = field.allOccs;
 final long[] formOccs = field.formAllOccs;;
 
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
@@ -145,7 +145,6 @@ for (Top.Entry<Bigram> entry: top) {
   out.println("    <td class=\"no right\">" + no + "</td>");
   out.println("  </tr>");
 }
-
 %>
        </table>
     </main>

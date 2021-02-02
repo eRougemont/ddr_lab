@@ -24,7 +24,7 @@ final int formMax = ftext.formMax;
 TagFilter tags = pars.cat.tags();
 boolean noStop = (tags != null && tags.noStop());
 boolean hasTags = (tags != null);
-double[] scores = fmat.test(distrib, null);
+double[] scores = fmat.test(distrib.scorer(), null);
 for (int formId = 0; formId < formMax; formId++) {
   if (noStop && ftext.isStop(formId)) scores[formId] = 0;
   else if (hasTags && !tags.accept(ftext.formTag[formId])) scores[formId] = 0;
@@ -58,9 +58,30 @@ results.scores(scores, pars.limit, reverse);
        <button type="submit">▶</button>
     </form>
     <main>
-      <%
-      // out.println("<pre>" + results + "</pre>");
-      %>
+      <div id="wordcloud2"></div>
+      <script src="vendor/wordcloud2.js">//</script>
+      <script>
+var data = [
+<%
+// {"word" : "beau", "weight" : 176, "attributes" : {"class" : "ADJ"}},
+boolean first = true;
+results.reset();
+final int max = 500;
+int i = 0;
+while (results.hasNext()) {
+  results.next();
+  if (first) first = false;
+  else out.print(",\n");
+  double score = results.score();
+  if (distrib.equals(Distrib.g)) score = Math.sqrt(score);
+  else if (distrib.equals(Distrib.bm25)) score = score;
+  out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.label(Tag.group(results.tag())) +"'}}");
+  if (++i >= max) break;
+}
+%>
+];
+      </script>
+      <script src="static/cloud.js">//</script>
       <table class="sortable" width="100%">
         <thead>
           <tr>
@@ -80,6 +101,7 @@ results.scores(scores, pars.limit, reverse);
                 String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
                 // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
                 int no = 0;
+                results.reset();
                 while (results.hasNext()) {
                   results.next();
                   no++;
