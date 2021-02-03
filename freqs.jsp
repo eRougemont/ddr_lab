@@ -45,6 +45,8 @@ results.scores(scores, pars.limit, reverse);
     <form  class="search">
       <input type="hidden" name="f" value="<%=JspTools.escape(pars.fieldName)%>"/>
       <input type="hidden" name="order" value="<%=pars.order%>"/>
+      <label for="limit" title="Nombre de mots à l’écran">Mots</label>
+      <input name="limit" type="text" value="<%= pars.limit %>" class="num3" size="2"/>
       <label title="Filtrer les mots par catégories grammaticales" for="cat">Catégories</label>
       <select name="cat" onchange="this.form.submit()">
         <option/>
@@ -66,17 +68,15 @@ var data = [
 // {"word" : "beau", "weight" : 176, "attributes" : {"class" : "ADJ"}},
 boolean first = true;
 results.reset();
-final int max = 500;
-int i = 0;
 while (results.hasNext()) {
   results.next();
   if (first) first = false;
   else out.print(",\n");
   double score = results.score();
-  if (distrib.equals(Distrib.g)) score = Math.sqrt(score);
-  else if (distrib.equals(Distrib.bm25)) score = score;
+  if (distrib.equals(Distrib.g) || distrib.equals(Distrib.tfidf)) score = Math.sqrt(score);
+  // else if (distrib.equals(Distrib.tfidf)) score = Math.sqrt(score) ;
+  // else if (distrib.equals(Distrib.bm25)) score = score;
   out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.label(Tag.group(results.tag())) +"'}}");
-  if (++i >= max) break;
 }
 %>
 ];

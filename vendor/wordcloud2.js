@@ -193,7 +193,7 @@ if (!window.clearImmediate) {
       clearCanvas: true,
       backgroundColor: '#fff', // opaque white = rgba(255, 255, 255, 1)
 
-      gridSize: 8,
+      gridSize: 16,
       drawOutOfBound: false,
       origin: null,
 
