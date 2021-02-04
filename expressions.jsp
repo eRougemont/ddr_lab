@@ -2,6 +2,8 @@
 <%@ include file="jsp/prelude.jsp" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import="alix.lucene.analysis.FrDics" %>
+<%@ page import="alix.lucene.analysis.FrDics.LexEntry" %>
 <%@ page import="alix.util.IntPair" %>
 <%@ page import="alix.util.Top" %>
 <%@ page import="alix.lucene.search.FieldRail.Bigram" %>
@@ -15,6 +17,8 @@ JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 int limit = tools.getInt("limit", 500);
 int floor = tools.getInt("floor", 0);
+boolean parceque = tools.getBoolean("parceque", false);
+boolean locs = tools.getBoolean("locs", false);
 String book = tools.getString("book", null);
 MI mi = (MI)tools.getEnum("mi", MI.g);
 
@@ -29,27 +33,37 @@ MI mi = (MI)tools.getEnum("mi", MI.g);
      <header>
       <%@ include file="tabs.jsp" %>
     </header>
-    <main>
       <form class="search">
       <label for="book" title="Limiter la sélection à un seul livre">Livre</label>
       <%= selectBook(alix, book) %>
        <br/>
-       <label>Algorithme de score
+       <label>Score</label>
          <select name="mi" onchange="this.form.submit()">
              <option/>
              <%= mi.options() %>
           </select>
-         </label>
-         <label>Fréquence minimale
-            <input name="floor" size="1" class="num3" value="<%= (floor > 0)?floor:"" %>"/>
-         </label>
+       <label for="locs" title="Montrer les locutions connues du dictionnaire d’indexation">Locutions</label>
+       <input name="locs" type="checkbox" <%= (locs)?"checked":"" %> onchange="this.form.submit()"/>
+       <label for="floor">Fréquence minimale</label>
+       <input name="floor" size="1" class="num3" value="<%= (floor > 0)?floor:"" %>"/>
+       <label for="parceque">Mots vides</label>
+       <input name="parceque" type="checkbox" <%= (parceque)?"checked":"" %> onchange="this.form.submit()"/>
       </form>
+    <main>
+      <details>
+        <summary>Expressions fréquentes</summary>
+        <p>
+        Ce tableau montre les expressions fréquentes. 
+        Il est produit à partir d’un index des mots fléchis (sans lemmatisation, sans dictionnaire de locutions).
+        
+        </p>
+      </details>
       <table class="sortable">
-        <caption><i>Information mutuelle</i>, où les mots qui vont bien ensemble</caption>
         <thead>
           <tr>
             <td/>
             <th>Couple (ab)</th>
+            <th>Catégorie</th>
             <th class="num">ab</th>
             <th class="num">a</th>
             <th class="num">b</th>
@@ -76,7 +90,7 @@ if (book != null) {
   // N = formOccs[0];
 }
 
-Map<IntPair, Bigram> dic = rail.expressions(filter);
+Map<IntPair, Bigram> dic = rail.expressions(filter, parceque);
 Top<Bigram> top= new Top<Bigram>(limit);
 final int pun1 = field.formId(",");
 final int pun2 = field.formId(".");
@@ -100,9 +114,19 @@ int no = 0;
 for (Top.Entry<Bigram> entry: top) {
   no++;
   Bigram bigram = entry.value();
+  String css = "";
+  LexEntry lex = FrDics.name(bigram.label);
+  if (lex != null) {
+    css += " NAME";
+  }
+  else {
+    lex = FrDics.word(bigram.label);
+    if (lex != null) css += " LOC";
+  }
+  if (!locs && lex != null) continue;
   out.println("  <tr>");
   out.println("    <td class=\"no left\">"  + no + "</td>");
-  out.print("    <td class=\"form\">");
+  out.print("    <td class=\"form " + css + "\">");
   out.print(bigram.label);
   /*
   final String a = field.label(entry.value().a);
@@ -111,6 +135,9 @@ for (Top.Entry<Bigram> entry: top) {
   if (!a.endsWith("'")) out.print(" ");
   out.print(b);
   */
+  out.println("</td>");
+  out.print("    <td>");
+  if (lex != null) out.print(Tag.label(lex.tag));
   out.println("</td>");
   out.print("    <td class=\"num\">");
   out.print(bigram.count);
@@ -131,5 +158,6 @@ for (Top.Entry<Bigram> entry: top) {
 %>
        </table>
     </main>
+  <script src="<%= hrefHome %>vendor/sortable.js">//</script>
   </body>
 </html>

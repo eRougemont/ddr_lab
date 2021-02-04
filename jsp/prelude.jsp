@@ -214,7 +214,7 @@ public Pars pars(final PageContext page)
     pars.context = 1 + pars.left + pars.right;
   }
   else {
-    pars.context = 50;
+    pars.context = 100;
     pars.left = 5;
     pars.right = 5;
   }
