@@ -174,81 +174,72 @@ boolean first;
       </header>
 
   <%
+    // keep nodes in insertion order (especially for query)
+  Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
 
+  // Select nodes in the cooccurrence
+  results.scorer = null;
+  if (pars.q != null && !pars.q.trim().isEmpty()) { // words requested, search for them
+    String[] forms = alix.forms(pars.q); // parse query as a set of terms
+    // rewrite queries, with only known terms
+    int nodeCount = 0;
+    for (String form: forms) {
+      int formId = ftext.formId(form);
+      if (formId < 0) continue;
+      final long freq;
+      if (pars.book != null) freq = results.formOccs(formId);
+      else freq = ftext.occs(formId);
+      if (freq < 1) continue;
+      // keep query words as stars
+      nodeMap.put(formId, new Node(formId, form).count(freq).type(STAR));
+      if (++nodeCount >= pars.nodes) break;
+    }
+    final int starCount = nodeCount;
+    // reloop on nodes found in query, add coocs
+    first = true;
+    // try to add quite same node to on an another
+    int i = 1;
+    Node[] toloop = nodeMap.values().toArray(new Node[nodeMap.size()]);
+    pars.q = "";
+    results.limit = pars.nodes + starCount; // take more coccs we need
+    for (Node src: toloop) {
+      if (first) first = false;
+      else pars.q += " ";
+      pars.q += src.form;
+      results.search = new String[]{src.form}; // parse query as terms
+      long found = frail.coocs(results);
+      if (found < 0) continue;
+      // score the coocs found before loop on it
+      frail.score(results, ftext.occs(src.formId));
+      final int srcId = src.formId;
+      final long srcFreq = src.count; // local freq
 
-// keep nodes in insertion order (especially for query)
-Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
-
-// Select nodes in the cooccurrence
-results.specif = null;
-if (pars.q != null && !pars.q.trim().isEmpty()) { // words requested, search for them
-  String[] forms = alix.forms(pars.q); // parse query as a set of terms
-  // rewrite queries, with only known terms
-  int nodeCount = 0;
-  for (String form: forms) {
-    int formId = ftext.formId(form);
-    if (formId < 0) continue;
-    final long freq;
-    if (pars.book != null) freq = results.formOccs(formId);
-    else freq = ftext.occs(formId);
-    if (freq < 1) continue;
-    // keep query words as stars
-    nodeMap.put(formId, new Node(formId, form).count(freq).type(STAR));
-    if (++nodeCount >= pars.nodes) break;
-  }
-  final int starCount = nodeCount;
-  // reloop on nodes found in query, add coocs
-  first = true;
-  // try to add quite same node to on an another
-  int i = 1;
-  Node[] toloop = nodeMap.values().toArray(new Node[nodeMap.size()]);
-  pars.q = "";
-  results.limit = pars.nodes + starCount; // take more coccs we need
-  for (Node src: toloop) {
-    if (first) first = false;
-    else pars.q += " ";
-    pars.q += src.form;
-    results.search = new String[]{src.form}; // parse query as terms
-    long found = frail.coocs(results);
-    if (found < 0) continue;
-    // score the coocs found before loop on it
-    frail.score(results, ftext.occs(src.formId));
-    final int srcId = src.formId;
-    final long srcFreq = src.count; // local freq
-
-    final int countMax = (int)((double)pars.nodes * i / starCount);
-    i++;
-    while (results.hasNext()) {
-      results.next();
-      final int dstId = results.formId();
-      final Node dst = nodeMap.get(dstId);
-      if (dst != null) continue; // node already found
-      Node comet = new Node(dstId, results.form()).count(results.freq()).type(COMET);
-      nodeMap.put(dstId, comet);
-      if (++nodeCount >= countMax) break;
+      final int countMax = (int)((double)pars.nodes * i / starCount);
+      i++;
+      while (results.hasNext()) {
+    results.next();
+    final int dstId = results.formId();
+    final Node dst = nodeMap.get(dstId);
+    if (dst != null) continue; // node already found
+    Node comet = new Node(dstId, results.form()).count(results.freq()).type(COMET);
+    nodeMap.put(dstId, comet);
+    if (++nodeCount >= countMax) break;
+      }
     }
   }
-}
-else { // 
+  else { // 
 
-  FormEnum top = null;
-  // a book selected, g test seems better, with no stops
-  if (pars.book != null) {
-    top = ftext.iterator(pars.nodes, pars.ranking.specif(), filter, pars.cat.tags(), false);
+    FormEnum top = null;
+    // a book selected, g test seems better, with no stops
+    top = ftext.results(pars.nodes, pars.cat.tags(), pars.distrib.scorer(), filter, false);
+    while (top.hasNext()) {
+      top.next();
+      final int formId = top.formId();
+      // add a linked node candidate
+      nodeMap.put(formId, new Node(formId, top.form()).count(top.freq()).type(COMET));
+    }
+    
   }
-  // global base, best selection is BM25 scoring with no stop words
-  else {
-    top = ftext.iterator(pars.nodes, pars.ranking.specif(), null,  pars.cat.tags(), false);
-  }
-  while (top.hasNext()) {
-    top.next();
-    final int formId = top.formId();
-    // add a linked node candidate
-    nodeMap.put(formId, new Node(formId, top.form()).count(top.freq()).type(COMET));
-  }
-  
-}
-
   %>
 <!-- Nodes <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
        <form id="form" class="search">
@@ -259,13 +250,10 @@ else { //
              <option/>
              <%=pars.cat.options()%>
            </select>
-           <label title="Algorithme d’ordre des mots pivots" for="ranking">Score</label>
-           <select name="ranking" onchange="this.form.submit()">
-             <option/>
-             <%
-             if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
-             else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
-             %>
+           <label for="distrib" title="Algorithme d’ordre des mots pivots">Score</label>
+           <select name="distrib" onchange="this.form.submit()">
+            <option/>
+             <%= pars.distrib.options("occs g bm25 tfidf") %>
            </select>
            <label for="context" title="Largeur du contexte, en nombre de mots, dont sont extraits les liens">Contexte</label>
            <input name="context" type="text" value="<%= pars.context %>"  class="num3" size="2"/>
@@ -281,7 +269,7 @@ else { //
            <label for="words">Chercher</label>
            <input type="text" name="q" value="<%=tools.escape(pars.q)%>" size="40" />
            <label for="book">Livre</label>
-           <%= selectBook(alix, pars) %>
+           <%= selectBook(alix, pars.book) %>
           <a class="help button" href="#aide">?</a>
         </form>
       <div id="graph" class="graph" oncontextmenu="return false">
@@ -353,7 +341,7 @@ results.limit = nodeMap.size() * 2; // collect enough edges
 for (Node src: nodeMap.values()) {
   results.search = new String[]{src.form}; // set pivot of the coocs
   long found = frail.coocs(results);
-  if (found < 0) continue;
+  if (found < 1) continue;
   // score the coocs found before loop on it
   final int srcId = src.formId;
   frail.score(results, ftext.occs(srcId));
@@ -371,7 +359,7 @@ for (Node src: nodeMap.values()) {
     else out.println(", ");
     out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + results.score() 
     + ", color:'rgba(0, 0, 0, 0.2)'"
-    // + ", srcLabel:'" + ftext.form(srcId) + "', srcOccs:" + ftext.occs(srcId) + ", dstLabel:'" + ftext.form(dstId) + "', dstOccs:" + ftext.occs(dstId) + ", freq:" + results.freq()
+    + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.occs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.occs(dstId) + ", freq:" + results.freq()
     + "}");
     if (src.type() != STAR &&  count == planets) break;
     count++;

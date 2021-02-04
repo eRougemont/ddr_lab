@@ -31,25 +31,8 @@ MI mi = (MI)tools.getEnum("mi", MI.g);
     </header>
     <main>
       <form class="search">
-       <label>Sélectionner un livre
-       <br/><select name="book" onchange="this.form.submit()">
-            <option value=""></option>
-            <%
-int[] books = alix.books(sortYear);
-for (int docId: books) {
-  Document doc = alix.reader().document(docId, BOOK_FIELDS);
-  String abid = doc.get(Alix.BOOKID);
-  out.print("<option value=\"" + abid + "\"");
-  if (abid.equals(book)) out.print(" selected=\"selected\"");
-  out.print(">");
-  String year = doc.get("year");
-  if (year != null) out.print(year + ", ");
-  out.print(doc.get("title"));
-  out.println("</option>");
-}
-                  %>
-         </select>
-       </label>
+      <label for="book" title="Limiter la sélection à un seul livre">Livre</label>
+      <%= selectBook(alix, book) %>
        <br/>
        <label>Algorithme de score
          <select name="mi" onchange="this.form.submit()">

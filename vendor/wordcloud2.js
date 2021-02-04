@@ -5,7 +5,7 @@
  * Copyright 2011 - 2013 Tim Chien
  * Released under the MIT license
  *
- * 2018–2020 Debugs by frederic.glorieux@ficitif.org
+ * 2018–2020 Debugs by frederic.glorieux@fictif.org
  */
 
 'use strict';
@@ -847,7 +847,7 @@ if (!window.clearImmediate) {
             'width': info.fillTextWidth + 'px',
             'height': info.fillTextHeight + 'px',
             'fontWeight': fontWeight,
-            'fontFamily': settings.fontFamily,
+            // 'fontFamily': settings.fontFamily,
             'left': ((gx + info.gw / 2) * g + info.fillTextOffsetX) + 'px',
             'top': ((gy + info.gh / 2) * g + info.fillTextOffsetY) + 'px',
             'transform': transformRule,

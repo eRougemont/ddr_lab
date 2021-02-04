@@ -130,9 +130,6 @@ public class Pars {
   String book; // restrict to a book
   String q; // word query
   Cat cat; // word categories to filter
-  Ranking ranking; // ranking algorithm, tf-idf like
-  MI mi; // proba kind of scoring, not tf-idf
-  Sim sim; // ?? TODO, better logic
   Mime mime; // mime type for output
   int limit; // results, limit of result to show
   int nodes; // number of nodes in wordnet
@@ -141,6 +138,12 @@ public class Pars {
   int left; // coocs, left context in words
   int right; // coocs, right context in words
   boolean expression; // kwic, filter multi word expression
+
+  // too much scoring algo
+  Distrib distrib; // ranking algorithm, tf-idf like
+  MI mi; // proba kind of scoring, not tf-idf, [2, 2]
+  Sim sim; // ?? TODO, better logic
+
   
   int start; // start record in search results
   int hpp; // hits per page
@@ -148,7 +151,6 @@ public class Pars {
   String[] forms;
   DocSort sort;
   
-
 }
 
 public Pars pars(final PageContext page)
@@ -163,10 +165,11 @@ public Pars pars(final PageContext page)
   pars.cat = (Cat)tools.getEnum("cat", Cat.NOSTOP); // 
   
   // ranking, sort… TODO unify
-  pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.bm25);
+  pars.distrib = (Distrib)tools.getEnum("distrib", Distrib.g);
+  pars.mi = (MI)tools.getEnum("mi", MI.g);
+  // ???
   pars.sim = (Sim)tools.getEnum("sim", Sim.g);
   pars.sort = (DocSort)tools.getEnum("sort", DocSort.year);
-  pars.mi = (MI)tools.getEnum("mi", MI.g);
   //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
   pars.order = (Order)tools.getEnum("order", Order.top);
   
@@ -234,7 +237,7 @@ public Pars pars(final PageContext page)
 /**
  * Book selector 
  */
-public String selectBook(final Alix alix, final Pars pars) throws IOException
+public String selectBook(final Alix alix, String bookid) throws IOException
 {
   StringBuilder sb = new StringBuilder();
   sb.append("<select name=\"book\" onchange=\"this.form.submit()\">\n");
@@ -249,7 +252,7 @@ public String selectBook(final Alix alix, final Pars pars) throws IOException
     txt += doc.get("title");
     String abid = doc.get(Alix.BOOKID);
     sb.append("<option value=\"" + abid + "\" title=\"" + txt + "\"" );
-    if (abid.equals(pars.book)) {
+    if (abid.equals(bookid)) {
       sb.append(" selected=\"selected\"");
     }
     sb.append(">");

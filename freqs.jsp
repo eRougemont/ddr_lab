@@ -19,6 +19,7 @@ if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars
 FieldText ftext = alix.fieldText(pars.fieldName);
 FieldMatrix fmat = new FieldMatrix(alix, pars.fieldName);
 FormEnum results = new FormEnum(ftext);
+boolean first;
 Distrib distrib = (Distrib)tools.getEnum("distrib", Distrib.occs); // 
 final int formMax = ftext.formMax;
 TagFilter tags = pars.cat.tags();
@@ -52,7 +53,7 @@ results.scores(scores, pars.limit, reverse);
         <option/>
         <%=pars.cat.options()%>
       </select>
-      <label title="Algorithme d’ordre des mots sélectionné" for="ranking">Score</label>
+      <label for="distrib" title="Algorithme d’ordre des mots sélectionné">Score</label>
       <select name="distrib" onchange="this.form.submit()">
            <option/>
            <%= distrib.options() %>
@@ -60,28 +61,76 @@ results.scores(scores, pars.limit, reverse);
        <button type="submit">▶</button>
     </form>
     <main>
-      <div id="wordcloud2"></div>
-      <script src="vendor/wordcloud2.js">//</script>
+      <script src="vendor/d3.layout.cloud.js">//</script>
+      <script src="vendor/d3-dispatch.min.js">//</script>
+      <script src="vendor/d3.layout.cloud.js">//</script>
+      <script src="vendor/d3-dispatch.min.js">//</script>
+      
+      <div style="text-align: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" class="d3cloud" id="svgcloud">
+        </svg>
+      </div>
       <script>
-var data = [
+var j3words = [
 <%
-// {"word" : "beau", "weight" : 176, "attributes" : {"class" : "ADJ"}},
-boolean first = true;
+// {text: "salut", size: 15, test: "haha"}
+first = true;
+results.first();
+double scoreMax = Math.sqrt(results.score());
+results.last();
+double scoreMin = Math.sqrt(results.score());
+double fontMin = 14;
+double factor = 90d / (scoreMax - scoreMin) ;
+
+
 results.reset();
 while (results.hasNext()) {
   results.next();
   if (first) first = false;
   else out.print(",\n");
-  double score = results.score();
-  if (distrib.equals(Distrib.g) || distrib.equals(Distrib.tfidf)) score = Math.sqrt(score);
+  double score = Math.sqrt(results.score());
+  // if (distrib.equals(Distrib.g) || distrib.equals(Distrib.tfidf)) score = Math.sqrt(score);
   // else if (distrib.equals(Distrib.tfidf)) score = Math.sqrt(score) ;
   // else if (distrib.equals(Distrib.bm25)) score = score;
-  out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.label(Tag.group(results.tag())) +"'}}");
+  out.print("  {text: '" + results.form().replace("'", "\\'") + "', size: " + dfdec1.format(fontMin + factor * (score - scoreMin)) + ", tag: '" + Tag.label(Tag.group(results.tag())) +"'}");
 }
 %>
 ];
       </script>
-      <script src="static/cloud.js">//</script>
+          <script>
+const width = 1200;
+const height = 700;
+var cloud = d3.layout.cloud()
+  .size([width, height])
+  .words(j3words)
+  .padding(1)
+  .rotate(function() { return ~~(Math.random() * 6) * (120/5) - 60; })
+  .font("sans-serif")
+  .fontWeight(400)
+  .spiral("rectangular")
+  .fontSize(function(d) { return d.size; })
+  .on("end", draw)
+;
+
+function draw(words) {
+  var svgns = "http://www.w3.org/2000/svg";  
+  var svg = document.getElementById("svgcloud");
+  for (var i = 0, len = words.length; i < len; i++) {
+    var w = words[i];
+    var el = document.createElementNS(svgns, "text");
+    el.append(words[i].text);
+    // el.setAttribute("text-anchor", "middle");
+    el.setAttribute("font-size", w.size + "px");
+    el.setAttribute("class", w.tag);
+    el.setAttribute("transform", "translate(" + [w.x + width/2, w.y + height/2] + ") rotate(" + w.rotate + ")");
+    svg.append(el);
+  }
+  // console.log(words);
+}
+window.addEventListener("load", function(event) {
+  cloud.start();
+}); 
+     </script>
       <table class="sortable" width="100%">
         <thead>
           <tr>
@@ -146,4 +195,5 @@ while (results.hasNext()) {
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>
   </body>
   <!-- <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
+  
 </html>

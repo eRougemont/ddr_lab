@@ -927,12 +927,38 @@ body.cloud #filter {
   position: absolute;
 }
 
+svg.d3cloud {
+  background: #888;
+}
+
+svg.d3cloud text {
+  font-family: sans-serif;
+  text-anchor: middle;
+  font-weight: 500;
+  fill: #fff;
+}
+
+svg.d3cloud .SUB {
+  fill: #000;
+}
+
+svg.d3cloud .NAME {
+  fill: #f00;
+}
+
+
+.wcframe {
+  padding: 30px;
+  background: var(--gray);
+}
+
 #wordcloud2 {
   height: 80vh;
+  font-family: "Fira Sans", "Open Sans", "Roboto", sans-serif;
 }
 
 #wordcloud2 a {
-  color: #887;
+  color: #000;
   text-decoration: none;
   line-height: 0.8em;
   display: block;
@@ -945,7 +971,7 @@ body.cloud #filter {
 }
 
 #wordcloud2 .SUB {
-  color: #000033;
+  color: #fff;
 }
 
 #wordcloud2 .ADJ {}
@@ -955,7 +981,7 @@ body.cloud #filter {
 #wordcloud2 .ADV {}
 
 #wordcloud2 .NAME {
-  color: #FF0000;
+  color: var(--red);
 }
 
 /**

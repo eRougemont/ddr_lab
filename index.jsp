@@ -6,6 +6,7 @@ Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 
 
 long time = System.nanoTime();
+boolean first;
 IndexReader reader = alix.reader();
 
 // get default parameters from request
@@ -37,7 +38,7 @@ if (pars.q != null) {
   if (found > 0) {
     // parameters for sorting
     results.limit = pars.limit;
-    results.specif = pars.ranking.specif();
+    results.mi = pars.mi;
     results.reverse = reverse;
     rail.score(results, pivotsOccs);
   }
@@ -48,7 +49,7 @@ if (pars.q != null) {
 else {
   // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
   // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
-  results = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
+  results = fieldText.results(pars.limit, pars.cat.tags(), pars.distrib.scorer(), filter, reverse);
 }
 %>
 <!DOCTYPE html>
@@ -64,33 +65,65 @@ else {
     <form  class="search">
       <input type="hidden" name="f" value="<%=JspTools.escape(pars.fieldName)%>"/>
       <input type="hidden" name="order" value="<%=pars.order%>"/>
-      <label title="Filtrer les mots par catégories grammaticales" for="cat">Catégories</label>
+      <label for="limit" title="Nombre de nœuds sur l’écran">Mots</label>
+      <input name="limit" type="text" value="<%= pars.limit %>" class="num3" size="2"/>
+      <label for="cat" title="Filtrer les mots par catégories grammaticales">Catégories</label>
       <select name="cat" onchange="this.form.submit()">
         <option/>
         <%=pars.cat.options()%>
       </select>
-      <label title="Algorithme d’ordre des mots sélectionné" for="ranking">Score</label>
-      <select name="ranking" onchange="this.form.submit()">
-           <option/>
+      <label for="distrib" title="Algorithme d’ordre des mots sélectionné">Score</label>
+      <select name="distrib" onchange="this.form.submit()">
+        <option/>
+        <%= pars.distrib.options() %>
+      </select>
            <%
+           /*
              if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
                   // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
                   else out.println (pars.ranking.options());
+            */
            %>
-      </select>
       <label for="book" title="Limiter la sélection à un seul livre">Livre</label>
-      <%= selectBook(alix, pars) %>
-       <br/>
-       <label for="q" title="Cooccurrents fréquents autour d’un ou plusieurs mots">Chercher</label>
-       <input name="q" onclick="this.select()" type="text" value="<%=tools.escape(pars.q)%>" size="40" />
+      <%= selectBook(alix, pars.book) %>
+      <br/>
+      <label for="q" title="Cooccurrents fréquents autour d’un ou plusieurs mots">Chercher</label>
+      <input name="q" onclick="this.select()" type="text" value="<%=tools.escape(pars.q)%>" size="40" />
+      <label for="mi" title="Algorithme de score pour les liens">Dépendance</label>
+      <select name="mi" onchange="this.form.submit()">
+        <option/>
+        <%= pars.mi.options() %>
+      </select>
        <label for="left" title="Nombre de mots à capturer à gauche">Gauche</label>
-       <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
-       Contextes
-       <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
-       <label for="right" title="Nombre de mots à capturer à droite">Droit</label>
-       <button type="submit">▶</button>
+      <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
+      Contextes
+      <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
+      <label for="right" title="Nombre de mots à capturer à droite">Droit</label>
+      <button type="submit">▶</button>
     </form>
     <main>
+      <div class="wcframe">
+        <div id="wordcloud2"></div>
+      </div>
+      <script>
+var words = [
+<%
+// {"word" : "beau", "weight" : 176, "attributes" : {"class" : "ADJ"}},
+first = true;
+results.reset();
+while (results.hasNext()) {
+  results.next();
+  if (first) first = false;
+  else out.print(",\n");
+  double score = results.score();
+  if (pars.distrib.equals(Distrib.g)) score = Math.sqrt(score);
+  // else if (distrib.equals(Distrib.tfidf)) score = Math.sqrt(score) ;
+  else if (pars.distrib.equals(Distrib.bm25)  || pars.distrib.equals(Distrib.tfidf) ) score = score * score;
+  out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.label(Tag.group(results.tag())) +"'}}");
+}
+%>
+];
+      </script>
       <table class="sortable" width="100%">
         <thead>
           <tr>
@@ -107,9 +140,10 @@ else {
         <tbody>
           <%
             // todo, book selector
-                String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
+                String urlForm = "kwic.jsp?" + tools.url(new String[]{"book"}) + "&amp;q=";
                 // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
                 int no = 0;
+                results.reset();
                 while (results.hasNext()) {
                   results.next();
                   no++;
@@ -130,12 +164,13 @@ else {
                   out.println("</td>");
                   
                   out.print("    <td class=\"num\">");
-                  // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
                   out.print(results.freq()) ;
+                  if (filter != null || pars.q != null) out.print("<small> / " + results.formOccs() + "<small>");
                   // out.println("</a>");
                   out.println("    </td>");
                   out.print("    <td class=\"num\">");
                   out.print(results.hits()) ;
+                  if (filter != null || pars.q != null) out.print("<small> / " + results.formDocs() + "<small>");
                   out.println("</td>");
                   // fréquence
                   // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
@@ -152,6 +187,8 @@ else {
       <p> </p>
     </main>
     <script src="<%= hrefHome %>vendor/sortable.js">//</script>
+    <script src="<%= hrefHome %>vendor/wordcloud2.js">//</script>
+    <script src="<%= hrefHome %>static/cloud.js">//</script>
   </body>
   <!-- <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
 </html>

@@ -152,13 +152,12 @@ double scoreMax = 1;
 double scoreMin = 0;
 if (pars.q != null) {
   String[] forms = alix.forms(pars.q);
-  docStats = fstats.docStats(forms, null, null);
+  docStats = fstats.docStats(forms, Distrib.g.scorer(), null);
   if (docStats != null) {
     scoreMax = docStats.scoreMax();
     scoreMin = docStats.scoreMin();
   }
 }
-
 final String href = "doc.jsp?q=" + pars.q + "&amp;id="; // href link
 boolean zero = false;
 int no = 1;

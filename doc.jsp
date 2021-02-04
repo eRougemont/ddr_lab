@@ -13,8 +13,6 @@ IndexReader reader = alix.reader();
 
 // params for the page
 pars.fieldName = TEXT;
-pars.ranking = (Ranking)tools.getEnum("ranking", Ranking.g);
-pars.cat = (Cat)tools.getEnum("cat", Cat.ALL);
 pars.limit = tools.getInt("limit", 50);
 
 int docId = tools.getInt("docid", -1); // get doc by lucene internal docId or persistant String id
@@ -35,25 +33,6 @@ try { // load full document
 catch (IllegalArgumentException e) { // doc not found
   id = "";
 }
-
-/*
-// global variables
-Corpus corpus = (Corpus)session.getAttribute(corpusKey);
-TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, sort);
-ScoreDoc[] hits = topDocs.scoreDocs;
-if (hits.length == 0) {
-  topDocs = null;
-  start = 0;
-}
-if (start < 1 || start >= hits.length) start = 1;
-//if a query, or a sort specification, provide navigation in documents
-if (doc == null && start > 0) {
-docId = hits[start - 1].doc;
-doc = new Doc(alix, docId);
-id = doc.id();
-}
-
-*/
 
 
 
@@ -99,29 +78,24 @@ if (doc != null) { // document id is verified, give it to javascript
           </svg>
         </button>
        -->
-        <label>Chercher un titre
-          <br/>
-          <input id="titles" name="titles" aria-describedby="titles-hint" placeholder="am… dia… eu… fed…" size="50"/>
-          <div class="progress"><div></div></div>
-          <div class="suggest"></div>
-        </label>
+        <label>Chercher un titre</label>
+        <input id="titles" name="titles" aria-describedby="titles-hint" placeholder="am… dia… eu… fed…" size="50"/>
+        <div class="progress"><div></div></div>
+        <div class="suggest"></div>
         <input type="hidden" id="id" name="id" value="<%=id%>" autocomplete="off" size="13"/>
-        <label>Surligner des mots
-          <br/>
-          <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
-        </label>
-        <br/>Mots spécifiques
-        <br/><label>Filtrer <select name="cat" onchange="this.form.submit()">
+        <label>Mots clés :</label>
+         <label for="cat">Filtrer</label>
+         <select name="cat" onchange="this.form.submit()">
             <option></option>
             <%= pars.cat.options() %>
          </select>
-        </label>
-        <label>Score
-        <select name="ranking" onchange="this.form.submit()">
-            <option></option>
-            <%= pars.ranking.options() %>
-         </select>
-        </label>
+        <label for="distrib">Score</label>
+        <select name="distrib" onchange="this.form.submit()">
+           <option></option>
+           <%= pars.distrib.options() %>
+        </select>
+        <label for="q">Surligner</label>
+         <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
         <button type="submit">▶</button>
         
         <%
@@ -150,20 +124,21 @@ if (doc != null) { // document id is verified, give it to javascript
         if (doc != null) {
           out.println(" <h5>Mots clés</h5>");
           BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
-          FormEnum forms = doc.iterator(TEXT, pars.limit, pars.ranking.specif(), pars.cat.tags(), false);
+          FormEnum forms = doc.results(TEXT, pars.limit, pars.cat.tags(), pars.distrib.scorer(), false);
           int no = 1;
+          forms.reset();
           while (forms.hasNext()) {
             forms.next();
             String form = forms.form();
             if (form.trim().isEmpty()) continue;
-            out.print("<a href=\"?id=" + id + "&amp;q=" + JspTools.escape(form) + "\" class=\"form\">");
+            out.print("<a title=\"score : " + formatScore(forms.score()) + "\" href=\"?id=" + id + "&amp;q=" + JspTools.escape(form) + "\" class=\"form\">");
             // out.print(dfscore.format(forms.score()) + " ");
             out.print(forms.form());
             out.print(" <small>(" + forms.freq() + ")</small>");
             out.println("</a>");
             if (no < 30) {
-          Query tq = new TermQuery(new Term(TEXT, forms.form()));
-          qBuilder.add(tq, BooleanClause.Occur.SHOULD);
+              Query tq = new TermQuery(new Term(TEXT, forms.form()));
+              qBuilder.add(tq, BooleanClause.Occur.SHOULD);
             }
             no++;
           }
@@ -179,7 +154,7 @@ if (doc != null) { // document id is verified, give it to javascript
       out.println("</div>");
       // mlt
       
-		  
+      
       // hilite
       if (!"".equals(q)) {
         String[] terms = alix.forms(q);

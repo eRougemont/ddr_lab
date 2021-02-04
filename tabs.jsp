@@ -5,17 +5,17 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"book", "q", "cat", "ranking", "context"}) {
+  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"q", "book", "cat", "context"}) {
   },
-  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"book", "q", "cat", "ranking", "right", "left"}) {
+  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"q", "book", "cat", "right", "left"}) {
   },
-  books("Livres", "books.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
+  books("Livres", "books.jsp", "Fréquences par livres", new String[]{"q"}) {
   },
-  chapters("Chapitres", "chapters.jsp", "Fréquences par livres", new String[]{"ranking", "q"}) {
+  chapters("Chapitres", "chapters.jsp", "Fréquences par livres", new String[]{"q"}) {
   },
-  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"q", "book", "ranking"}) {
+  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"q", "book"}) {
   },
-  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q", "ranking"}) {
+  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) {
   },
   ;
   
