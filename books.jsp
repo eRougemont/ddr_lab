@@ -5,14 +5,10 @@
 long time = System.nanoTime();
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-IndexReader reader = alix.reader();
-// Params for the page
-String q = tools.getString("q", null);
-Ranking ranking = (Ranking)tools.getEnum("ranking", null);
+Pars pars = pars(pageContext);
 
-//global variables
-FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
-String[] search = alix.forms(q);
+IndexReader reader = alix.reader();
+
 %>
 <!DOCTYPE html>
 <html>
@@ -24,23 +20,22 @@ String[] search = alix.forms(q);
     <header>
        <jsp:include page="tabs.jsp" flush="true" />
     </header>
-  
+    <form  class="search">
+      <input type="hidden" name="f" value="<%=JspTools.escape(pars.fieldName)%>"/>
+     <label for="q" title="Classer les livres selon un ou plusieurs mots">Chercher</label>
+      <input name="q" onclick="this.select()" type="text" value="<%=tools.escape(pars.q)%>" size="40" />
+      
+      <label for="distrib" title="Algorithme d’ordre">Score</label>
+      <select name="distrib" onchange="this.form.submit()">
+        <option/>
+        <%= pars.distrib.options() %>
+      </select>
+      
+      <button type="submit">▶</button>
+    </form>
     <main>
       <table class="sortable" width="100%">
-        <caption>
-          <form id="qform"  class="search">
-            <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"  tabindex="-1" />
-            <label>Classer les livres selon un ou plusieurs mots
-            <br/><input id="q" name="q" value="<%=JspTools.escape(q)%>" width="100" autocomplete="off"/>
-            </label>
-            <br/><label>Algorithme d’ordre
-            <br/><select name="ranking" onchange="this.form.submit()">
-                <option/>
-                <%= ranking.options() %>
-             </select>
-            </label>
-          </form>
-        </caption>
+        <caption>Classer les livres selon un ou plusieurs mots</caption>
         <thead>
           <tr>
             <td/>
@@ -56,7 +51,10 @@ String[] search = alix.forms(q);
         
     
 <%
-              FormEnum dic = facet.iterator(search, null, ranking.specif(), -1);
+            //global variables
+            FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
+            String[] search = alix.forms(pars.q);
+            FormEnum dic = facet.iterator(search, null, pars.distrib.scorer(), -1);
             // if no word searched, sort by date, not well optimized here
             if (search == null || search.length < 1) {
               // get docIds of books sorted by a query
@@ -72,7 +70,7 @@ String[] search = alix.forms(q);
             dic.setNos(nos);
             */
             // build a resizable href link
-            final String href = "kwic.jsp?q=" + JspTools.escape(q)+ "&amp;book=";
+            final String href = "kwic.jsp?q=" + JspTools.escape(pars.q)+ "&amp;book=";
             // resend a query somewhere ?
             boolean zero = false;
             int no = 1;

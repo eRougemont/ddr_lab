@@ -9,7 +9,6 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
 {
   JspWriter out = page.getOut();
   if (topDocs == null) return;
-
   
   boolean repetitions = false;
   ByteRunAutomaton include = null;

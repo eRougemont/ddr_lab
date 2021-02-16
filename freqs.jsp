@@ -4,7 +4,6 @@
 JspTools tools = new JspTools(pageContext);
 Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 
-
 long time = System.nanoTime();
 IndexReader reader = alix.reader();
 

@@ -51,6 +51,7 @@ else {
   // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
   results = fieldText.results(pars.limit, pars.cat.tags(), pars.distrib.scorer(), filter, reverse);
 }
+
 %>
 <!DOCTYPE html>
 <html>
@@ -65,7 +66,7 @@ else {
     <form  class="search">
       <input type="hidden" name="f" value="<%=JspTools.escape(pars.fieldName)%>"/>
       <input type="hidden" name="order" value="<%=pars.order%>"/>
-      <label for="limit" title="Nombre de nœuds sur l’écran">Mots</label>
+      <label for="limit">Mots</label>
       <input name="limit" type="text" value="<%= pars.limit %>" class="num3" size="2"/>
       <label for="cat" title="Filtrer les mots par catégories grammaticales">Catégories</label>
       <select name="cat" onchange="this.form.submit()">
@@ -119,7 +120,7 @@ while (results.hasNext()) {
   if (pars.distrib.equals(Distrib.g)) score = Math.sqrt(score);
   // else if (distrib.equals(Distrib.tfidf)) score = Math.sqrt(score) ;
   else if (pars.distrib.equals(Distrib.bm25)  || pars.distrib.equals(Distrib.tfidf) ) score = score * score;
-  out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.label(Tag.group(results.tag())) +"'}}");
+  out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.parent(results.tag()).toString() +"'}}");
 }
 %>
 ];

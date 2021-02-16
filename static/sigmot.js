@@ -8,10 +8,10 @@
    * This label renderer will just display the label on the center of the node.
    *
    * @param  {object}                   node     The node object.
-   * @param  {CanvasRenderingContext2D} context  The canvas context.
+   * @param  {CanvasRenderingContext2D} ctx  The canvas context.
    * @param  {configurable}             settings The settings function.
    */
-  sigma.canvas.labels.def = function(node, context, settings) {
+  sigma.canvas.labels.def = function(node, ctx, settings) {
     var fontSize,
         prefix = settings('prefix') || '',
         labelWidth = 0,
@@ -47,10 +47,10 @@
     // if (['respirer', 'vivre'].includes(node.label)) console.log(node.label+" size="+size+" fontSize="+fontSize+" defaultLabelSize="+settings('defaultLabelSize'));
 
 
-    context.font = (settings('fontStyle') ? settings('fontStyle') + ' ' : '') +
+    ctx.font = (settings('fontStyle') ? settings('fontStyle') + ' ' : '') +
       fontSize + 'px ' + settings('font');
 
-    labelWidth = context.measureText(node.label).width;
+    labelWidth = ctx.measureText(node.label).width;
     labelPlacementX = Math.round(node[prefix + 'x'] + size + 3);
     labelPlacementY = Math.round(node[prefix + 'y'] + fontSize / 3);
 
@@ -84,8 +84,10 @@
     }
     // Node border:
     if (node.type == 'hub') {
-      context.strokeStyle = 'rgba(128, 128, 128, 0.3)';
-      context.lineWidth = 0.5 + 0.05 * fontSize;
+      ctx.strokeStyle = (settings('labelColor') === 'node') ?
+      (node.color || settings('defaultNodeColor')) :
+      settings('defaultLabelColor');
+      ctx.lineWidth = 0.5 + 0.05 * fontSize;
       var padx = -4;
       var pady = 1;
       var x = labelPlacementX - padx;
@@ -93,34 +95,53 @@
       var w =labelWidth + 2 * padx;
       var h = Math.round(fontSize + 2 * pady);
       var e = Math.round(h / 2);
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = 'rgba(192, 0, 0, 0.3)';
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      // ctx.arcTo(x, y, x + e, y, e);
+      ctx.lineTo(x + w, y);
+      ctx.quadraticCurveTo(x+w+e, y, x+w+e, y+e);
+      ctx.quadraticCurveTo(x+w+e, y+h, x+w, y+h);
 
-      context.fillStyle = 'rgba(192, 0, 0, 0.3)';
-      context.beginPath();
-      context.moveTo(x, y);
-      // context.arcTo(x, y, x + e, y, e);
-      context.lineTo(x + w, y);
-      context.quadraticCurveTo(x+w+e, y, x+w+e, y+e);
-      context.quadraticCurveTo(x+w+e, y+h, x+w, y+h);
+      ctx.lineTo(x, y + h);
+      ctx.quadraticCurveTo(x-e, y+h, x-e, y+e);
+      ctx.quadraticCurveTo(x-e, y, x, y);
 
-      context.lineTo(x, y + h);
-      context.quadraticCurveTo(x-e, y+h, x-e, y+e);
-      context.quadraticCurveTo(x-e, y, x, y);
+      ctx.closePath();
 
-      context.closePath();
-
-      context.stroke();
-      // context.fill();
+      ctx.stroke();
+      // ctx.fill();
 
     }
-    context.fillStyle = (settings('labelColor') === 'node') ?
+    /* too much time
+    ctx.shadowColor="#fff";
+    ctx.shadowBlur=1;
+    */
+    /* stroke, bof
+    ctx.globalAlpha = 1;
+    ctx.lineWidth=0.5;
+    ctx.strokeStyle = (settings('labelColor') === 'node') ?
       (node.color || settings('defaultNodeColor')) :
       settings('defaultLabelColor');
-
-    context.fillText(
+    ctx.strokeText(
       node.label,
       labelPlacementX,
       labelPlacementY
     );
+    ctx.globalAlpha = 0.6;
+    */
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = (settings('labelColor') === 'node') ?
+      (node.color || settings('defaultNodeColor')) :
+      settings('defaultLabelColor');
+
+    ctx.fillText(
+      node.label,
+      labelPlacementX,
+      labelPlacementY
+    );
+
 
   };
 
@@ -128,10 +149,10 @@
    * Override the node over for centered labels
    *
    * @param  {object}                   node     The node object.
-   * @param  {CanvasRenderingContext2D} context  The canvas context.
+   * @param  {CanvasRenderingContext2D} ctx  The canvas context.
    * @param  {configurable}             settings The settings function.
    */
-  sigma.canvas.hovers.def = function(node, context, settings) {
+  sigma.canvas.hovers.def = function(node, ctx, settings) {
     var x,
         y,
         w,
@@ -145,19 +166,19 @@
           settings('labelSizeRatio') * size;
 
     // Label background:
-    context.font = (fontStyle ? fontStyle + ' ' : '') +
+    ctx.font = (fontStyle ? fontStyle + ' ' : '') +
       fontSize + 'px ' + (settings('hoverFont') || settings('font'));
 
-    context.beginPath();
-    context.fillStyle = settings('labelHoverBGColor') === 'node' ?
+    ctx.beginPath();
+    ctx.fillStyle = settings('labelHoverBGColor') === 'node' ?
       (node.color || settings('defaultNodeColor')) :
       settings('defaultHoverLabelBGColor');
 
     if (node.label && settings('labelHoverShadow')) {
-      context.shadowOffsetX = 0;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = 8;
-      context.shadowColor = settings('labelHoverShadowColor');
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = settings('labelHoverShadowColor');
     }
 
     /*
@@ -165,36 +186,36 @@
       x = Math.round(node[prefix + 'x'] - fontSize / 2 - 2);
       y = Math.round(node[prefix + 'y'] - fontSize / 2 - 2);
       w = Math.round(
-        context.measureText(node.label).width + fontSize / 2 + size + 7
+        ctx.measureText(node.label).width + fontSize / 2 + size + 7
       );
       h = Math.round(fontSize + 4);
       e = Math.round(fontSize / 2 + 2);
 
-      context.moveTo(x, y + e);
-      context.arcTo(x, y, x + e, y, e);
-      context.lineTo(x + w, y);
-      context.lineTo(x + w, y + h);
-      context.lineTo(x + e, y + h);
-      context.arcTo(x, y + h, x, y + h - e, e);
-      context.lineTo(x, y + e);
+      ctx.moveTo(x, y + e);
+      ctx.arcTo(x, y, x + e, y, e);
+      ctx.lineTo(x + w, y);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x + e, y + h);
+      ctx.arcTo(x, y + h, x, y + h - e, e);
+      ctx.lineTo(x, y + e);
 
-      context.closePath();
-      context.fill();
+      ctx.closePath();
+      ctx.fill();
 
-      context.shadowOffsetX = 0;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
     }
     */
 
     /*
     // Node border:
     if (settings('borderSize') > 0) {
-      context.beginPath();
-      context.fillStyle = settings('nodeBorderColor') === 'node' ?
+      ctx.beginPath();
+      ctx.fillStyle = settings('nodeBorderColor') === 'node' ?
         (node.color || settings('defaultNodeColor')) :
         settings('defaultNodeBorderColor');
-      context.arc(
+      ctx.arc(
         node[prefix + 'x'],
         node[prefix + 'y'],
         size + settings('borderSize'),
@@ -202,23 +223,23 @@
         Math.PI * 2,
         true
       );
-      context.closePath();
-      context.fill();
+      ctx.closePath();
+      ctx.fill();
     }
     */
 
     // Node:
     var nodeRenderer = sigma.canvas.nodes[node.type] || sigma.canvas.nodes.def;
-    // nodeRenderer(node, context, settings);
+    // nodeRenderer(node, ctx, settings);
 
     /*
     // Display the label:
     if (node.label && typeof node.label === 'string') {
-      context.fillStyle = (settings('labelHoverColor') === 'node') ?
+      ctx.fillStyle = (settings('labelHoverColor') === 'node') ?
         (node.color || settings('defaultNodeColor')) :
         settings('defaultLabelHoverColor');
 
-      context.fillText(
+      ctx.fillText(
         node.label,
         Math.round(node[prefix + 'x'] + size + 3),
         Math.round(node[prefix + 'y'] + fontSize / 3)
@@ -226,72 +247,6 @@
     }
     */
   };
-
-  /**
-   * This label renderer will just display the label on the center of the node.
-   *
-   * @param  {object}                   node     The node object.
-   * @param  {CanvasRenderingContext2D} context  The canvas context.
-   * @param  {configurable}             settings The settings function.
-   */
-  sigma.canvas.labels.term = function(node, context, settings) {
-  
-    
-    if (!node.label || typeof node.label !== 'string')
-      return;
-    var prefix = settings('prefix') || '';
-    // no labels for little nodes
-    if (node[prefix + 'size'] < settings('labelThreshold'))
-      return;
-    context.save();
-    var scale = (settings('scale'))?settings('scale'):1;
-    // node size relative to global size
-    var nodeSize = node[prefix + 'size'] * scale * 0.7;
-    // fontSize relative to nodeSize
-    var fontSize = (settings('labelSize') === 'fixed') ?
-      settings('defaultLabelSize') :
-      settings('defaultLabelSize') + settings('labelSizeRatio') * (nodeSize - settings('minNodeSize'));
-    // default font ?
-
-    var height = parseInt(fontSize);
-    var y = Math.round(node[prefix + 'y'] + nodeSize * 0.6);
-
-    var small = 25;
-    context.lineWidth = 1;
-    // bg color
-    if ( fontSize <= small) {
-      context.font = fontSize+'px '+settings('font');
-      var width = Math.round(context.measureText(node.label).width);
-      var x = Math.round(node[prefix + 'x'] - (width / 2) );
-      context.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      context.fillRect(x-fontSize*0.2, y - fontSize + fontSize/10, width+fontSize*0.4, height);
-    }
-    else {
-      context.font = settings('fontStyle')+' '+fontSize+'px '+settings('font');
-      var width = Math.round(context.measureText(node.label).width);
-      var x = Math.round(node[prefix + 'x'] - (width / 2) );
-      context.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      context.fillRect(x-fontSize*0.2, y - fontSize + fontSize/10, width+fontSize*0.4, height);
-    }
-    // text color
-    if (settings('labelColor') === 'node') {
-      context.fillStyle = (node.color || settings('defaultNodeColor'));
-    }
-    else {
-      context.fillStyle = settings('defaultLabelColor');
-    }
-
-    context.fillText( node.label, x, y);
-
-    /* border text ?
-    if (settings('labelStrokeStyle') && fontSize > small) {
-      context.strokeStyle = settings('labelStrokeStyle');
-      context.strokeText(node.label, x, y);
-    }
-    */
-    context.restore();
-  };
-
 
 
 
@@ -306,12 +261,9 @@
     var height = zediv.offsetHeight;
     // adjust maxnode size to screen height
     // var scale = Math.max( height, 150) / 700;
-    if ( !maxNodeSize ) maxNodeSize = height / 30;
+    if ( !maxNodeSize ) maxNodeSize = height / 20;
     else maxNodeSize = maxNodeSize * scale;
     var width = zediv.offsetWidth;
-    
-    // console.log(maxNodeSize);
-
     
     var s = new sigma({
       id: id,
@@ -341,8 +293,8 @@
         labelSizeRatio: 1.5,
         labelAlignment: 'center', // specific
         labelColor: "node",
-        font: ' Tahoma, Geneva, sans-serif', // after fontSize
-        fontStyle: ' ', // before fontSize
+        font: '"Fira Sans", "Open Sans", "Roboto", sans-serif', // after fontSize
+        fontStyle: 'bold', // before fontSize
 
         minNodeSize: 8,
         maxNodeSize: maxNodeSize,
@@ -539,7 +491,7 @@
           size: size,
           clip: true,
           zoomRatio: 1,
-          background: "#666",
+          background: "#4c555d",
           labels: false
         });
       };

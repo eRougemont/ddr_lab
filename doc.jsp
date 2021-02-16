@@ -36,9 +36,6 @@ catch (IllegalArgumentException e) { // doc not found
 
 
 
-
-
-
 // bibl ref with no tags
 String title = "";
 if (doc != null) title = ML.detag(doc.doc().get("scope"));

@@ -358,7 +358,7 @@ for (Node src: nodeMap.values()) {
     if (first) first = false;
     else out.println(", ");
     out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + results.score() 
-    + ", color:'rgba(0, 0, 0, 0.2)'"
+    + ", color:'rgba(128, 128, 128, 0.2)'"
     + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.occs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.occs(dstId) + ", freq:" + results.freq()
     + "}");
     if (src.type() != STAR &&  count == planets) break;
@@ -377,25 +377,25 @@ for (Node node: nodeMap.values()) {
    else out.println(", ");
    int tag = ftext.tag(node.formId);
    String color = "rgba(255, 255, 255, 1)";
-   if (node.type() == STAR) color = "rgba(255, 0, 0, 1)";
-   else if (Tag.isSub(tag)) color = "rgba(255, 255, 255, 1)";
-   else if (Tag.isName(tag)) color = "rgba(0, 255, 0, 1)";
-   else if (Tag.isVerb(tag)) color = "rgba(128, 128, 255, 1)";
-   else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-   else color = "rgba(192, 192, 192, 0.8)";
+   if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.7)";
+   // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
+   else if (Tag.NAME.sameParent(tag)) color = "rgba(207, 19, 8, 1)";
+   // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
+   // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
+   else color = "rgba(0, 0, 0, 0.8)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + dfdec2.format(10 * node.count) // node.count
-   + ", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) 
-   + ", color:'" + color + "'"
-   + "}");
+   out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + dfdec2.format(10 * node.count)); // node.count
+   out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+   if (node.type() == STAR) out.print(", type:'hub'");
+   out.print(", color:'" + color + "'");
+   out.println("}");
  }
  out.println("\n  ]");
 
   
 
 
- out.println("}");
-%>
+ out.println("}");%>
 
 
 

@@ -9,8 +9,6 @@
 <%@ page import="alix.lucene.search.FieldRail.Bigram" %>
 <%!
 
-
-
 %>
 <%
 JspTools tools = new JspTools(pageContext);
