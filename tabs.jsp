@@ -18,12 +18,12 @@ static public enum Tab {
   doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) {
   },
   ;
-  
+
   final public String label;
   final public String href;
   final public String hint;
   final public String[] pars;
-  private Tab(final String label, final String href, final String hint, final String[] pars) {  
+  private Tab(final String label, final String href, final String hint, final String[] pars) {
     this.label = label ;
     this.href = href;
     this.hint = hint;
@@ -41,7 +41,7 @@ static public enum Tab {
     }
     return sb.toString();
   }
-  
+
   public void a(final StringBuilder sb, final HttpServletRequest request)
   {
     String here = request.getRequestURI();
@@ -76,19 +76,5 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  <form>Base
-    <select  name="base" oninput="this.form.submit();">
-    <%
-    JspTools retools = new JspTools(pageContext);
-    String base = retools.getString("base", "rougemont", "alixBase");
-    for (Map.Entry<String, Alix> entry : Alix.pool.entrySet()) {
-      String value = entry.getKey();
-      out.print("<option value=\"" + value + "\"");
-      if (value.equals(base)) out.print(" selected=\"selected\"");
-      out.println(">" + entry.getValue().props.get("label") + "</option>");
-    }
-    %>
-    </select>
-  </form>
   <%= Tab.nav(request) %>
 </nav>
