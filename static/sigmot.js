@@ -50,9 +50,10 @@
     ctx.font = (settings('fontStyle') ? settings('fontStyle') + ' ' : '') +
       fontSize + 'px ' + settings('font');
 
-    labelWidth = ctx.measureText(node.label).width;
-    labelPlacementX = Math.round(node[prefix + 'x'] + size + 3);
-    labelPlacementY = Math.round(node[prefix + 'y'] + fontSize / 3);
+    var textMetrics = ctx.measureText(node.label);
+    var labelWidth = textMetrics.width;
+    var labelPlacementX = Math.round(node[prefix + 'x'] + size + 3);
+    var labelPlacementY = Math.round(node[prefix + 'y'] + fontSize / 3);
 
     switch (alignment) {
       case 'inside':
@@ -82,21 +83,24 @@
         labelPlacementX = Math.round(node[prefix + 'x'] + size + 3);
         break;
     }
+    var color = (settings('labelColor') === 'node') ? (node.color || settings('defaultNodeColor')) : settings('defaultLabelColor');
+    ctx.globalAlpha = 1;
     // Node border:
     if (node.type == 'hub') {
-      ctx.strokeStyle = (settings('labelColor') === 'node') ?
-      (node.color || settings('defaultNodeColor')) :
-      settings('defaultLabelColor');
+      ctx.strokeStyle = color;
       ctx.lineWidth = 0.5 + 0.05 * fontSize;
-      var padx = -4;
-      var pady = 1;
+      var padx = - 4 - fontSize / 5;
+      var pady = 5 + fontSize / 10;
       var x = labelPlacementX - padx;
-      var y = Math.round(labelPlacementY + 2 + pady - fontSize);
+      var y = labelPlacementY - pady - textMetrics.actualBoundingBoxAscent; // - textMetrics.actualBoundingBoxDescent;
       var w =labelWidth + 2 * padx;
-      var h = Math.round(fontSize + 2 * pady);
+      var h = Math.round(textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent + 2 * pady);
       var e = Math.round(h / 2);
-      ctx.globalAlpha = 0.3;
-      ctx.fillStyle = 'rgba(192, 0, 0, 0.3)';
+      // ctx.globalAlpha = 0.3;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.shadowColor="#fff";
+      ctx.lineWidth= 2 + fontSize / 10;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.beginPath();
       ctx.moveTo(x, y);
       // ctx.arcTo(x, y, x + e, y, e);
@@ -109,10 +113,9 @@
       ctx.quadraticCurveTo(x-e, y, x, y);
 
       ctx.closePath();
-
-      ctx.stroke();
       // ctx.fill();
-
+      ctx.stroke();
+      ctx.shadowBlur = 0;
     }
     /* too much time
     ctx.shadowColor="#fff";
@@ -131,11 +134,8 @@
     );
     ctx.globalAlpha = 0.6;
     */
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = (settings('labelColor') === 'node') ?
-      (node.color || settings('defaultNodeColor')) :
-      settings('defaultLabelColor');
 
+    ctx.fillStyle = color;
     ctx.fillText(
       node.label,
       labelPlacementX,

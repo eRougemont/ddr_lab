@@ -6,7 +6,44 @@ body {
   font-weight: 300;
   font-size: 18px;
 }
-body {
-  background-color: #fff;
+
+/**
+ * Welcome pages
+ */
+#portrait {
+  margin-left: 100px;
+  height: 200px;
+  position: relative;
+  display: inline-block;
+  width: auto;
+  max-width: 500px;
+  min-width: 270px;
+}
+#header_ban {
+  background-image: url('https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/header_ban.png');
+  background-size: 100% 200px;
+  background-repeat: no-repeat;
+  position: relative;
+  height: 200px;
+}
+#moto {
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #000;
+  display: block;
+  position: absolute;
+  top: 60px;
+  left: 120px;
 }
 
+#header_container {
+}
+
+#ddrtete {
+  position: absolute;
+}
+
+#header-row {
+  margin-left: 150px;
+}

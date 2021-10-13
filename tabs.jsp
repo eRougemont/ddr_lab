@@ -5,15 +5,19 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  freqs("Mots", "index.jsp", "Fréquences par mots", new String[]{"q", "book", "cat", "context"}) {
+  index("Accueil", "index.jsp", "Présentation", new String[]{"q", "book", "cat", "context"}) {
   },
-  wordnet("Réseau", "wordnet.jsp", "Réseaux de mots", new String[]{"q", "book", "cat", "right", "left"}) {
+  wordnet("Réseau", "reseau.jsp", "Réseaux de mots", new String[]{"q", "book", "cat", "right", "left"}) {
   },
-  books("Livres", "books.jsp", "Fréquences par livres", new String[]{"q"}) {
+  freqs("Table", "table.jsp", "Fréquences par mots", new String[]{"q", "book", "cat", "context"}) {
   },
-  chapters("Chapitres", "chapters.jsp", "Fréquences par livres", new String[]{"q"}) {
+  cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"q", "book", "cat", "context"}) {
   },
-  kwic("Concordance", "kwic.jsp", "Recherche de mot", new String[]{"q", "book"}) {
+  books("Livres", "livres.jsp", "Fréquences par livres", new String[]{"q"}) {
+  },
+  chapters("Chapitres", "chapitres.jsp", "Fréquences par livres", new String[]{"q"}) {
+  },
+  kwic("Concordance", "conc.jsp", "Recherche de mot", new String[]{"q", "book"}) {
   },
   doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) {
   },
@@ -76,5 +80,7 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
+  <strong>Rougemont, labo</strong>
+  <a style="float:right;" href="https://www.unige.ch/rougemont/" title="Aller à l’édition">Rougemont 2.0 ▲</a>
   <%= Tab.nav(request) %>
 </nav>

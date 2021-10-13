@@ -267,7 +267,7 @@ boolean first;
            <button type="submit">▶</button>
            <br/>
            <label for="words">Chercher</label>
-           <input type="text" name="q" value="<%=tools.escape(pars.q)%>" size="40" />
+           <input type="text" name="q" value="<% JspTools.escape(out, pars.q); %>" size="40" />
            <label for="book">Livre</label>
            <%= selectBook(alix, pars.book) %>
           <a class="help button" href="#aide">?</a>

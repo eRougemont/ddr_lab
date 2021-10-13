@@ -185,7 +185,7 @@ public Pars pars(final PageContext page)
   if (pars.limit < 1) pars.limit = limitMax;
   
   final int nodesMax = 300;
-  final int nodesMid = 100;
+  final int nodesMid = 50;
   pars.nodes = tools.getInt("nodes", nodesMid);
   if (pars.nodes < 1) pars.nodes = nodesMid;
   if (pars.nodes > nodesMax) pars.nodes = nodesMax;
