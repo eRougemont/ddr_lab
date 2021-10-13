@@ -138,11 +138,12 @@ Query query = alix.query(pars.fieldName, pars.q);
 if (query == null) {
   query = QUERY_CHAPTER;
 }
-
+/*
 query = new BooleanQuery.Builder()
     .add(new TermQuery(new Term("type", "article")), Occur.FILTER)
     .add(query, Occur.MUST)
     .build();
+*/
 
 IndexSearcher searcher = alix.searcher();
 // searcher.setSimilarity(sim.similarity()); // test has been done, BM25 is the best
