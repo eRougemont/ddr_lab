@@ -5,7 +5,7 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  index("Accueil", "index.jsp", "Présentation", new String[]{"q", "book", "cat", "context"}) {
+  index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{"q", "book", "cat", "context"}) {
   },
   wordnet("Réseau", "reseau.jsp", "Réseaux de mots", new String[]{"q", "book", "cat", "right", "left"}) {
   },
@@ -80,7 +80,7 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  <strong>Rougemont, labo</strong>
-  <a style="float:right;" href="https://www.unige.ch/rougemont/" title="Aller à l’édition">Rougemont 2.0 ▲</a>
+  
+  <a style="float:right;" href="https://www.unige.ch/rougemont/" title="Aller à l’édition">Rougemont 2.0 &#x2197;</a>
   <%= Tab.nav(request) %>
 </nav>

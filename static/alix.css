@@ -74,7 +74,6 @@ td.no {
 
 nav.tabs {
   background-color: var(--gray);
-  padding: 0 15px;
 }
 nav.tabs::after {
   content: "";
@@ -87,7 +86,6 @@ nav.tabs {
   color: #fff;
 }
 
-nav.tabs strong,
 nav.tabs a {
   padding: 5px 0.5rem;
   float: left;
@@ -95,8 +93,8 @@ nav.tabs a {
 
 nav.tabs a.selected,
 nav.tabs a:hover {
-  background-color: #ccc;
-  color: #000;
+  background-color: var(--red);
+  color: #fff;
 }
 
 nav.tabs form {
