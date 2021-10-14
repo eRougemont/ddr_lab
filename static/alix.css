@@ -188,6 +188,17 @@ label {
   padding-right: 0px;
 }
 
+form.search a.icon {
+  border: 1px transparent solid;
+  padding: 4px 4px 0px 4px;
+  margin-right: 4px;
+  float: right;
+}
+
+
+form.search a.icon:hover {
+  border-color: #fff;
+}
 
 select {
   background-color: #FFFFFF;

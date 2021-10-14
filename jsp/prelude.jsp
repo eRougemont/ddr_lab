@@ -57,8 +57,10 @@ final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Loca
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
 static final DecimalFormat dfdec3 = new DecimalFormat("0.000", ensyms);
 static final DecimalFormat dfdec2 = new DecimalFormat("0.00", ensyms);
+static final DecimalFormat frdec2 = new DecimalFormat("0.00", frsyms);
 static final DecimalFormat dfdec1 = new DecimalFormat("0.0", ensyms);
 static final DecimalFormat dfdec5 = new DecimalFormat("0.0000E0", ensyms);
+static final DecimalFormat frdec5 = new DecimalFormat("0.0000E0", frsyms);
 static final DecimalFormat dfScore = new DecimalFormat( "0.00000", ensyms);
 /** Fields to retrieve in document for a book */
 final static HashSet<String> BOOK_FIELDS = new HashSet<String>(Arrays.asList(new String[] {Alix.BOOKID, "byline", "year", "title"}));
@@ -266,5 +268,53 @@ public String selectBook(final Alix alix, String bookid) throws IOException
 
 public static final String BASE = "rougemont";
 static String hrefHome = "";
+
+/**
+ *
+ */
+public FormEnum freqList(Alix alix, Pars pars) throws IOException
+{
+  Corpus corpus = null;
+  BitSet filter = null; // if a corpus is selected, filter results with a bitset
+  if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
+
+  FieldText fieldText = alix.fieldText(pars.fieldName);
+
+  boolean reverse = false;
+  if (pars.order == Order.last) reverse = true;
+
+  FormEnum results = null;
+  if (pars.q != null) {
+    FieldRail rail = alix.fieldRail(pars.fieldName); // get the tool for cooccurrences
+    // prepare a result object to populate with co-occurences
+    results = new FormEnum(fieldText); 
+    results.search = alix.forms(pars.q); // parse query as terms
+    int pivotsOccs = 0;
+    for (String form: results.search) {
+      pivotsOccs += fieldText.occs(form);
+    }
+    results.left = pars.left; // left context
+    results.right = pars.right; // right context
+    results.filter = filter; // limit to some documents
+    results.tags = pars.cat.tags(); // limit word list by tags
+    long found = rail.coocs(results); // populate the wordlist
+    if (found > 0) {
+      // parameters for sorting
+      results.limit = pars.limit;
+      results.mi = pars.mi;
+      results.reverse = reverse;
+      rail.score(results, pivotsOccs);
+    }
+    else {
+      // if nothing found, what should be done ?
+    }
+  }
+  else {
+    // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
+    // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
+    results = fieldText.results(pars.limit, pars.cat.tags(), pars.distrib.scorer(), filter, reverse);
+  }
+  return results;
+}
 
 %>

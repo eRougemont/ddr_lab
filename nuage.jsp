@@ -125,69 +125,7 @@ while (results.hasNext()) {
 %>
 ];
       </script>
-      <table class="sortable" width="100%">
-        <thead>
-          <tr>
-            <td/>
-            <th title="Forme graphique indexée">Graphie</th>
-            <th title="Catégorie grammaticale">Catégorie</th>
-            <th title="Nombre d’occurrences" class="num"> Occurrences</th>
-            <th title="Nombre de chapitres" class="num"> Chapitres</th>
-            <th title="Score selon l’algorithme" class="num"> Score</th>
-            <th width="100%"/>
-            <td/>
-          <tr>
-        </thead>
-        <tbody>
-          <%
-            // todo, book selector
-                String urlForm = "kwic.jsp?" + tools.url(new String[]{"book"}) + "&amp;q=";
-                // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
-                int no = 0;
-                results.reset();
-                while (results.hasNext()) {
-                  results.next();
-                  no++;
-                  String term = results.form();
-                  // .replace('_', ' ') ?
-                  out.println("  <tr>");
-                  out.println("    <td class=\"no left\">"  + no + "</td>");
-                  out.println("    <td class=\"form\">");
-                  out.print("      <a");
-                  out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
-                  out.print(">");
-                  out.print(term);
-                  out.print("</a>");
-                  out.println("    </td>");
-                  
-                  out.print("    <td>");
-                  out.print(Tag.label(results.tag()));
-                  out.println("</td>");
-                  
-                  out.print("    <td class=\"num\">");
-                  out.print(results.freq()) ;
-                  if (filter != null || pars.q != null) out.print("<small> / " + results.formOccs() + "<small>");
-                  // out.println("</a>");
-                  out.println("    </td>");
-                  out.print("    <td class=\"num\">");
-                  out.print(results.hits()) ;
-                  if (filter != null || pars.q != null) out.print("<small> / " + results.formDocs() + "<small>");
-                  out.println("</td>");
-                  // fréquence
-                  // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-                  out.print("    <td class=\"num\">");
-                  out.print(formatScore(results.score()));
-                  out.println("</td>");
-                  out.println("    <td></td>");
-                  out.println("    <td class=\"no right\">" + no + "</td>");
-                  out.println("  </tr>");
-                }
-          %>
-        </tbody>
-      </table>
-      <p> </p>
     </main>
-    <script src="<%= hrefHome %>vendor/sortable.js">//</script>
     <script src="<%= hrefHome %>vendor/wordcloud2.js">//</script>
     <script src="<%= hrefHome %>static/cloud.js">//</script>
   </body>

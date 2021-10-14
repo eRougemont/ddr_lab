@@ -187,7 +187,7 @@ boolean first;
       int formId = ftext.formId(form);
       if (formId < 0) continue;
       final long freq;
-      if (pars.book != null) freq = results.formOccs(formId);
+      if (pars.book != null) freq = results.freq(formId);
       else freq = ftext.occs(formId);
       if (freq < 1) continue;
       // keep query words as stars

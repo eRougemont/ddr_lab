@@ -11,47 +11,7 @@ IndexReader reader = alix.reader();
 
 // get default parameters from request
 Pars pars = pars(pageContext);
-Corpus corpus = null;
-BitSet filter = null; // if a corpus is selected, filter results with a bitset
-if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
-
-FieldText fieldText = alix.fieldText(pars.fieldName);
-
-boolean reverse = false;
-if (pars.order == Order.last) reverse = true;
-
-FormEnum results = null;
-if (pars.q != null) {
-  FieldRail rail = alix.fieldRail(pars.fieldName); // get the tool for cooccurrences
-  // parameters and population of dic.freqs and dic.hits with the rail co-occurrents
-  results = new FormEnum(fieldText); // build a wrapper to have results
-  results.search = alix.forms(pars.q); // parse query as terms
-  int pivotsOccs = 0;
-  for (String form: results.search) {
-    pivotsOccs += fieldText.occs(form);
-  }
-  results.left = pars.left; // left context
-  results.right = pars.right; // right context
-  results.filter = filter; // limit to some documents
-  results.tags = pars.cat.tags(); // limit word list by tags
-  long found = rail.coocs(results);
-  if (found > 0) {
-    // parameters for sorting
-    results.limit = pars.limit;
-    results.mi = pars.mi;
-    results.reverse = reverse;
-    rail.score(results, pivotsOccs);
-  }
-  else {
-    // if nothing found, what should be done ?
-  }
-}
-else {
-  // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
-  // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
-  results = fieldText.results(pars.limit, pars.cat.tags(), pars.distrib.scorer(), filter, reverse);
-}
-
+FormEnum results = freqList(alix, pars);
 %>
 <!DOCTYPE html>
 <html>
@@ -64,6 +24,8 @@ else {
       <jsp:include page="tabs.jsp"/>
     </header>
     <form  class="search">
+      <a  class="icon" href="csv.jsp?<%= tools.url(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi"}) %>"><img src="static/icon_csv.svg" alt="Export intégral des données au format "></a>
+      <a class="icon" href="tableur.jsp?<%= tools.url(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi", "limit"}) %>"><img src="static/icon_excel.svg" alt="Export des données visibles pour Excel"></a>
       <input type="hidden" name="f" value="<%=JspTools.escape(pars.fieldName)%>"/>
       <input type="hidden" name="order" value="<%=pars.order%>"/>
       <label for="limit">Mots</label>
@@ -80,6 +42,7 @@ else {
       </select>
            <%
            /*
+           
              if (pars.book == null && pars.q == null) out.println (pars.ranking.options("occs bm25 tfidf"));
                   // else out.println (pars.ranking.options("occs bm25 tfidf g chi2"));
                   else out.println (pars.ranking.options());
@@ -144,12 +107,12 @@ else {
                   
                   out.print("    <td class=\"num\">");
                   out.print(results.freq()) ;
-                  if (filter != null || pars.q != null) out.print("<small> / " + results.formOccs() + "<small>");
+                  if (results.filter != null || pars.q != null) out.print("<small> / " + results.occs() + "<small>");
                   // out.println("</a>");
                   out.println("    </td>");
                   out.print("    <td class=\"num\">");
                   out.print(results.hits()) ;
-                  if (filter != null || pars.q != null) out.print("<small> / " + results.formDocs() + "<small>");
+                  if (results.filter != null || pars.q != null) out.print("<small> / " + results.docs() + "<small>");
                   out.println("</td>");
                   // fréquence
                   // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;

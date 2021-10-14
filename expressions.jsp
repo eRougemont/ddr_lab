@@ -78,8 +78,8 @@ FieldText field = alix.fieldText(fieldName);
 FieldRail rail = alix.fieldRail(fieldName);
 
 
-final long N = field.allOccs;
-final long[] formOccs = field.formAllOccs;;
+final long N = field.occsAll;
+final long[] formOccs = field.formOccsAll;;
 
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (book != null) {

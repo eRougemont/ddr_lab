@@ -146,46 +146,46 @@ window.addEventListener("load", function(event) {
         <tbody>
           <%
             // todo, book selector
-                String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
-                // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
-                int no = 0;
-                results.reset();
-                while (results.hasNext()) {
-                  results.next();
-                  no++;
-                  String term = results.form();
-                  // .replace('_', ' ') ?
-                  out.println("  <tr>");
-                  out.println("    <td class=\"no left\">"  + no + "</td>");
-                  out.println("    <td class=\"form\">");
-                  out.print("      <a");
-                  out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
-                  out.print(">");
-                  out.print(term);
-                  out.print("</a>");
-                  out.println("    </td>");
-                  
-                  out.print("    <td>");
-                  out.print(Tag.label(results.tag()));
-                  out.println("</td>");
-                  
-                  out.print("    <td class=\"num\">");
-                  // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
-                  out.print(results.formOccs()) ;
-                  // out.println("</a>");
-                  out.println("    </td>");
-                  out.print("    <td class=\"num\">");
-                  out.print(results.formDocs()) ;
-                  out.println("</td>");
-                  // fréquence
-                  // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-                  out.print("    <td class=\"num\">");
-                  out.print(formatScore(results.score()));
-                  out.println("</td>");
-                  out.println("    <td></td>");
-                  out.println("    <td class=\"no right\">" + no + "</td>");
-                  out.println("  </tr>");
-                }
+                                  String urlForm = "kwic.jsp?" + tools.url(new String[]{"ranking", "book"}) + "&amp;q=";
+                                  // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
+                                  int no = 0;
+                                  results.reset();
+                                  while (results.hasNext()) {
+                                    results.next();
+                                    no++;
+                                    String term = results.form();
+                                    // .replace('_', ' ') ?
+                                    out.println("  <tr>");
+                                    out.println("    <td class=\"no left\">"  + no + "</td>");
+                                    out.println("    <td class=\"form\">");
+                                    out.print("      <a");
+                                    out.print(" href=\"" + urlForm + JspTools.escUrl(term) + "\"");
+                                    out.print(">");
+                                    out.print(term);
+                                    out.print("</a>");
+                                    out.println("    </td>");
+                                    
+                                    out.print("    <td>");
+                                    out.print(Tag.label(results.tag()));
+                                    out.println("</td>");
+                                    
+                                    out.print("    <td class=\"num\">");
+                                    // out.print("      <a href=\"" + urlOccs + JspTools.escUrl(term) + "\">");
+                                    out.print(results.occs()) ;
+                                    // out.println("</a>");
+                                    out.println("    </td>");
+                                    out.print("    <td class=\"num\">");
+                                    out.print(results.docs()) ;
+                                    out.println("</td>");
+                                    // fréquence
+                                    // out.println(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+                                    out.print("    <td class=\"num\">");
+                                    out.print(formatScore(results.score()));
+                                    out.println("</td>");
+                                    out.println("    <td></td>");
+                                    out.println("    <td class=\"no right\">" + no + "</td>");
+                                    out.println("  </tr>");
+                                  }
           %>
         </tbody>
       </table>
