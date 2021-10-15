@@ -34,7 +34,7 @@
             <li><a href="conc.jsp">Concordance</a> : occurences avec extraits, d’un ou plusieurs mots recherchés</li>
             <li><a href="doc.jsp">Liseuse</a> : occurences dans le contexte d’un chapitre/article, d’un ou plusieurs mots recherchés</li>
           </ul>
-          <p><a href="#" onmouseover="if(this.ok)return; this.href='mai'+'lt'+'o:rougemont'+'\u0040'+'unige.ch'; this.ok=true">🖂 renseignements</a></p>
+          <p><a href="#" onmouseover="if(this.ok)return; this.href='mai'+'lt'+'o:rougemont'+'\u0040'+'unige.ch'; this.ok=true">Renseignements</a></p>
         </div>
       </div>
     </main>

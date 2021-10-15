@@ -35,13 +35,17 @@ IndexReader reader = alix.reader();
     </form>
     <main>
       <table class="sortable" width="100%">
-        <caption>Classer les livres selon un ou plusieurs mots</caption>
+        <caption>Lecture : <a href="?q=aimer">chercher le verbe aimer</a>.
+<br/>— Dans <i>Comme toi-même</i>, 198 occurrences trouvées (/ ~70 000 mots), dans 14 chapitres (/ 20).
+<br/>— Le score de pertinence est calculé relativement à la taille du livre, et à la présence du mot ailleurs dans le corpus</caption>
         <thead>
           <tr>
             <td/>
             <th>Livre</th>
-            <th title="Nombre d’occurrences" class="num"> Occurrences</th>
-            <th title="Nombre de chapitres" class="num"> Chapitres</th>
+            <th title="Nombre d’occurrences trouvées" class="num"> Occurrences</th>
+            <td title="Taille du livre-compilation en mots" class="all">/mots</td>
+            <th title="Nombre de chapitres-articles contenant les mots cherchés" class="num"> Résultats</th>
+            <td title="Taille du livre-compilation en chapitres-articles" class="all">/chapitres</th>
             <th title="Score selon l’algorithme" class="num"> Score</th>
             <th width="100%"/>
             <td/>
@@ -51,8 +55,8 @@ IndexReader reader = alix.reader();
         
     
 <%
-            //global variables
-            FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
+          //global variables
+          FieldFacet facet = alix.fieldFacet(Alix.BOOKID, TEXT);
             String[] search = alix.forms(pars.q);
             FormEnum dic = facet.iterator(search, null, pars.distrib.scorer(), -1);
             // if no word searched, sort by date, not well optimized here
@@ -70,7 +74,7 @@ IndexReader reader = alix.reader();
             dic.setNos(nos);
             */
             // build a resizable href link
-            final String href = "kwic.jsp?q=" + JspTools.escape(pars.q)+ "&amp;book=";
+            final String href = "conc.jsp?q=" + JspTools.escape(pars.q)+ "&amp;book=";
             // resend a query somewhere ?
             boolean zero = false;
             int no = 1;
@@ -107,17 +111,27 @@ IndexReader reader = alix.reader();
               out.print(doc.get("year"));
               out.print(", ");
               out.print(doc.get("title"));
-
               out.print("</a>");
               out.println("</td>");
+              
               out.print("    <td class=\"num\">");
-              if (dic.freq() > 0) out.print(dic.freq());
-              // out.print("<small>/" + dic.formOccs() + "</small>");
+              if (dic.freq() > 0) {
+                out.print(dic.freq());
+              }
               out.println("</td>");
+
+              out.print("    <td class=\"all\">");
+              out.print("/ "+frdec.format(dic.occs()));
+              out.println("</td>");
+
               out.print("    <td class=\"num\">");
               if (dic.hits() > 0) out.print(dic.hits());
-              out.print("<small class=\"docs\">/" + dic.formDocs() + "</small>");
               out.println("</td>");
+              
+              out.print("    <td class=\"all\">");
+              out.print("/ "+dic.docs());
+              out.println("</td>");
+
               // fréquence
               // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
               out.print("    <td class=\"num\">");

@@ -55,6 +55,9 @@ static final String COOKIE_BASE = "alixBase";
 
 final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
+
+static final DecimalFormat frdec = new DecimalFormat("###,###,###,###", frsyms);
+
 static final DecimalFormat dfdec3 = new DecimalFormat("0.000", ensyms);
 static final DecimalFormat dfdec2 = new DecimalFormat("0.00", ensyms);
 static final DecimalFormat frdec2 = new DecimalFormat("0.00", frsyms);

@@ -502,7 +502,17 @@ table.sortable {
 }
 
 table.sortable caption {
-  text-align: left;
+  padding: 1rem 2rem;
+  font-weight: 400;
+  text-align: justify;
+  line-height: 1.2em;
+}
+
+caption a {
+  color: var(--red);
+}
+caption a:hover {
+  text-decoration: underline;
 }
 
 .sortable td a {
@@ -551,6 +561,8 @@ table.sortable tr:hover {
   box-shadow: 0px 0px 5px 0px var(--red);
 }
 
+table.sortable th.all,
+td.all,
 table.sortable th.num,
 td.num {
   text-align: right;
@@ -560,14 +572,11 @@ td.num {
 td.num {
   font-family: monospace;
 }
-td.num small {
+td.all {
   font-family: sans-serif;
+  color: #888;
 }
 
-td.num small.docs {
-  display: inline-block;
-  width: 4ex;
-}
 td.target {
   cursor: pointer;
   background: var(--red);

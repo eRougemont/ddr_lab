@@ -216,7 +216,7 @@ var Sortable = {
     // innerText could be very slow (infers CSS visibility)
     text=Sortable.trim(text);
     // num
-    n=parseFloat(text.replace(/,/g, '.').replace(/[  x×/]/g, ''));
+    n=parseFloat(text.replace(/,/g, '.').replace(/[  x×\/]/g, ''));
     // text
     if (isNaN(n)) {
       text=text.toLowerCase().replace(/’/, "'").replace(/^(d'|de |le |les |la |l')/, '').replace(/œ/g, 'oe').replace(/æ/g, 'ae').replace(/ç/g, 'c').replace(/ñ/g, 'n').replace(/[éèêë]/g, 'e').replace(/[áàâä]/g, 'a').replace(/[íìîï]/g, 'i').replace(/úùûü/, 'u').replace(/\W/g, '') ;
