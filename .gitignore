@@ -1,3 +1,4 @@
+*.jardesc
 .*.swp
 /WEB-INF/*.xml
 !/WEB-INF/web.xml
