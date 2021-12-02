@@ -1,33 +1,4 @@
 /*! Teinte.css, generic TEI styling, https://github.com/oeuvres/Teinte   */
-
-/* Relative sizes */
-
-.argument,
-.epigraph,
-blockquote.quote,
-li.witness,
-div.speaker,
-p.speaker,
-.questions,
-.note,
-.floatingText,
-li.bibl {
-  font-size: 93%;
-  line-height: 125%;
-}
-
-.titlePage div.rights,
-a.noteback,
-.note-page,
-.p.manuscrits,
-p dfn.gloss,
-div.gloss,
-div.l dfn.gloss,
-.small {
-  font-size: small;
-  line-height: 110%;
-}
-
 /* Reset CSS */
 html,
 body {
@@ -103,6 +74,27 @@ div.stage {
   hyphens: auto;
 }
 
+.bookmark,
+.cb,
+.pb,
+small.l,
+small.l-n,
+.noteref,
+.pb,
+div.biblverse span.lb::after,
+.mark a.prev,
+.mark a.next,
+.unselectable,
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+
 /* html5 default, in alphabetic order */
 a:target,
 mark:target,
@@ -137,7 +129,7 @@ article a {
 article a:hover {
   background-color: rgba(255, 255, 255, 0.3);
   color: #000;
-  border-bottom-color: inherit;
+  border-color: inherit;
   text-decoration: none;
 }
 
@@ -166,7 +158,7 @@ acronym {
 
 address {
   font-style: normal;
-  line-height: 110%;
+  line-height: 1.1;
 }
 
 article {
@@ -180,8 +172,12 @@ aside header {
 }
 
 blockquote.quote {
-  margin: 1.5rem 0rem 1.5rem 1.5rem;
-  padding: 0;
+  margin: 0 0 0 0.5rem;
+  padding: 0.4rem 0rem 0.6rem 1rem;
+  line-height: 1.2;
+  color:rgba(0, 0, 0, 0.5);
+  border-left: 0.5rem solid rgba(128, 128, 128, 0.1);
+  font-size: 1.2rem;
 }
 
 blockquote.quote .p {}
@@ -220,7 +216,7 @@ fieldset {
 }
 
 fieldset div {
-  line-height: 1.1rem;
+  line-height: 1.1;
   margin: 0.25rem 0;
 }
 
@@ -257,7 +253,7 @@ figcaption img {
 figure {
   display: block;
   position: relative;
-  line-height: 105%;
+  line-height: 1.05;
   margin: 0;
   text-align: left;
   margin-top: 1rem;
@@ -328,13 +324,29 @@ h6 {
   orphans: 0;
 }
 
+a.bookmark {
+  font-size: 60%;
+  visibility: hidden;
+}
+
+h1:hover a.bookmark,
+h2:hover a.bookmark,
+h3:hover a.bookmark,
+h4:hover a.bookmark,
+h5:hover a.bookmark,
+h6:hover a.bookmark,
+a.bookmark:hover {
+  opacity: 0.5;
+  visibility: visible;
+}
+
 h1 {
   font-size: 130%;
   font-weight: 900;
   padding-top: 1rem;
   margin-top: 0;
   text-align: center;
-  line-height: 115%;
+  line-height: 1.15;
 }
 
 h1 small {
@@ -357,6 +369,7 @@ h3 a:link,
 h3 a:visited {
   text-decoration: none;
   border-bottom-color: transparent;
+  color: inherit;
 }
 
 h1 a:hover {
@@ -368,7 +381,7 @@ h2 {
   font-size: 130%;
   margin: 1rem 0 1rem 0;
   padding-top: 1rem;
-  line-height: 150%;
+  line-height: 1.5;
   text-align: center;
 }
 
@@ -378,7 +391,7 @@ h3 {
   margin-top: 1rem;
   margin-bottom: 1rem;
   padding-top: 1rem;
-  text-indent: 1.5rem;
+  text-indent: 2rem;
 }
 
 h5,
@@ -426,7 +439,7 @@ kbd {
 }
 
 li.item {
-  line-height: 120%;
+  line-height: 1.2;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
@@ -473,7 +486,7 @@ menu a {
 menu li {
   margin-bottom: 0;
   margin-top: 0;
-  line-height: 110%;
+  line-height: 1.1;
   list-style: none;
 }
 
@@ -485,7 +498,7 @@ menu ul {
 }
 
 menu ul li {
-  line-height: 105%;
+  line-height: 1.05;
   padding-top: 0;
   margin-top: 0;
   padding-bottom: 0;
@@ -578,7 +591,7 @@ pre .label {
 
 pre {
   width: 95%;
-  line-height: 1rem;
+  line-height: 1;
   border-left: 1px dotted #808080;
   padding-left: 10px;
   overflow: auto;
@@ -594,8 +607,14 @@ q:after {
   content: '';
 }
 
-q q {
+q.quote {
   font-style: italic;
+}
+
+q.quote em,
+q.quote i,
+q.quote q {
+  font-style: normal;
 }
 
 samp {
@@ -696,6 +715,11 @@ form a {
   border-bottom: none;
 }
 
+form label {
+  padding: 0;
+  line-height: 1;
+}
+
 form h1 {
   margin: 0;
   padding: 0;
@@ -767,6 +791,7 @@ textarea {
 
 textarea[readonly],
 textarea.readonly {
+  font-size: 20px;
   padding: 1rem;
   height: 10rem;
   width: 90%;
@@ -787,13 +812,21 @@ h2.castList {
 
 .argument {
   margin: 2rem 0 3rem 0;
+  line-height: 1.4;
+  font-size: 105%;
   text-indent: 0;
+  font-style: italic;
   text-align: justify
+}
+
+.argument em,
+.argument i {
+  font-style: normal;
 }
 
 p.argument {
   font-style: normal;
-  line-height: 140%;
+  line-height: 1.4;
   text-indent: 2rem;
 }
 
@@ -833,13 +866,14 @@ figure.bibl {
 
 li.bibl {
   list-style: circle;
+  font-size: 90%;
 }
 
 /* like li.witness */
 blockquote .bibl {
   text-align: right;
   margin-top: 0.5rem;
-  line-height: 110%;
+  line-height: 1.1;
 }
 
 .quote.l .bibl {
@@ -848,16 +882,14 @@ blockquote .bibl {
   margin-right: 15%;
 }
 
-p.byline,
-div.byline {
+.byline {
   text-align: right;
   margin-left: 2rem;
   margin-top: 2rem;
   text-indent: 0;
 }
 
-aside p.byline,
-aside div.byline {
+aside .byline {
   margin-top: 0;
   text-align: left;
   margin: 0 20% 0 0;
@@ -893,16 +925,23 @@ small.l-n {
   text-indent: 0;
   text-decoration: none;
   border: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  font-size: 80%;
+}
+
+article > .pb,
+footer > .pb,
+header > .pb,
+section > .pb {
+  float: left;
+  margin-right: 0.5rem;
+  margin-top: 0.3rem;
 }
 
 a.pb {
   color: #888;
 }
+
+
 
 a.pb:hover {
   background-color: #FFFFFF;
@@ -921,8 +960,6 @@ a.pb:hover {
 }
 
 small.ed {
-  color: grey;
-  font-size: 11px;
 }
 
 .choice {
@@ -976,6 +1013,7 @@ aside .docDate {
 
 .epigraph {
   margin: 2rem 0 3rem 5rem;
+  font-size: 92%;
 }
 
 .epigraph p.p,
@@ -1000,7 +1038,7 @@ aside .docDate {
 }
 
 li.item {
-  line-height: 120%;
+  line-height: 1.2;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
@@ -1051,10 +1089,12 @@ li.item {
 .fileDesc>.publicationStmt,
 .fileDesc>.sourceDesc {
   text-align: left;
-  line-height: 1.2rem;
+  line-height: 1.2;
 }
 
 .floatingText {
+  font-size: 0.8rem;
+  line-height: 1.2;
   padding: 0% 1% 1% 5%;
   background-color: #F8F7F4;
 }
@@ -1080,15 +1120,21 @@ hr.footnotes {
   font-variant: normal;
 }
 
+.form {
+  font-weight: bold;
+}
+
 div.l dfn.gloss {
   display: block;
   position: absolute;
   padding: 5px 5px 5px 5px;
   border-radius: 10px;
+  line-height: 1.1;
   text-align: left;
   float: right;
   margin-left: 25rem;
   width: 250px;
+  font-size: small;
   background-color: #F3F3F3;
   text-indent: 0;
 }
@@ -1097,27 +1143,35 @@ p dfn.gloss,
 div.gloss {
   padding: 5px 5px 5px 5px;
   border-radius: 10px;
+  line-height: 1.1;
   text-align: left;
+  font-size: small;
   background-color: #F3F3F3;
   text-indent: 0;
 }
 
+
+div.index {
+  background-color: #eee;
+  padding: 0.2rem 1rem;
+}
+
 li.item {
-  line-height: 120%;
+  line-height: 1.2;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
 
 .l {
 /* negative indent for long verse ?
-  text-indent: -1.5rem;
-  padding-left: 1.5rem;
-  line-height: 150%;
+  text-indent: -2rem;
+  padding-left: 2rem;
+  line-height: 1.5;
   */
 }
 
 .lg > .lg > .l:first-of-type {
-  text-indent: 1.5rem;
+  /* text-indent: 2rem; */
 }
 
 
@@ -1200,7 +1254,8 @@ li.item {
 }
 
 .p.manuscrits {
-  margin-top: 1.5rem;
+  font-size: 80%;
+  margin-top: 2rem;
   background-color: #FBFAF8;
   border-radius: 8px;
 }
@@ -1222,7 +1277,7 @@ label.label {
 p.label,
 div.label {
   margin: 1.4rem 0 0.7rem 0;
-  line-height: 105%;
+  line-height: 1.05;
   text-align: center;
   text-indent: 0;
   padding-left: 0;
@@ -1232,7 +1287,6 @@ div.label {
 
 blockquote.quote .label {
   margin: 0.5rem 0 0.25rem 2rem;
-  text-align: left;
 }
 
 figure .label {
@@ -1276,7 +1330,7 @@ div.lg {
   position: relative;
   width: 15rem;
   text-align: right;
-  line-height: 120%;
+  line-height: 1.2;
 }
 
 .marginnote a {
@@ -1285,12 +1339,10 @@ div.lg {
 }
 
 .note {
+  line-height: 1.25;
+  font-size: 90%;
   margin: 1px 0 1rem 0;
   clear: both;
-}
-
-  {
-  background-color: #FFFFEE;
 }
 
 .note blockquote {
@@ -1321,6 +1373,10 @@ p.note {
   margin-top: 0.5rem;
 }
 
+.note-page {
+  font-size: 0.8rem;
+}
+
 .note-margin-left {
   float: left;
   margin-left: -2rem;
@@ -1328,15 +1384,20 @@ p.note {
 }
 
 a.noteref {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  font-size: 60%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+  top: -0.4em;
+}
+
+a.noteref sup {
+  font-size: 100%;
 }
 
 a.noteref,
 a.noteback {
+  font-family: sans-serif;
   text-decoration: none;
   border-bottom: none;
   font-style: normal;
@@ -1345,9 +1406,13 @@ a.noteback {
   /* note sep */
 }
 
+a.noteback {
+  font-size: 85%;
+}
+
 .num {
   font-family: inherit;
-  line-height: 100%;
+  line-height: 1;
   font-variant: small-caps;
 }
 
@@ -1359,8 +1424,13 @@ a.noteback {
   margin-bottom: 1rem;
 }
 
-.questions {
-  margin: 1rem 0 1rem 0;
+p.p {
+  text-indent: 2rem;
+}
+
+p.p.no {
+  text-indent: 0;
+  margin-top: 1rem;
 }
 
 /*
@@ -1372,7 +1442,7 @@ div.salute,
 p.salute {
   margin: 1rem 0 1rem 0;
   text-align: left;
-  text-indent: 1.5rem;
+  text-indent: 2rem;
 }
 
 .letter .salute {
@@ -1404,18 +1474,23 @@ p.salute {
 
 div.speaker,
 p.speaker {
+  color: #666;
+  font-weight: bold;
+  font-size: 90%;
   margin-top: 1rem;
   margin-bottom: 0.25rem;
-  font-weight: normal;
   text-transform: uppercase;
   text-indent: 3rem;
+  line-height: 1.2;
 }
 
 .speaker i,
 .speaker em {
+  font-weight: normal;
+  font-size: 111%;
   font-variant: normal;
-  font-size: 90%;
   text-transform: none;
+  color: #000;
 }
 
 .stage {
@@ -1434,7 +1509,7 @@ section>div.stage em {
 
 div.stage {
   text-align: justify;
-  /* line-height: 120%; */
+  /* line-height: 1.2; */
 }
 
 .stage.indent {
@@ -1570,10 +1645,13 @@ i .title,
 
 .titlePage>.docImprint {
   font-size: 75%;
-  line-height: 150%;
+  line-height: 1.5;
   margin-top: 1rem;
 }
 
+.titlePage div.rights {
+  font-size: 65%;
+}
 
 .titlePage p,
 .titlePage blockquote,
@@ -1609,6 +1687,7 @@ i .title,
   padding-bottom: 0;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  border: none;
 }
 
 .titleStmt div {
@@ -1624,6 +1703,8 @@ i .title,
 
 li.witness {
   list-style: square;
+  font-size: 90%;
+  font-family: sans-serif;
 }
 
 .witness label,
@@ -1632,14 +1713,35 @@ i.wit,
 a.msDesc {
   font-style: italic;
   color: inherit;
+  font-family: serif;
 }
 
 /**
  * @rend, @type useful classes, in alphabetic order
  */
 p.p {
-  text-indent: 1.5rem;
+  text-indent: 2rem;
 }
+
+ul,
+ol {
+  padding-left: 2rem;
+}
+
+p.p.no {
+  text-indent: 0;
+}
+
+.milestone.no::before {
+  content: "\a";
+  white-space: pre;
+}
+small.no {
+  font-weight: 900;
+  font-style: normal;
+  width: 3rem;
+}
+
 
 .alert {
   color: #971716;
@@ -1665,36 +1767,17 @@ section.article h2 {
   font-size: 130%;
 }
 
-.border {
-  border: 1px solid #808080;
-  padding: 0.2rem 0.5rem;
-}
-
+div.border,
 blockquote.border {
-  border: none;
-  padding: inherit;
+  margin: 1rem 0;
+  border: 1px solid #808080;
+  padding: 0.5rem 1.5rem;
 }
 
-a.bookmark {
-  font-size: 60%;
-  visibility: hidden;
-  user-select: none;
-}
-
-h1:hover a.bookmark,
-h2:hover a.bookmark,
-h3:hover a.bookmark,
-h4:hover a.bookmark,
-h5:hover a.bookmark,
-h6:hover a.bookmark,
-a.bookmark:hover {
-  opacity: 0.5;
-  visibility: visible;
-}
 
 div.center,
 p.center,
-blockquote.center>* {
+blockquote.center > * {
   text-align: center;
   text-indent: 0;
   margin-left: auto;
@@ -1707,15 +1790,16 @@ blockquote.center>* {
   display: table;
 }
 
+.center h1,
+.center h2,
+.center h3,
+.center h4,
+.center .l,
 .center p {
   text-align: inherit;
   text-indent: 0;
 }
 
-.center l {
-  text-align: inherit;
-  text-indent: 0;
-}
 
 span.center {
   display: block;
@@ -1764,6 +1848,32 @@ hr.dots {
   float: left;
   line-height: 1;
 }
+p.initial4::first-letter {
+  display: block;
+  font-weight: bold;
+  padding-top: -0.8em;
+  margin-left: -0.2em;
+  margin-right: 5px;
+  font-size: 6em;
+  float: left;
+  line-height: 1;
+}
+p.initial2::first-letter {
+  display: block;
+  font-weight: bold;
+  font-size: 2.8em;
+  float: left;
+  line-height: 1;
+  padding-top: 0.2em;
+  margin-right: 0.2em;
+}
+
+
+span.initial2,
+span.initial4 {
+  font-variant: small-caps;
+  font-weight: bold;
+}
 
 .i .dropcap::first-letter {
   margin-right: 10px;
@@ -1780,8 +1890,8 @@ span.exquote {
 /* seg[@type='exquote'] */
 .hanging,
 p.hanging {
-  margin-left: 1.5rem;
-  text-indent: -1.5rem
+  margin-left: 2rem;
+  text-indent: -2rem
 }
 
 .he {
@@ -1813,7 +1923,7 @@ div.left {
 }
 
 .lmarg1 {
-  margin-left: 1.5rem;
+  margin-left: 2rem;
 }
 
 .lmarg2 {
@@ -1842,7 +1952,7 @@ div.left {
 }
 
 h1.main {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .margin {
@@ -1852,15 +1962,6 @@ h1.main {
 
 .noborder {
   border: none;
-}
-
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .normal,
@@ -1899,12 +2000,14 @@ p.autofirst {
   text-indent: 0;
 }
 
+.dinkus,
 div.ornament {
-  line-height: 95%;
+  line-height: 0.95;
   margin: 1rem 5rem;
   text-align: center;
 }
 
+.dinkus,
 .ornament.star {
   letter-spacing: 0.6rem;
 }
@@ -1928,6 +2031,21 @@ div.ornament {
   margin-top: 6rem;
   height: 5rem;
   border-top: 1px #CCCCCC solid;
+}
+
+.questions {
+  margin: 1rem 0 1rem 0;
+  font-size: 90%;
+}
+
+div.question,
+p.question {
+  font-weight: 300;
+  text-align: justify;
+  font-style: italic;
+  text-align: left;
+  font-size: 95%;
+  line-height: inherit;
 }
 
 .l.refrain {
@@ -1969,6 +2087,10 @@ blockquote .sc,
 
 .sc.i {
   font-style: italic;
+}
+
+.small {
+  font-size: 70%;
 }
 
 h1.sub {
@@ -2039,12 +2161,6 @@ a.next {
 .mark a.prev,
 .mark a.next {
   color: rgba(100, 100, 100, 0.5);
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .mark a.prev:hover,
@@ -2112,10 +2228,12 @@ ol.simple {
   list-style-type: lower-greek
 }
 
+ol.a,
 .lower-latin {
   list-style-type: lower-latin
 }
 
+ol.i,
 .lower-roman {
   list-style-type: lower-roman
 }
@@ -2128,10 +2246,12 @@ ol.simple {
   list-style-type: upper-alpha;
 }
 
+ol.A,
 .upper-latin {
   list-style-type: upper-latin;
 }
 
+ol.I,
 .upper-roman {
   list-style-type: upper-roman;
 }
@@ -2161,6 +2281,7 @@ tfoot {
 table.data,
 table.table,
 table.search {
+  font-family: sans-serif;
   border: 1px solid;
   border-color: #CCCCCC;
   margin-top: 1rem;
@@ -2174,7 +2295,7 @@ table.table {
 
 table.data {
   font-size: 14px;
-  line-height: 110%;
+  line-height: 1.1;
 }
 
 caption {
@@ -2242,7 +2363,7 @@ table.table pre {
 }
 
 table.table p {
-  line-height: 110%;
+  line-height: 1.1;
 }
 
 table.table th,
@@ -2377,7 +2498,7 @@ a.next:after {font-size: 3rem; color: rgba(200, 200, 200, 0.5); padding-right: 0
 }
 
 pre.xml {
-  line-height: 105%;
+  line-height: 1.05;
   text-align: left;
 }
 
@@ -2415,12 +2536,14 @@ pre.xml a.dc {
 }
 
 a.template {
+  font-family: sans-serif;
   font-weight: bold;
 }
 
 pre.xml .el,
 pre.xml a.el {
   font-weight: bold;
+  font-family: "Lucida Console", Courier, "MS Courier New", monospace;
   text-decoration: none;
   color: #040;
   border: none;
@@ -2433,10 +2556,12 @@ pre.xml a:hover.att {
 }
 
 pre.xml .att {
+  font-family: sans-serif;
   font-weight: 100;
 }
 
 pre.xml a.att {
+  font-family: sans-serif;
   color: #444;
 }
 
@@ -2467,7 +2592,7 @@ pre.xml .cdata {
 pre.xml .comment,
 pre.xml .comment code {
   font-size: 12px;
-  line-height: 125%;
+  line-height: 1.25;
   background: #FFE;
   color: #666;
 }
@@ -2540,7 +2665,7 @@ dl.xml dt {
 
   section>.note {
     margin: 1em 0 1rem 0;
-    padding-left: 1.5rem;
+    padding-left: 2rem;
   }
 
   a.noteback {
@@ -2597,11 +2722,12 @@ dl.xml dt {
 
   body,
   .dialogue li {
-    line-height: 130%;
+    line-height: 1.3;
   }
 
   .speaker,
   .stage {
+    font-family: sans-serif;
     text-align: center;
   }
 
@@ -2635,7 +2761,7 @@ dl.xml dt {
   }
 
   h2 {
-    line-height: 1.2rem;
+    line-height: 1.2;
   }
 
   /* works but will be added to default margin of browser
@@ -2645,12 +2771,12 @@ dl.xml dt {
     padding-top: 0;
     padding-bottom: 0;
     border: solid 1pt #CCCCCC;
-    line-height: 110%;
+    line-height: 1.1;
   }
 
   figcaption {
     padding-top: 0;
     padding-bottom: 0;
-    line-height: 110%;
+    line-height: 1.1;
   }
 }
