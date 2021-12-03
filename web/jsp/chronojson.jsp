@@ -18,7 +18,7 @@ String formsLabel = "";
 String[] forms = null;
 int formsLenght = 0;
 if (pars.q != null) {
-  out.print( "  \"q\": \"" + pars.q.replace("\"", "\\\"")+"\",\n");
+  out.print( "  \"q\": \"" + pars.q.replace("\"", "\\\"").replaceAll("[\\<\\>]", "")+"\",\n");
   // get words in the query
   forms = alix.forms(pars.q, pars.field.name());
   // get the count of occurrences found by year

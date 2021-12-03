@@ -153,7 +153,7 @@ String[] forms = null;
 if (pars.q != null) {
   forms = alix.forms(pars.q, pars.field.name());
 }
-final String href = "doc.jsp?q=" + pars.q + "&amp;id="; // href link
+final String href = "doc.jsp?q=" + JspTools.escape(pars.q) + "&amp;id="; // href link
 boolean zero = false;
 int no = 1;
 int lastYear = Integer.MIN_VALUE;
