@@ -8,7 +8,7 @@
   </head>
   <body>
     <header id="header" class="top accueil">
-      <jsp:include page="tabs.jsp"/>
+      <jsp:include page="local/tabs.jsp"/>
       <div id="header_ban">
         <a id="portrait" href="https://www.unige.ch/rougemont">
          <img id="ddrtete" src="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont//img/ddr_portrait.png"/>
