@@ -30,7 +30,7 @@
     </noscript>
      -->
     <link href="<%=hrefHome %>static/alix.css" rel="stylesheet"/>
-    <link href="<%=hrefHome %>static/ddr.css" rel="stylesheet"/>
+    <link href="<%=hrefHome %>local/ddr.css" rel="stylesheet"/>
     <link rel="icon" sizes="32x32"    href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon32.png">
     <link rel="icon" sizes="57x57"    href="https://www.unige.ch/rougemont/rougemont/packages/rougemont/themes/rougemont/img/favicon57.png">
     <link rel="icon" sizes="76x76"    href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon76.png">

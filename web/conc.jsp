@@ -3,7 +3,6 @@
 <%@ page import="org.apache.lucene.util.automaton.Automaton" %>
 <%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton" %>
 <%@ page import="alix.lucene.util.WordsAutomatonBuilder" %>
-<%@ include file="jsp/prelude.jsp" %>
 <%!
 public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs, Pars pars) throws IOException, NoSuchFieldException
 {
@@ -41,9 +40,8 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     i++; // loop now
     final Doc doc = new Doc(alix, docId);
     String type = doc.doc().get(Alix.TYPE);
-    // TODO Enenum
     if (type.equals(DocType.book.name())) continue;
-    // if (doc.doc().get(pars.fieldName) == null) continue; // not a good test, field may be indexed but not store
+    // if (doc.doc().get(pars.field.name()) == null) continue; // not a good test, field may be indexed but not store
     String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
     // show simple metadata
@@ -69,7 +67,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     }
     
     String[] lines = null;
-    lines = doc.kwic(pars.fieldName, include, href.toString(), 200, pars.left, pars.right, gap, expression, repetitions);
+    lines = doc.kwic(pars.field.name(), include, href.toString(), 200, pars.left, pars.right, gap, expression, repetitions);
     if (lines == null || lines.length < 1) continue;
     // doc.kwic(field, include, 50, 50, 100);
     out.println("<article class=\"kwic\">");
@@ -94,19 +92,10 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
   }
 
 }
-
-
 %>
+<%@ include file="jsp/prelude.jsp" %>
 <%
-
-long time = System.nanoTime();
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-IndexReader reader = alix.reader();
-
-
-Pars pars = pars(pageContext);
-pars.forms = alix.forms(pars.q);
+pars.forms = alix.forms(pars.q, pars.field.name());
 // local param
 pars.left = 50;
 pars.right = 70;
@@ -118,7 +107,7 @@ Query query = null;
 Query qWords = null;
 Query qFilter = null;
 if (pars.q != null) {
-  qWords = alix.query(pars.fieldName, pars.q);
+  qWords = alix.query(pars.field.name(), pars.q);
 }
 if (pars.book != null) {
   qFilter = new TermQuery(new Term(Alix.BOOKID, pars.book));
@@ -133,22 +122,8 @@ else if (qWords != null) query = qWords;
 else if (qFilter != null) query = qFilter;
 else query = QUERY_CHAPTER;
 
-TopDocs topDocs = null;
 IndexSearcher searcher = alix.searcher();
-int totalHitsThreshold = Integer.MAX_VALUE;
-final int numHits = alix.reader().maxDoc();
-TopDocsCollector<?> collector = null;
-
-if (pars.sort != null && pars.sort.sort() != null) {
-  collector = TopFieldCollector.create(pars.sort.sort(), numHits, totalHitsThreshold);
-}
-else {
-  collector = TopScoreDocCollector.create(numHits, totalHitsThreshold);
-}
-
-
-searcher.search(query, collector);
-topDocs = collector.topDocs();
+TopDocs topDocs = pars.sort.top(searcher, query);
 
 out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" -->");
 
@@ -156,58 +131,68 @@ out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" 
 <!DOCTYPE html>
 <html>
   <head>
-   <jsp:include page="ddr_head.jsp" flush="true" />
-   <title><%= alix.props.get("label")%> [Alix]</title>
+   <jsp:include page="local/head.jsp" flush="true" />
+   <title>Concordance, <%= alix.props.get("label")%> [Alix]</title>
    <style>
-span.left {display: inline-block; text-align: right; width: <%= Math.round(pars.left * 1.0)%>ex; padding-right: 1ex;}
+span.left {display: inline-block; text-align: right; width: <%= Math.round(10+pars.left * 1.0)%>ex; padding-right: 1ex;}
     </style>
   </head>
   <body>
     <header>
-     <jsp:include page="tabs.jsp" flush="true" />
+      <jsp:include page="local/tabs.jsp" flush="true" />
+      <form  class="search">
+        <%= selectCorpus(alix.name) %>,
+        <%= selectBook(alix, pars.book) %>
+        
+        <br/>
+        
+        <label for="q">Chercher</label>
+        <button style="position: absolute; left: -9999px" type="submit">▶</button>
+        <input name="q" class="q" id="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
+          onfocus="this.setSelectionRange(this.value.length,this.value.length);"
+          oninput="this.form['start'].value='';"
+        />
+        <select name="f" onchange="this.form.submit()">
+          <option/>
+          <%=pars.field.options("score occs year year_inv")%>
+        </select>
+        <!-- 
+        <label>Expressions <input type="checkbox" name="expression" value="true" <%= (pars.expression)?"checked=\"checked\"":"" %>/></label>
+         -->
+        <br/>
+        <% // prev / next nav
+        if (pars.start > 1 && pars.q != null) {
+          int n = Math.max(1, pars.start - pars.hpp);
+          out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
+        }
+        if (topDocs != null) {
+          long max = topDocs.totalHits.value;
+          out.println("<input  name=\"start\" value=\""+ pars.start+"\" autocomplete=\"off\" class=\"start num3\"/>");
+          out.println("<span class=\"hits\"> / "+ max  + "</span>");
+          int n = pars.start + pars.hpp;
+          if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
+        }
+        /*
+        if (forms == null || forms.length < 2 );
+        else if (expression) {
+          out.println("<button title=\"Cliquer pour dégrouper les locutions\" type=\"submit\" name=\"expression\" value=\"false\">✔ Locutions</button>");
+        }
+        else {
+          out.println("<button title=\"Cliquer pour grouper les locutions\" type=\"submit\" name=\"expression\" value=\"true\">☐ Locutions</button>");
+        }
+        */
+        %>
+        <select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
+          <option/>
+          <%= pars.sort.options() %>
+        </select>
+       </form> 
     </header>
-    <form  class="search">
-      <input type="hidden" name="f" value="<%= JspTools.escape(pars.fieldName) %>"/>
-      <label for="q">Chercher</label>
-      <button style="position: absolute; left: -9999px" type="submit">▶</button>
-      <input name="q" id="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
-        onfocus="this.setSelectionRange(this.value.length,this.value.length);"
-        oninput="this.form['start'].value='';"
-      />
-      <label>Expressions <input type="checkbox" name="expression" value="true" <%= (pars.expression)?"checked=\"checked\"":"" %>/></label>
-      <br/><label for="book" title="Limiter la sélection à un seul livre">Livre</label>
-      <%= selectBook(alix, pars.book) %>
-      <select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
-        <option/>
-        <%= pars.sort.options() %>
-      </select>
-      <% // prev / next nav
-      if (pars.start > 1 && pars.q != null) {
-        int n = Math.max(1, pars.start - pars.hpp);
-        out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
-      }
-      if (topDocs != null) {
-        long max = topDocs.totalHits.value;
-        out.println("<input  name=\"start\" value=\""+ pars.start+"\" autocomplete=\"off\" class=\"start num3\"/>");
-        out.println("<span class=\"hits\"> / "+ max  + "</span>");
-        int n = pars.start + pars.hpp;
-        if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
-      }
-      /*
-      if (forms == null || forms.length < 2 );
-      else if (expression) {
-        out.println("<button title=\"Cliquer pour dégrouper les locutions\" type=\"submit\" name=\"expression\" value=\"false\">✔ Locutions</button>");
-      }
-      else {
-        out.println("<button title=\"Cliquer pour grouper les locutions\" type=\"submit\" name=\"expression\" value=\"true\">☐ Locutions</button>");
-      }
-      */
-
-      %>
-      
-     </form> 
     <main>
-       <!-- query=<%= query %> totalHits=<%= topDocs.totalHits %> forms=<%= Arrays.toString(pars.forms) %> -->
+       <!-- 
+       query=<%= query %> 
+       totalHits=?? 
+       forms=<%= Arrays.toString(pars.forms) %> -->
        <% 
        pars.href = "doc.jsp?";
        kwic(pageContext, alix, topDocs, pars); 

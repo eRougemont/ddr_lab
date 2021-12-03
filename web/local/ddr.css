@@ -1,5 +1,31 @@
 /* css Rougemont pour Alix */
 
+
+:root {
+  --bg: #ddd;
+  --bghi: #eee;
+  --text: #333;
+  --texthi: #cf1308;
+  --textlo: #666;
+  --textinv: #000;
+  --link: #cc6b66;
+  --bg2: #cf1308;
+  --text2: #ddd;
+  --textlo2: #333;
+  --texthi2: #fff;
+  --textinv2: #333;
+  --bg3: var(--bg);
+  --text3: #333;
+
+  --red: #cf1308;
+  --redlight: #fba19d;
+  --redmid: #cc6b66;
+  --redalpha: rgba(207, 19, 8, 0.5);
+  --light: #f5f4f5;
+  --black: #212529;
+  --gray: #4c555d;
+}
+
 body {
   font-family: 'Fira Sans', 'Open Sans', 'Roboto', sans-serif-light, sans-serif;
   line-height: 1.5;

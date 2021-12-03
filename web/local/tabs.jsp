@@ -5,22 +5,14 @@
 <%@ page import="java.util.Map" %>
 <%!
 static public enum Tab {
-  index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{"q", "book", "cat", "context"}) {
-  },
-  wordnet("Réseau", "reseau.jsp", "Réseaux de mots", new String[]{"q", "book", "cat", "right", "left"}) {
-  },
-  freqs("Table", "table.jsp", "Fréquences par mots", new String[]{"q", "book", "cat", "context"}) {
-  },
-  cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"q", "book", "cat", "context"}) {
-  },
-  books("Livres", "livres.jsp", "Fréquences par livres", new String[]{"q"}) {
-  },
-  chapters("Chapitres", "chapitres.jsp", "Fréquences par livres", new String[]{"q"}) {
-  },
-  kwic("Concordance", "conc.jsp", "Recherche de mot", new String[]{"q", "book"}) {
-  },
-  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) {
-  },
+  index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{}) { },
+  freqs("Table", "table.jsp", "Fréquences par mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
+  cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
+  wordnet("Réseau", "reseau.jsp", "Réseaux de mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
+  books("Livres", "livres.jsp", "Fréquences par livres/compilations", new String[]{"f", "q"}) { },
+  chapters("Chapitres", "chapitres.jsp", "Fréquences par texte (chapitres, articles)", new String[]{"f", "q"}) { },
+  kwic("Concordance", "conc.jsp", "Recherche de mot", new String[]{"q", "book"}) { },
+  doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) { },
   ;
 
   final public String label;
@@ -57,6 +49,7 @@ static public enum Tab {
     for (String par: pars) {
       String value = request.getParameter(par);
       if (value == null) continue;
+      value = JspTools.escape(value);
       if (first) {
         first = false;
         sb.append("?");
@@ -80,7 +73,5 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  
-  <a style="float:right;" href="https://www.unige.ch/rougemont/" title="Aller à l’édition">Rougemont 2.0 &#x2197;</a>
   <%= Tab.nav(request) %>
 </nav>

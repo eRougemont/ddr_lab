@@ -21,14 +21,10 @@ static String format(double real)
 response.setHeader("Content-type", "application/csv; charset=UTF-8");
 response.setHeader("Content-Disposition", "attachment; filename=rougemont_freqs.tsv");
 
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-// get default parameters from request
-Pars pars = pars(pageContext);
 pars.limit = -1;
 FormEnum results = freqList(alix, pars);
 
-out.println("Mot\tCatégorie\tOccurrences\t/occsAll\tChapitres\t/docsAll\tScore");
+out.println("Mot\tCatégorie\tOccurrences\t/occurrences\tTextes\t/textes\tScore");
 results.reset();
 while (results.hasNext()) {
    results.next();

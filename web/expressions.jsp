@@ -1,5 +1,4 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ include file="jsp/prelude.jsp" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="alix.lucene.analysis.FrDics" %>
@@ -10,33 +9,35 @@
 <%!
 
 %>
+<%@ include file="jsp/prelude.jsp" %>
 <%
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
 int limit = tools.getInt("limit", 500);
 int floor = tools.getInt("floor", 0);
 boolean parceque = tools.getBoolean("parceque", false);
 boolean locs = tools.getBoolean("locs", false);
 String book = tools.getString("book", null);
 MI mi = (MI)tools.getEnum("mi", MI.g);
+final String fieldName = "text" + "_orth";
+
+FieldText ftext = alix.fieldText(fieldName);
+FieldRail frail = alix.fieldRail(fieldName);
 
 %>
 <!DOCTYPE html>
 <html>
   <head>
-    <%@ include file="ddr_head.jsp" %>
+    <%@ include file="local/head.jsp"%>
     <title>Expressions</title>
   </head>
   <body>
      <header>
-      <%@ include file="tabs.jsp" %>
-    </header>
+      <%@ include file="local/tabs.jsp"%>
       <form class="search">
-      <label for="book" title="Limiter la sélection à un seul livre">Livre</label>
-      <%= selectBook(alix, book) %>
-       <br/>
-       <label>Score</label>
-         <select name="mi" onchange="this.form.submit()">
+        <%= selectCorpus(alix.name) %>
+        <%= selectBook(alix, book) %>
+        <br/>
+        <label>Score</label>
+        <select name="mi" onchange="this.form.submit()">
              <option/>
              <%= mi.options() %>
           </select>
@@ -47,7 +48,10 @@ MI mi = (MI)tools.getEnum("mi", MI.g);
        <label for="parceque">Mots vides</label>
        <input name="parceque" type="checkbox" <%= (parceque)?"checked":"" %> onchange="this.form.submit()"/>
       </form>
+    </header>
     <main>
+      <table class="sortable">
+        <caption>
       <details>
         <summary>Expressions fréquentes</summary>
         <p>
@@ -56,30 +60,28 @@ MI mi = (MI)tools.getEnum("mi", MI.g);
         
         </p>
       </details>
-      <table class="sortable">
+        </caption>
         <thead>
           <tr>
-            <td/>
-            <th>Couple (ab)</th>
-            <th>Catégorie</th>
-            <th class="num">ab</th>
-            <th class="num">a</th>
-            <th class="num">b</th>
-            <th class="num">Score</th>
+            <th/>
+            <th align="right">ab</th>
+            <th title="occurrences">occs</th>
+            <th class="num">score</th>
+            <th align="right">a</th>
+            <th title="occurrences">occs</th>
+            <th align="right">b</th>
+            <th title="occurrences">occs</th>
             <th width="100%"/>
-            <td/>
+            <th/>
           <tr>
         </thead>
         <tbody>
 
 <%
-  final String fieldName = TEXT + "_orth";
-FieldText field = alix.fieldText(fieldName);
-FieldRail rail = alix.fieldRail(fieldName);
 
 
-final long N = field.occsAll;
-final long[] formOccs = field.formOccsAll;;
+final long N = ftext.occsAll;
+final long[] formOccs = ftext.formOccsAll;;
 
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (book != null) {
@@ -87,12 +89,15 @@ if (book != null) {
   // formOccs = field.formOccs(filter);
   // N = formOccs[0];
 }
+TagFilter tags = new TagFilter().setAll().noStop(true).clear(Tag.SUB).clear(Tag.VERB); // .clearGroup(Tag.SUB).clearGroup(Tag.VERB);
+BitSet rule = ftext.formRule(tags);
+Map<IntPair, Bigram> dic = frail.expressions(filter, tags);
 
-Map<IntPair, Bigram> dic = rail.expressions(filter, parceque);
+
 Top<Bigram> top= new Top<Bigram>(limit);
-final int pun1 = field.formId(",");
-final int pun2 = field.formId(".");
-final int pun3 = field.formId("§");
+final int pun1 = ftext.formId(",");
+final int pun2 = ftext.formId(".");
+final int pun3 = ftext.formId("§");
 for (Bigram bigram: dic.values()) {
   if (bigram.count <= floor) continue;
   // if (field.isStop(bigram.a) || field.isStop(bigram.b)) continue;
@@ -134,21 +139,29 @@ for (Top.Entry<Bigram> entry: top) {
   out.print(b);
   */
   out.println("</td>");
+  /*
   out.print("    <td>");
   if (lex != null) out.print(Tag.label(lex.tag));
   out.println("</td>");
+  */
   out.print("    <td class=\"num\">");
   out.print(bigram.count);
   out.println("</td>");
   out.print("    <td class=\"num\">");
+  out.print(formatScore(bigram.score));
+  out.println("</td>");
+  out.print("    <td align=\"right\">");
+  out.print(ftext.form(bigram.a));
+  out.println("</td>");
+  out.print("    <td class=\"num\">");
   out.print(formOccs[bigram.a]);
+  out.println("</td>");
+  out.print("    <td align=\"right\">");
+  out.print(ftext.form(bigram.b));
   out.println("</td>");
   out.print("    <td class=\"num\">");
   out.print(formOccs[bigram.b]);
   out.println("</td>");
-  out.print("    <td class=\"num\">");
-  out.print(formatScore(bigram.score));
-  out.println("</td>");  
   out.println("    <td></td>");
   out.println("    <td class=\"no right\">" + no + "</td>");
   out.println("  </tr>");

@@ -6,27 +6,21 @@
 
 <%!
 %>
+<%@ include file="prelude.jsp" %>
 <%
 final String YEAR = "year";
-final String TEXT = "text";
-final String BASE = "rougemont";
-final String COOKIE_BASE = "alixBase";
+FieldInt fint = alix.fieldInt(YEAR, pars.field.name());
+IntEnum iterator = fint.iterator();
 
 out.println("{");
-long time = System.nanoTime(); 
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, COOKIE_BASE);
-FieldInt fint = alix.fieldInt(YEAR, TEXT);
-IntEnum iterator = fint.iterator();
 // get a query
-final String q = tools.getString("q", null);
 String formsLabel = "";
 String[] forms = null;
 int formsLenght = 0;
-if (q != null) {
-  out.print( "  \"q\": \""+q.replace("\"", "\\\"")+"\",\n");
+if (pars.q != null) {
+  out.print( "  \"q\": \"" + pars.q.replace("\"", "\\\"")+"\",\n");
   // get words in the query
-  forms = alix.forms(q);
+  forms = alix.forms(pars.q, pars.field.name());
   // get the count of occurrences found by year
   for (String form: forms) {
     fint.form(iterator, form);

@@ -21,16 +21,7 @@ static String format(double real)
 response.setHeader("Content-type", "application/xls");
 response.setHeader("Content-Disposition", "attachment; filename=rougemont_freqs.xls");
 
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-
-
-long time = System.nanoTime();
 boolean first;
-IndexReader reader = alix.reader();
-
-// get default parameters from request
-Pars pars = pars(pageContext);
 FormEnum results = freqList(alix, pars);
 
 /*
@@ -78,9 +69,9 @@ comment { display:none;  }
          <th>Mot</th>
          <th>Catégorie</th>
          <th>Occurrences</th>
-         <th>/occsAll</th>
-         <th>Chapitres</th>
-         <th>/docsAll</th>
+         <th>/occurrences</th>
+         <th>Textes</th>
+         <th>/textes</th>
          <th>Score</th>
        </tr>
        <%

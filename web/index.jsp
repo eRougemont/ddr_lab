@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <jsp:include page="ddr_head.jsp" flush="true"/>
+    <jsp:include page="local/head.jsp" flush="true"/>
     <title>Rougemont 2.0, labo [Alix]</title>
   </head>
   <body>

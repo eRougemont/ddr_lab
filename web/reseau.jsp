@@ -41,8 +41,6 @@ static private int FREQ_FLOOR = 5;
 /** default number of focus on load */
 static int starsDefault = 15;
 
-
-
 private static final int STAR = 2; // confirmed star
 private static final int NEBULA = 1; // candidate star
 private static final int COMET = -1; // floating corp
@@ -117,43 +115,42 @@ static class Node implements Comparable<Node>
 
 %>
 <%
+boolean first;
 // global data handlers
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-Pars pars = pars(pageContext);
-long time = System.nanoTime();
+String field = pars.field.name();
 /*
 int starsCount = tools.getInt("stars", starsDefault);
 if (starsCount < 1) starsCount = starsDefault;
 else if (starsCount > starsMax) starsCount = starsMax;
 */
 
-
+// the consistency magic
 final int planetMax = 50;
 final int planetMid = 5;
 int planets = tools.getInt("planets", planetMid, alix.name()+"Planets");
 if (planets > planetMax) planets = planetMax;
 if (planets < 1) planets = planetMid;
 
-// local data object, to build from parameters
-BitSet filter = null;
-if (pars.book != null) filter = Corpus.bits(alix, Alix.BOOKID, new String[]{pars.book});
-final FieldText ftext = alix.fieldText(pars.fieldName);
-final FieldRail frail = alix.fieldRail(pars.fieldName);
-final int context = (pars.context + 1) / 2;
-FormEnum results = new FormEnum(ftext); // build a wrapper to have results
-results.left = context; // left context
-results.right = context; // right context
-results.filter = filter; // limit to some documents
-results.tags = pars.cat.tags(); // limit word list to SUB, NAME, adj
-results.mi = pars.mi; // best ranking for coocs
-boolean first;
+pars.left = tools.getInt("left", 50);
+pars.right = tools.getInt("right", 50);
+pars.limit = tools.getInt("limit", 50);
+if (pars.limit > 200) pars.limit = 200;
+
+// for consistency, same freqlist as table.jsp
+// this list will be reused to get the matrix of distances
+FormEnum freqList = freqList(alix, pars);
+// don’t forget to sort, with a limit
+freqList.sort(pars.order.sorter(), pars.limit);
+
+final FieldText ftext = alix.fieldText(field);
+final FieldRail frail = alix.fieldRail(field);
+
 
 %>
 <!DOCTYPE html>
 <html>
   <head>
-    <%@ include file="ddr_head.jsp" %>
+    <%@ include file="local/head.jsp" %>
     <title>Graphe de texte</title>
     <script src="<%=hrefHome%>vendor/sigma/sigma.min.js">//</script>
     <script src="<%=hrefHome%>vendor/sigma/sigma.plugins.dragNodes.js">//</script>
@@ -170,108 +167,61 @@ boolean first;
   <body class="wordnet">
     <div id="graphcont">
       <header>
-        <jsp:include page="tabs.jsp"/>
+        <jsp:include page="local/tabs.jsp"/>
       </header>
-
   <%
-    // keep nodes in insertion order (especially for query)
+  // keep nodes in insertion order (especially for query)
   Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
-
-  // Select nodes in the cooccurrence
-  results.scorer = null;
-  if (pars.q != null && !pars.q.trim().isEmpty()) { // words requested, search for them
-    String[] forms = alix.forms(pars.q); // parse query as a set of terms
-    // rewrite queries, with only known terms
-    int nodeCount = 0;
-    for (String form: forms) {
-      int formId = ftext.formId(form);
-      if (formId < 0) continue;
-      final long freq;
-      if (pars.book != null) freq = results.freq(formId);
-      else freq = ftext.occs(formId);
-      if (freq < 1) continue;
-      // keep query words as stars
-      nodeMap.put(formId, new Node(formId, form).count(freq).type(STAR));
-      if (++nodeCount >= pars.nodes) break;
-    }
-    final int starCount = nodeCount;
-    // reloop on nodes found in query, add coocs
-    first = true;
-    // try to add quite same node to on an another
-    int i = 1;
-    Node[] toloop = nodeMap.values().toArray(new Node[nodeMap.size()]);
-    pars.q = "";
-    results.limit = pars.nodes + starCount; // take more coccs we need
-    for (Node src: toloop) {
-      if (first) first = false;
-      else pars.q += " ";
-      pars.q += src.form;
-      results.search = new String[]{src.form}; // parse query as terms
-      long found = frail.coocs(results);
-      if (found < 0) continue;
-      // score the coocs found before loop on it
-      frail.score(results, ftext.occs(src.formId));
-      final int srcId = src.formId;
-      final long srcFreq = src.count; // local freq
-
-      final int countMax = (int)((double)pars.nodes * i / starCount);
-      i++;
-      while (results.hasNext()) {
-    results.next();
-    final int dstId = results.formId();
-    final Node dst = nodeMap.get(dstId);
-    if (dst != null) continue; // node already found
-    Node comet = new Node(dstId, results.form()).count(results.freq()).type(COMET);
-    nodeMap.put(dstId, comet);
-    if (++nodeCount >= countMax) break;
-      }
-    }
+  int i = 0;
+  freqList.reset();
+  while (freqList.hasNext()) {
+    freqList.next();
+    final int formId = freqList.formId();
+    // add a linked node candidate
+    long count = 1;
+    if (pars.order.equals(Order.hits)) count = freqList.hits();
+    else count = freqList.freq();
+    nodeMap.put(formId, new Node(formId, freqList.form()).count(count).type(COMET));
+    if (++i >= 500) break;
   }
-  else { // 
 
-    FormEnum top = null;
-    // a book selected, g test seems better, with no stops
-    top = ftext.results(pars.nodes, pars.cat.tags(), pars.distrib.scorer(), filter, false);
-    while (top.hasNext()) {
-      top.next();
-      final int formId = top.formId();
-      // add a linked node candidate
-      nodeMap.put(formId, new Node(formId, top.form()).count(top.freq()).type(COMET));
-    }
-    
-  }
   %>
 <!-- Nodes <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
-       <form id="form" class="search">
-           <label for="nodes" title="Nombre de nœuds sur l’écran">Mots</label>
-           <input name="nodes" type="text" value="<%= pars.nodes %>" class="num3" size="2"/>
-           <label title="Filtrer les mots par catégories grammaticales" for="cat">Catégories</label>
-           <select name="cat" onchange="this.form.submit()">
-             <option/>
-             <%=pars.cat.options()%>
-           </select>
-           <label for="distrib" title="Algorithme d’ordre des mots pivots">Score</label>
-           <select name="distrib" onchange="this.form.submit()">
-            <option/>
-             <%= pars.distrib.options("occs g bm25 tfidf") %>
-           </select>
-           <label for="context" title="Largeur du contexte, en nombre de mots, dont sont extraits les liens">Contexte</label>
-           <input name="context" type="text" value="<%= pars.context %>"  class="num3" size="2"/>
-           <label for="planets" title="Nombre maximum de liens sortants par nœud">Compacité</label>
-           <input type="text" name="planets" value="<%=planets%>"  class="num3" size="2"/>
-           <label for="mi" title="Algorithme de score pour les liens">Dépendance</label>
-           <select name="mi" onchange="this.form.submit()">
-             <option/>
-             <%= pars.mi.options() %>
-           </select>
-           <button type="submit">▶</button>
-           <br/>
-           <label for="words">Chercher</label>
-           <input type="text" name="q" value="<% JspTools.escape(out, pars.q); %>" size="40" />
-           <label for="book">Livre</label>
-           <%= selectBook(alix, pars.book) %>
-          <a class="help button" href="#aide">?</a>
-        </form>
+      <form id="form" class="search">
+        <%= selectCorpus(alix.name) %>,
+        <%= selectBook(alix, pars.book) %>
+        <button type="submit">▶</button>
+        
+        <br/>
+        <input name="limit" type="text" value="<%= pars.limit %>" class="num3" size="2"/>
+        <select name="f" onchange="this.form.submit()">
+          <option/>
+          <%=pars.field.options()%>
+        </select>
+        <label for="cat" title="Filtrer les mots par catégories grammaticales">filtre</label>
+        <select name="cat" onchange="this.form.submit()">
+          <option/>
+          <%=pars.cat.options()%>
+        </select>
+        <label for="order" title="Sélectionner et ordonner le tableau selon une colonne">rangés par</label>
+        <select name="order" onchange="this.form.submit()">
+          <option/>
+          <%= pars.order.options("score freq hits")%>
+        </select>
+        
+        <br/>
+        <label for="left" title="Largeur du contexte dont sont extraits les liens, en nombre de mots, à gauche">Contexte gauche</label>
+        <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
+        <label for="right" title="Nombre de mots à capturer à droite">à droite</label>
+        <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
+        <label for="planets" title="Nombre maximum de liens sortants par nœud">Compacité</label>
+        <input type="text" name="planets" value="<%=planets%>"  class="num3" size="2"/>
+        <a class="help button" href="#aide">?</a>
+        
+         <br/>
+         <label for="words">Chercher</label>
+         <input type="text" class="q" name="q" value="<% JspTools.escape(out, pars.q); %>" size="40" />
+      </form>
       <div id="graph" class="graph" oncontextmenu="return false">
       </div>
        <div class="butbar">
@@ -295,37 +245,9 @@ boolean first;
          -->
        </div>
     </div>
-    <%
-    /* debug
-    results.specif = null;
-    out.println(results.mi);
-    results.limit = nodeMap.size() * 2; // collect enough edges
-    for (Node src: nodeMap.values()) {
-      results.search = new String[]{src.form}; // set pivot of the coocs
-      long found = frail.coocs(results);
-      if (found < 0) continue;
-      // score the coocs found before loop on it
-      frail.score(results, ftext.occs(src.formId));
-      final int srcId = src.formId;
-      int count = 0;
-      while (results.hasNext()) {
-        results.next();
-        final int dstId = results.formId();
-        if (srcId == dstId) continue;
-        // link only selected nodes
-        final Node dst = nodeMap.get(dstId);
-        if (dst == null) continue;
-        out.println("<li>" + ftext.form(srcId) + " => " + ftext.form(dstId) + " (" + results.freq() + ") " + results.score() + " partOccs=" + results.partOccs + " dst frq=" 
-        + results.formOccs() +"</li>"); 
-        if (src.type() != STAR &&  count == planets) break;
-        count++;
-      }
-    }
-    out.flush();
-    // */ 
-    %>
     <script>
-<%first = true;
+<%
+first = true;
 out.println("var data = {");
 out.println("  edges: [");
 
@@ -337,18 +259,20 @@ int edgeId = 0;
 
  
 // Set<Node> nodeSet = new TreeSet<Node>(starSet);
-results.limit = nodeMap.size() * 2; // collect enough edges
+freqList.limit = nodeMap.size() * 2; // collect enough edges
+freqList.left = pars.left;
+freqList.right = pars.right;
 for (Node src: nodeMap.values()) {
-  results.search = new String[]{src.form}; // set pivot of the coocs
-  long found = frail.coocs(results);
+  freqList.search = new String[]{src.form}; // set pivot of the coocs
+  long found = frail.coocs(freqList);
   if (found < 1) continue;
   // score the coocs found before loop on it
   final int srcId = src.formId;
-  frail.score(results, ftext.occs(srcId));
+  frail.score(freqList, ftext.formOccs(srcId));
   int count = 0;
-  while (results.hasNext()) {
-    results.next();
-    final int dstId = results.formId();
+  while (freqList.hasNext()) {
+    freqList.next();
+    final int dstId = freqList.formId();
     if (srcId == dstId) continue;
     // link only selected nodes
     final Node dst = nodeMap.get(dstId);
@@ -357,9 +281,9 @@ for (Node src: nodeMap.values()) {
     if (dst.type() == COMET) dst.type(PLANET);
     if (first) first = false;
     else out.println(", ");
-    out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + results.score() 
+    out.print("    {id:'e" + (edgeId++) + "', source:'n" + srcId + "', target:'n" + dstId + "', size:" + freqList.score() 
     + ", color:'rgba(128, 128, 128, 0.2)'"
-    + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.occs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.occs(dstId) + ", freq:" + results.freq()
+    + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.formOccs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.formOccs(dstId) + ", freq:" + freqList.freq()
     + "}");
     if (src.type() != STAR &&  count == planets) break;
     count++;
@@ -377,25 +301,27 @@ for (Node node: nodeMap.values()) {
    else out.println(", ");
    int tag = ftext.tag(node.formId);
    String color = "rgba(255, 255, 255, 1)";
-   if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.7)";
+   if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.8)";
+   else if (Tag.ADJ.sameParent(tag)) color = "rgba(240, 255, 240, 0.7)";
    // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
-   else if (Tag.NAME.sameParent(tag)) color = "rgba(207, 19, 8, 1)";
+   else if (Tag.NAME.sameParent(tag)) color = "rgba(255, 192, 0, 1)";
    // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
    // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-   else color = "rgba(0, 0, 0, 0.8)";
+   else color = "rgba(159, 183, 159, 1)";
    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + dfdec2.format(10 * node.count)); // node.count
+   out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + (node.count)); // node.count
    out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
    if (node.type() == STAR) out.print(", type:'hub'");
    out.print(", color:'" + color + "'");
-   out.println("}");
+   out.print("}");
  }
  out.println("\n  ]");
 
   
 
 
- out.println("}");%>
+ out.println("}");
+ %>
 
 
 
@@ -410,7 +336,7 @@ var graph = new sigmot('graph', data);
 Document doc = null;
 if (pars.book != null) {
   final int docId = alix.getDocId(pars.book);
-  doc = alix.reader().document(docId, BOOK_FIELDS);
+  if (docId > 0) doc = alix.reader().document(docId, BOOK_FIELDS);
 }
 if (doc != null) {
   final String title = doc.get("title");
@@ -421,7 +347,7 @@ else {
 }
 if (pars.q == null && pars.book != null) {
   out.println(
-      " Les mots reliés sont les plus significatifs du livre relativement au reste de la base,"
+      " Les visibles sont les plus significatifs du livre relativement au reste de la base,"
     + " selon un calcul de distance statistique "
     + " (<i><a href=\"https://en.wikipedia.org/wiki/G-test\">G-test</a></i>, "
     + " voir <a class=\"b\" href=\"index.jsp?book=" + pars.book + "&amp;cat=STRONG&amp;ranking=g\">les résultats</a>)."

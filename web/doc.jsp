@@ -1,23 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@include file="jsp/prelude.jsp" %>
 <%@ page import="alix.lucene.search.Doc" %>
+<%@ page import="org.apache.lucene.search.similarities.*" %>
 <%@ page import="alix.util.Top" %>
+<%@include file="jsp/prelude.jsp" %>
 <%
-long time = System.nanoTime();
-
-JspTools tools = new JspTools(pageContext);
-Alix alix = (Alix)tools.getMap("base", Alix.pool, BASE, "alixBase");
-Pars pars = pars(pageContext);
-
-IndexReader reader = alix.reader();
-
 // params for the page
-pars.fieldName = TEXT;
+int max = 100;
 pars.limit = tools.getInt("limit", 50);
+if (pars.limit > max) pars.limit = max;
+// best words for query, no names
+pars.cat = (Cat)tools.getEnum("cat", Cat.STRONG);
 
 int docId = tools.getInt("docid", -1); // get doc by lucene internal docId or persistant String id
 String id = tools.getString("id", "");
 String q = tools.getString("q", null); // if no doc, get params to navigate in a results series
+
+String field = "text";
 
 Doc doc = null;
 try { // load full document
@@ -45,13 +43,13 @@ SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
 <!DOCTYPE html>
 <html class="document">
   <head>
-    <%@ include file="ddr_head.jsp" %>
-    <title>Livres</title>
     <link href="<%= hrefHome %>vendor/teinte.css" rel="stylesheet"/>
+    <%@ include file="local/head.jsp" %>
+    <title>Livres</title>
     <script>
 <%
 if (doc != null) { // document id is verified, give it to javascript
-  out.println("var docLength = "+doc.length(TEXT)+";");
+  out.println("var docLength = " + doc.length(field) + ";");
   out.println("var docId = \""+doc.id()+"\";");
 }
 %>
@@ -59,9 +57,7 @@ if (doc != null) { // document id is verified, give it to javascript
   </head>
   <body class="document">
     <header>
-      <%@ include file="tabs.jsp" %>
-    </header>
-    <main>
+      <%@ include file="local/tabs.jsp" %>
       <form class="search" id="search" autocomplete="off" action="#" role="search">
       <!-- 
         <button name="magnify" type="button">
@@ -75,7 +71,8 @@ if (doc != null) { // document id is verified, give it to javascript
           </svg>
         </button>
        -->
-        <label>Chercher un titre</label>
+        <%= selectCorpus(alix.name) %>,
+        <label for="titles">Chercher un titre</label>
         <input id="titles" name="titles" aria-describedby="titles-hint" placeholder="am… dia… eu… fed…" size="50"/>
         <div class="progress"><div></div></div>
         <div class="suggest"></div>
@@ -114,6 +111,8 @@ if (doc != null) { // document id is verified, give it to javascript
                */
         %>
       </form>
+    </header>
+    <main>
       <div class="row">
         <nav class="terms" id="sidebar">
         <%
@@ -121,7 +120,8 @@ if (doc != null) { // document id is verified, give it to javascript
         if (doc != null) {
           out.println(" <h5>Mots clés</h5>");
           BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
-          FormEnum forms = doc.results(TEXT, pars.limit, pars.cat.tags(), pars.distrib.scorer(), false);
+          FormEnum forms = doc.results(field, pars.distrib.scorer(), pars.cat.tags());
+          forms.sort(FormEnum.Sorter.score, pars.limit, false);
           int no = 1;
           forms.reset();
           while (forms.hasNext()) {
@@ -134,7 +134,7 @@ if (doc != null) { // document id is verified, give it to javascript
             out.print(" <small>(" + forms.freq() + ")</small>");
             out.println("</a>");
             if (no < 30) {
-              Query tq = new TermQuery(new Term(TEXT, forms.form()));
+              Query tq = new TermQuery(new Term(field, forms.form()));
               qBuilder.add(tq, BooleanClause.Occur.SHOULD);
             }
             no++;
@@ -154,11 +154,11 @@ if (doc != null) { // document id is verified, give it to javascript
       
       // hilite
       if (!"".equals(q)) {
-        String[] terms = alix.forms(q);
-        out.print(doc.hilite(TEXT, terms));
+        String[] terms = alix.forms(q, field);
+        out.print(doc.hilite(field, terms));
       }
       else {
-        out.print(doc.doc().get(TEXT));
+        out.print(doc.doc().get(field));
       }
         }
     %>
@@ -169,9 +169,13 @@ if (doc != null) { // document id is verified, give it to javascript
 if (mlt != null) {
   out.println("<h5>Sur les mêmes sujets…</h5>");
   IndexSearcher searcher = alix.searcher();
-  // searcher.setSimilarity(sim.similarity()); // test has been done, BM25 is the best
+  //test has been done, BM25 seems the best
+  // Similarity oldSim = searcher.getSimilarity();
+  // searcher.setSimilarity(new LMDirichletSimilarity());
+  // searcher.setSimilarity(sim.similarity()); 
   TopDocs topDocs;
   topDocs = searcher.search(mlt, 20);
+  // searcher.setSimilarity(oldSim);
   ScoreDoc[] hits = topDocs.scoreDocs;
   final String href = "?id=";
   final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Alix.ID, Alix.BOOKID, "bibl"}));
