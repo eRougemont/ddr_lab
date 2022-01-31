@@ -16,12 +16,11 @@ int floor = tools.getInt("floor", 0);
 boolean parceque = tools.getBoolean("parceque", false);
 boolean locs = tools.getBoolean("locs", false);
 String book = tools.getString("book", null);
-MI mi = (MI)tools.getEnum("mi", MI.g);
+OptionMI mi = (OptionMI)tools.getEnum("mi", OptionMI.g);
 final String fieldName = "text" + "_orth";
 
 FieldText ftext = alix.fieldText(fieldName);
 FieldRail frail = alix.fieldRail(fieldName);
-
 %>
 <!DOCTYPE html>
 <html>

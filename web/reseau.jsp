@@ -111,9 +111,7 @@ static class Node implements Comparable<Node>
     sb.append(formId).append(":").append(form).append(" (").append(type).append(", ").append(count).append(")");
     return sb.toString();
   }
-}
-
-%>
+}%>
 <%
 boolean first;
 // global data handlers
@@ -140,12 +138,10 @@ if (pars.limit > 200) pars.limit = 200;
 // this list will be reused to get the matrix of distances
 FormEnum freqList = freqList(alix, pars);
 // don’t forget to sort, with a limit
-freqList.sort(pars.order.sorter(), pars.limit);
+freqList.sort(pars.order.order(), pars.limit);
 
 final FieldText ftext = alix.fieldText(field);
 final FieldRail frail = alix.fieldRail(field);
-
-
 %>
 <!DOCTYPE html>
 <html>
@@ -171,20 +167,19 @@ final FieldRail frail = alix.fieldRail(field);
       </header>
   <%
   // keep nodes in insertion order (especially for query)
-  Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
-  int i = 0;
-  freqList.reset();
-  while (freqList.hasNext()) {
-    freqList.next();
-    final int formId = freqList.formId();
-    // add a linked node candidate
-    long count = 1;
-    if (pars.order.equals(Order.hits)) count = freqList.hits();
-    else count = freqList.freq();
-    nodeMap.put(formId, new Node(formId, freqList.form()).count(count).type(COMET));
-    if (++i >= 500) break;
-  }
-
+    Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
+    int i = 0;
+    freqList.reset();
+    while (freqList.hasNext()) {
+      freqList.next();
+      final int formId = freqList.formId();
+      // add a linked node candidate
+      long count = 1;
+      if (pars.order.equals(OptionOrder.hits)) count = freqList.hits();
+      else count = freqList.freq();
+      nodeMap.put(formId, new Node(formId, freqList.form()).count(count).type(COMET));
+      if (++i >= 500) break;
+    }
   %>
 <!-- Nodes <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
       <form id="form" class="search">

@@ -151,7 +151,7 @@ ScoreDoc[] hits = topDocs.scoreDocs;
 Doc doc = null;
 String[] forms = null;
 if (pars.q != null) {
-  forms = alix.forms(pars.q, pars.field.name());
+  forms = alix.tokenize(pars.q, pars.field.name());
 }
 final String href = "doc.jsp?q=" + JspTools.escape(pars.q) + "&amp;id="; // href link
 boolean zero = false;

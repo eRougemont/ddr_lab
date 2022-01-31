@@ -20,7 +20,7 @@ int formsLenght = 0;
 if (pars.q != null) {
   out.print( "  \"q\": \"" + pars.q.replace("\"", "\\\"").replaceAll("[\\<\\>]", "")+"\",\n");
   // get words in the query
-  forms = alix.forms(pars.q, pars.field.name());
+  forms = alix.tokenize(pars.q, pars.field.name());
   // get the count of occurrences found by year
   for (String form: forms) {
     fint.form(iterator, form);

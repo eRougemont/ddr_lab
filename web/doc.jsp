@@ -4,12 +4,14 @@
 <%@ page import="alix.util.Top" %>
 <%@include file="jsp/prelude.jsp" %>
 <%
+
+
 // params for the page
 int max = 100;
 pars.limit = tools.getInt("limit", 50);
 if (pars.limit > max) pars.limit = max;
 // best words for query, no names
-pars.cat = (Cat)tools.getEnum("cat", Cat.STRONG);
+pars.cat = (OptionCat)tools.getEnum("cat", OptionCat.STRONG);
 
 int docId = tools.getInt("docid", -1); // get doc by lucene internal docId or persistant String id
 String id = tools.getString("id", "");
@@ -121,7 +123,7 @@ if (doc != null) { // document id is verified, give it to javascript
           out.println(" <h5>Mots clés</h5>");
           BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
           FormEnum forms = doc.results(field, pars.distrib.scorer(), pars.cat.tags());
-          forms.sort(FormEnum.Sorter.score, pars.limit, false);
+          forms.sort(FormEnum.Order.score, pars.limit, false);
           int no = 1;
           forms.reset();
           while (forms.hasNext()) {
@@ -154,7 +156,7 @@ if (doc != null) { // document id is verified, give it to javascript
       
       // hilite
       if (!"".equals(q)) {
-        String[] terms = alix.forms(q, field);
+        String[] terms = alix.tokenize(q, field);
         out.print(doc.hilite(field, terms));
       }
       else {

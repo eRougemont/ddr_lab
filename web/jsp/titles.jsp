@@ -12,7 +12,6 @@ final static HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new S
 String q = tools.getString("q", null);
 int limit = tools.getInt("limit", 100);
 
-
 SortField sf1 = new SortField("year", SortField.Type.INT);
 SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
 Sort sort = new Sort(sf1, sf2);

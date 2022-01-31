@@ -14,7 +14,6 @@ static String format(double real)
   return frdec2.format(real);
 }
 
-
 %>
 <%
 // response.setHeader("Content-Type", "application/vnd.ms-excel");

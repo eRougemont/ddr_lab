@@ -3,9 +3,29 @@
 <%
 //global variables
 FieldFacet facet = alix.fieldFacet(Alix.BOOKID, pars.field.name());
-String[] search = alix.forms(pars.q, pars.field.name());
+String[] search = alix.tokenize(pars.q, pars.field.name());
 FormEnum results = facet.results(search, null, pars.distrib.scorer());
-results.sort(FormEnum.Sorter.score, -1, false);
+//if no word searched, sort by date, not well optimized here
+if (search == null || search.length < 1) {
+    IndexSearcher searcher = alix.searcher();
+    // get book cover in date order
+    Query qBook = new TermQuery(new Term(Alix.TYPE, DocType.book.name()));
+    TopFieldDocs top = searcher.search(qBook, 10000, sortYear);
+    int length = top.scoreDocs.length;
+    ScoreDoc[] docs = top.scoreDocs;
+    int[] sorter = new int[length];
+    for (int i = 0; i < length; i++) {
+        final int docId = docs[i].doc;
+        // get a facetId available for this doc
+        final int facetId = facet.facetId(docId);
+        // set the facetId in the sorter
+        sorter[i] = facetId;
+    }
+    results.sorter(sorter);
+}
+else {
+     results.sort(FormEnum.Order.score, -1, false);
+}
 
 %>
 <!DOCTYPE html>
@@ -71,32 +91,22 @@ results.sort(FormEnum.Sorter.score, -1, false);
         
     
 <%
-            // if no word searched, sort by date, not well optimized here
-            if (search == null || search.length < 1) {
-              // get docIds of books sorted by a query
-              int[] books = alix.books(sortYear);
-              // take a facteId for these books to set a sorter
-              for (int i = 0, length = books.length; i < length; i++) books[i] = facet.facetId(books[i]);
-              results.sorter(books);
-            }
-            /* 
-            // Hack to use facet as a navigator in results, cache results in the facet order
-            TopDocs topDocs = getTopDocs(pageContext, alix, corpus, q, DocSort.author);
-            int[] nos = facet.nos(topDocs);
-            results.setNos(nos);
-            */
-            // build a resizable href link
-            final String href = "conc.jsp?q=" + JspTools.escape(pars.q)+ "&amp;book=";
-            // resend a query somewhere ?
-            boolean zero = false;
-            int no = 1;
-            while (results.hasNext()) {
-              results.next();
+
+// build a resizable href link
+final String href = "conc.jsp?q=" + JspTools.escape(pars.q)+ "&amp;book=";
+// resend a query somewhere ?
+boolean zero = false;
+int no = 1;
+// results.reset();
+while (results.hasNext()) {
+    results.next();
               // n = results.n();
               //in alpha order, do something if no match ?
+              /*
               if (results.hits() < 1) {
                 // continue;
               }
+              */
               // a link should here send a query by book, isnt t ?
               // rebuild link from href prefix
               /*
@@ -112,53 +122,50 @@ results.sort(FormEnum.Sorter.score, -1, false);
                 zero = true;
               }
               */
-              String id = results.form();
-              out.println("  <tr>");
-              out.println("    <td class=\"no left\">" + no + "</td>");
-              out.print("    <td class=\"form\">");
-              out.print("<a href=\""+href+id+"\">");
-              // out.print(results.label());
-              int docId = alix.getDocId(id);
-              Document doc = reader.document(docId, BOOK_FIELDS);
-              out.print(doc.get("year"));
-              out.print(", ");
-              out.print(doc.get("title"));
-              out.print("</a>");
-              out.println("</td>");
-              
-              out.print("    <td class=\"num\">");
-              if (results.freq() > 0) {
-                out.print(results.freq());
-              }
-              out.println("</td>");
+    String id = results.form();
+    out.println("  <tr>");
+    out.println("    <td class=\"no left\">" + no + "</td>");
+    out.print("    <td class=\"form\">");
+    out.print("<a href=\""+href+id+"\">");
+    // out.print(results.label());
+    int docId = alix.getDocId(id);
+    Document doc = reader.document(docId, BOOK_FIELDS);
+    out.print(doc.get("year"));
+    out.print(", ");
+    out.print(doc.get("title"));
+    out.print("</a>");
+    out.println("</td>");
+    out.print("    <td class=\"num\">");
+    if (results.freq() > 0) {
+        out.print(results.freq());
+    }
+    out.println("</td>");
 
-              out.print("    <td class=\"all\">");
-              out.print("/ "+frdec.format(results.occs()));
-              out.println("</td>");
 
-              out.print("    <td class=\"num\">");
-              if (results.hits() > 0) out.print(results.hits());
-              out.println("</td>");
-              
-              out.print("    <td class=\"all\">");
-              out.print("/ "+results.docs());
-              out.println("</td>");
 
-              // fréquence
-              // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
-              out.print("    <td class=\"num\">");
-              if (results.score() != 0) out.print(formatScore(results.score()));
-              out.println("</td>");
-              out.println("    <td></td>");
-            /*
-                if (filtered || queried) out.print(" <span class=\"docs\">("+hits+" / "+docs+")</span>    ");
-                else out.print(" <span class=\"docs\">("+docs+")</span>    ");
-                out.println("</div>");
-              */
-              out.println("    <td class=\"no right\">" + no + "</td>");
-              out.println("</tr>");
-              no++;
-            }
+    out.print("    <td class=\"all\">");
+    out.print("/ "+frdec.format(results.occs()));
+    out.println("</td>");
+    
+    out.print("    <td class=\"num\">");
+    if (results.hits() > 0) out.print(results.hits());
+    out.println("</td>");
+    
+    out.print("    <td class=\"all\">");
+    out.print("/ "+results.docs());
+    out.println("</td>");
+    
+
+    // fréquence
+    // sb.append(dfdec1.format((double)forms.occsMatching() * 1000000 / forms.occsPart())) ;
+    out.print("    <td class=\"num\">");
+    if (results.score() != 0) out.print(formatScore(results.score()));
+    out.println("</td>");
+    out.println("    <td></td>");
+    out.println("    <td class=\"no right\">" + no + "</td>");
+    out.println("</tr>");
+    no++;
+}
             %>
         </tbody>
       </table>

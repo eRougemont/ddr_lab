@@ -95,7 +95,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
 %>
 <%@ include file="jsp/prelude.jsp" %>
 <%
-pars.forms = alix.forms(pars.q, pars.field.name());
+pars.forms = alix.tokenize(pars.q, pars.field.name());
 // local param
 pars.left = 50;
 pars.right = 70;
@@ -154,7 +154,7 @@ span.left {display: inline-block; text-align: right; width: <%= Math.round(10+pa
         />
         <select name="f" onchange="this.form.submit()">
           <option/>
-          <%=pars.field.options("score occs year year_inv")%>
+          <%=pars.field.options()%>
         </select>
         <!-- 
         <label>Expressions <input type="checkbox" name="expression" value="true" <%= (pars.expression)?"checked=\"checked\"":"" %>/></label>
