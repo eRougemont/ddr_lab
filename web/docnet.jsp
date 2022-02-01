@@ -14,6 +14,15 @@ dt {
     padding-top: 1rem;
     font-size: 85%;
 }
+iframe {
+    border: none;
+    height: calc(100vh - 40px);
+    position: fixed;
+    width: 33%;
+}
+.text {
+    width: 33% !important;
+}
     </style>
   </head>
   <body class="document">
@@ -22,6 +31,8 @@ dt {
     </header>
     <main>
       <div class="row">
+      <iframe style="left:0" name="left" src="text.jsp">
+      </iframe>
         <div class="text">
 <%
 
@@ -32,6 +43,8 @@ IndexSearcher searcher = alix.searcher();
 ScoreDoc[] biblio = OptionSort.id.top(searcher, query).scoreDocs;
 final String field = "text";
 int no = 1;
+float score = 20;
+int n = 20;
 out.println("<dl>");
 for (ScoreDoc src: biblio) {
     final int docId = src.doc;
@@ -57,27 +70,22 @@ for (ScoreDoc src: biblio) {
     boolean first = true;
     for (ScoreDoc tgt: mltDocs) {
         if (tgt.doc == docId) continue;
-        if (tgt.score < 25) break;
+        if (tgt.score < score) break;
         if (first) {
-            out.println("  <dt>"+ " <a href=\"doc.jsp?id=" + srcDoc.get(Alix.ID) + "\"> " + ML.detag(srcDoc.get("bibl")).trim() + "</a>" + "</dt>");
+            out.println("  <dt>"+ " <a target=\"left\" href=\"text.jsp?id=" + srcDoc.get(Alix.ID) + "\"> " + ML.detag(srcDoc.get("bibl")).trim() + "</a>" + "</dt>");
             first = false;
         }
         Document tgtDoc = reader.document(tgt.doc, DOC_SHORT);
-        out.println("    <dd>" + tgt.score + " <a href=\"doc.jsp?id=" + tgtDoc.get(Alix.ID) + "\">" + ML.detag(tgtDoc.get("bibl")).trim() + "</a></dd>");
-      }
-    
-    /*
-
-    // searcher.setSimilarity(oldSim);
-    ScoreDoc[] hits = topDocs.scoreDocs;
-    final String href = "?id=";
-    final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Alix.ID, Alix.BOOKID, "bibl"}));
-    */
-
+        out.println("    <dd>" + tgt.score + " <a target=\"right\" href=\"text.jsp?id=" + tgtDoc.get(Alix.ID) + "\">" + ML.detag(tgtDoc.get("bibl")).trim() + "</a></dd>");
+    }
+    if (first) continue;
 }
 out.println("</dl>");
 %>
         </div>
+          <iframe style="right:0" name="right" src="text.jsp">
+          </iframe>
+
       </div>
     </main>
   </body>
