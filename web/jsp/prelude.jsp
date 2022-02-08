@@ -155,13 +155,14 @@
         OptionCat cat; // word categories to filter
         OptionOrder order;// order in list of terms and facets
         int limit; // results, limit of result to show
-        int nodes; // number of nodes in wordnet
-        int context; // coocs, context width in words
+        // int context; // coocs, context width in words
+        // int nodes; // number of nodes in wordnet
         int left; // coocs, left context in words
         int right; // coocs, right context in words
         boolean expression; // kwic, filter multi word expression
         OptionMime mime; // mime type for output
-
+        int edges; // used to transmit an info to freqList
+        int compac; // a compacity index for wordnet
         // too much scoring algo
         OptionDistrib distrib; // ranking algorithm, tf-idf like
         OptionMI mi; // proba kind of scoring, not tf-idf, [2, 2]
@@ -198,16 +199,6 @@
 
         pars.limit = 100;
         pars.limit = tools.getInt("limit", pars.limit);
-        // user should know his limits
-
-        final int nodesMax = 300;
-        final int nodesMid = 50;
-        pars.nodes = tools.getInt("nodes", nodesMid);
-        if (pars.nodes < 1)
-            pars.nodes = nodesMid;
-        if (pars.nodes > nodesMax)
-            pars.nodes = nodesMax;
-
         // coocs
         pars.left = tools.getInt("left", 0);
         pars.right = tools.getInt("right", 0);
@@ -333,6 +324,10 @@
             results.right = pars.right; // right context
             results.tags = pars.cat.tags(); // filter word list by tags
             results.search = alix.tokenize(pars.q, pars.field.name()); // parse query as terms
+            if (pars.edges > 0) { // record edges
+                results.edges();
+            }
+            
             // for stats, global freq of searched terms
             int pivotsOccs = 0;
             for (String form : results.search) {
@@ -349,7 +344,8 @@
             } else {
                 // if nothing found, what should be done ?
             }
-        } else {
+        } 
+        else {
             // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
             // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
             // pars.distrib.scorer()
