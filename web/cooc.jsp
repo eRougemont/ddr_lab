@@ -1,61 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="jsp/prelude.jsp" %>
-<%@ page import="java.io.BufferedReader" %>
-<%@ page import="java.io.File" %>
-<%@ page import="java.io.InputStream" %>
-<%@ page import="java.io.InputStreamReader" %>
-<%@ page import="java.io.StringReader" %>
-<%@ page import="java.nio.file.Path" %>
-<%@ page import="java.nio.file.Files" %>
-<%@ page import="java.nio.file.StandardOpenOption" %>
-<%@ page import="java.nio.charset.StandardCharsets" %>
-<%@ page import="java.util.Enumeration" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.TreeSet" %>
-<%@ page import="java.util.TreeMap" %>
 
-<%@ page import="org.apache.lucene.analysis.Analyzer" %>
-<%@ page import="org.apache.lucene.analysis.TokenStream" %>
-<%@ page import="org.apache.lucene.analysis.Tokenizer" %>
-<%@ page import="org.apache.lucene.analysis.tokenattributes.CharTermAttribute" %>
-<%@ page import="org.apache.lucene.analysis.tokenattributes.FlagsAttribute" %>
-<%@ page import="org.apache.lucene.analysis.tokenattributes.OffsetAttribute" %>
-<%@ page import="org.apache.lucene.util.BytesRef" %>
-
-<%@ page import="alix.lucene.analysis.FrDics" %>
-<%@ page import="alix.lucene.analysis.tokenattributes.CharsAtt" %>
-<%@ page import="alix.lucene.analysis.tokenattributes.CharsLemAtt" %>
-<%@ page import="alix.lucene.analysis.tokenattributes.CharsOrthAtt" %>
-<%@ page import="alix.fr.Tag" %>
-<%@ page import="alix.fr.Tag.TagFilter" %>
-<%@ page import="alix.util.Dir" %>
-<%@ page import="alix.util.IntEdges" %>
-<%@ page import="alix.util.IntEdges.Edge" %>
-<%@ page import="alix.util.IntList" %>
-<%@ page import="alix.util.IntPair" %>
-
-
-<%!
-
-
-%>
-<%
-boolean first;
-// global data handlers
-String field = pars.field.name();
-final FieldText ftext = alix.fieldText(field);
-
-pars.left = tools.getInt("left", 50);
-pars.right = tools.getInt("right", 50);
-pars.limit = tools.getInt("limit", 50);
-if (pars.limit > 200) pars.limit = 200;
-pars.edges = tools.getInt("edges", 200);
-if (pars.edges < 10 ) pars.edges = 10;
-if (pars.edges > 500 ) pars.edges = 500;
-
-// for consistency, same freqlist as table.jsp
-FormEnum freqList = freqList(alix, pars);
-%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -70,8 +15,8 @@ FormEnum freqList = freqList(alix, pars);
     <script src="<%=hrefHome%>vendor/sigma/sigma.layout.noverlap.js">//</script>
     <script src="<%=hrefHome%>static/sigmot.js">//</script>
     <script src="<%=hrefHome%>static/alix.js">//</script>
-    <style>
-    </style>
+    <script>
+    </script>
   </head>
   <body class="wordnet">
     <div id="graphcont">
@@ -106,9 +51,8 @@ FormEnum freqList = freqList(alix, pars);
         <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
         <label for="right" title="Nombre de mots à capturer à droite">à droite</label>
         <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
-        <label for="planets" title="Nombre de de liens">edges</label>
-        <input type="text" name="compac" value="<%=pars.edges%>"  class="num3" size="2"/>
-        <a class="help button" href="#aide">?</a>
+        <label for="edges" title="Nombre de de liens">liens</label>
+        <input type="text" name="edges" value="<%=pars.edges%>"  class="num3" size="2"/>
         
          <br/>
          <label for="words">Chercher</label>
@@ -138,72 +82,7 @@ FormEnum freqList = freqList(alix, pars);
        </div>
     </div>
     <script>
-<%
-first = true;
-out.println("var data = {");
-out.println("  edges: [");
-
-// collect nodes
-IntList nodeList = new IntList();
-
-List<Edge> edges = freqList.edges().top();
-int edgeCount = Math.min(edges.size(), 200); 
-for (int edgeId = 0; edgeId < edgeCount; edgeId++) {
-    Edge edge = edges.get(edgeId);
-    nodeList.push(edge.source);
-    nodeList.push(edge.target);
-    if (first) first = false;
-    else out.println(", ");
-    out.print("    {id:'e" + (edgeId) + "', source:'n" + edge.source + "', target:'n" + edge.target + "', size:" + edge.count 
-    + ", color:'rgba(128, 128, 128, 0.2)'"
-    // for debug
-    // + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.formOccs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.formOccs(dstId) + ", freq:" + freqList.freq()
-    + "}");
-}
-
-out.println("\n  ],");
-
-
-out.println("  nodes: [");
-first = true;
-
-// sort vector
-int[] nodes = nodeList.toArray();
-Arrays.sort(nodes);
-int lastNode = nodes[0] - 1;
-
-for (int i=0, len=nodes.length; i < len; i++) {
-    if (lastNode == nodes[i]) continue;
-    int formId = lastNode = nodes[i];
-    
-    if (first) first = false;
-    else out.println(", ");
-    int tag = ftext.tag(formId);
-    String color = "rgba(255, 255, 255, 1)";
-    if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.8)";
-    else if (Tag.ADJ.sameParent(tag)) color = "rgba(240, 255, 240, 0.7)";
-    // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
-    else if (Tag.NAME.sameParent(tag)) color = "rgba(255, 192, 0, 1)";
-    // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
-    // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-    else color = "rgba(159, 183, 159, 1)";
-    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-    out.print("    {id:'n" + formId + "', label:'" + ftext.form(formId).replace("'", "\\'") + "', size:" + (freqList.freq(formId))); // node.count
-    out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
-    // if (node.type() == STAR) out.print(", type:'hub'");
-    out.print(", color:'" + color + "'");
-    out.print("}");
- }
- out.println("\n  ]");
-
-  
-
-
- out.println("}");
- %>
-
-
-
+<jsp:include page="jsp/netcooc.jsp" flush="true" />;
 var graph = new sigmot('graph', data);
     </script>
     <!-- Edges <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->

@@ -111,7 +111,8 @@ static class Node implements Comparable<Node>
     sb.append(formId).append(":").append(form).append(" (").append(type).append(", ").append(count).append(")");
     return sb.toString();
   }
-}%>
+}
+%>
 <%
 boolean first;
 // global data handlers
@@ -133,12 +134,18 @@ pars.left = tools.getInt("left", 50);
 pars.right = tools.getInt("right", 50);
 pars.limit = tools.getInt("limit", 50);
 if (pars.limit > 200) pars.limit = 200;
-
-// for consistency, same freqlist as table.jsp
-// this list will be reused to get the matrix of distances
+//for consistency, same freqlist as table.jsp
+//this list will be reused to get the matrix of distances
 FormEnum freqList = freqList(alix, pars);
-// don’t forget to sort, with a limit
-freqList.sort(pars.order.order(), pars.limit);
+// search forms
+String[] forms;
+if (freqList.search != null) {
+    forms = freqList.search;
+}
+else {
+    forms = new String[0];
+}
+freqList.sort(pars.order.order(), pars.limit + forms.length);
 
 final FieldText ftext = alix.fieldText(field);
 final FieldRail frail = alix.fieldRail(field);
@@ -166,20 +173,34 @@ final FieldRail frail = alix.fieldRail(field);
         <jsp:include page="local/tabs.jsp"/>
       </header>
   <%
-  // keep nodes in insertion order (especially for query)
-    Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
-    int i = 0;
-    freqList.reset();
-    while (freqList.hasNext()) {
-      freqList.next();
-      final int formId = freqList.formId();
-      // add a linked node candidate
-      long count = 1;
-      if (pars.order.equals(OptionOrder.hits)) count = freqList.hits();
-      else count = freqList.freq();
-      nodeMap.put(formId, new Node(formId, freqList.form()).count(count).type(COMET));
-      if (++i >= 500) break;
+// keep nodes in insertion order (especially for query)
+Map<Integer, Node> nodeMap = new LinkedHashMap<Integer, Node>();
+int i = 0;
+freqList.reset();
+while (freqList.hasNext()) {
+    freqList.next();
+    String form = freqList.form();
+    // strip pivots
+    boolean pass = false;
+    for (String s: forms) {
+        if (s.equals(form)) {
+        	pass = true;
+            break;
+        }
     }
+    if (pass) continue;
+    final int formId = freqList.formId();
+    
+    
+    // add a linked node candidate
+    long count = 1;
+    if (pars.order.equals(OptionOrder.hits)) count = freqList.hits();
+    else count = freqList.freq();
+    
+    
+    nodeMap.put(formId, new Node(formId, form).count(count).type(COMET));
+    if (++i >= 500) break;
+}
   %>
 <!-- Nodes <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
       <form id="form" class="search">
@@ -291,25 +312,34 @@ out.println("\n  ],");
 out.println("  nodes: [");
 first = true;
 for (Node node: nodeMap.values()) {
-   if (node.type == COMET) continue; // not connected
-   if (first) first = false;
-   else out.println(", ");
-   int tag = ftext.tag(node.formId);
-   String color = "rgba(255, 255, 255, 1)";
-   if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.8)";
-   else if (Tag.ADJ.sameParent(tag)) color = "rgba(240, 255, 240, 0.7)";
-   // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
-   else if (Tag.NAME.sameParent(tag)) color = "rgba(255, 192, 0, 1)";
-   // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
-   // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-   else color = "rgba(159, 183, 159, 1)";
-   // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
-   out.print("    {id:'n" + node.formId + "', label:'" + node.form.replace("'", "\\'") + "', size:" + (node.count)); // node.count
-   out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
-   if (node.type() == STAR) out.print(", type:'hub'");
-   out.print(", color:'" + color + "'");
-   out.print("}");
- }
+    if (node.type == COMET) continue; // not connected
+    String form = node.form;
+    /*
+    for (String s: forms) {
+        if (s.equals(form)) {
+            continue;
+        }
+    }
+    */
+
+    if (first) first = false;
+    else out.println(", ");
+    int tag = ftext.tag(node.formId);
+    String color = "rgba(255, 255, 255, 1)";
+    if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.8)";
+    else if (Tag.ADJ.sameParent(tag)) color = "rgba(240, 255, 240, 0.7)";
+    // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
+    else if (Tag.NAME.sameParent(tag)) color = "rgba(255, 192, 0, 1)";
+    // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
+    // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
+    else color = "rgba(159, 183, 159, 1)";
+    // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
+    out.print("    {id:'n" + node.formId + "', label:'" + form.replace("'", "\\'") + "', size:" + (node.count)); // node.count
+    out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+    if (node.type() == STAR) out.print(", type:'hub'");
+    out.print(", color:'" + color + "'");
+    out.print("}");
+}
  out.println("\n  ]");
 
   

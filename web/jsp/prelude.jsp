@@ -155,8 +155,8 @@
         OptionCat cat; // word categories to filter
         OptionOrder order;// order in list of terms and facets
         int limit; // results, limit of result to show
-        // int context; // coocs, context width in words
-        // int nodes; // number of nodes in wordnet
+        int dist; // wordnet, context width in words
+        int nodes; // number of nodes in wordnet
         int left; // coocs, left context in words
         int right; // coocs, right context in words
         boolean expression; // kwic, filter multi word expression
@@ -199,6 +199,22 @@
 
         pars.limit = 100;
         pars.limit = tools.getInt("limit", pars.limit);
+        pars.nodes = 50;
+        pars.nodes = tools.getInt("nodes", pars.nodes);
+        if (pars.nodes < 0) {
+        	pars.nodes = 3;
+        }
+        if (pars.nodes > 250) {
+            pars.nodes = 250;
+        }
+        pars.dist = tools.getInt("dist", 50);
+        if (pars.dist < 0) {
+        	pars.dist = 1;
+        }
+        if (pars.dist > 250) {
+        	pars.dist = 250;
+        }
+
         // coocs
         pars.left = tools.getInt("left", 0);
         pars.right = tools.getInt("right", 0);
@@ -210,6 +226,9 @@
             pars.left = 5;
             pars.right = 5;
         }
+        pars.edges = tools.getInt("edges", 100);
+        if (pars.edges < 0 ) pars.edges = 0;
+        if (pars.edges > 500 ) pars.edges = 500;
         /*
         else if (pars.left > 10) pars.left = 50;
         pars.right = tools.getInt("right", 5);
@@ -232,7 +251,7 @@
     }
 
     /**
-     * Corpus selecto
+     * Corpus selector
      */
     public String selectCorpus(final String corpusid) {
         return selectCorpus(corpusid, null);
@@ -244,7 +263,8 @@
             for (Map.Entry<String, Alix> entry : Alix.pool.entrySet()) {
                 sb.append("<strong>" + entry.getValue().props.get("label") + "</strong>");
             }
-        } else {
+        } 
+        else {
             if (label == null)
                 label = "Corpus";
             sb.append("<label for=\"corpus\" title=\"Choisir une base de textes\">" + label + "</label>\n");
@@ -308,38 +328,33 @@
                 filter = Corpus.bits(alix, Alix.BOOKID, new String[] { pars.book });
         }
 
-        FieldText fieldText = alix.fieldText(pars.field.name());
+        FieldText ftext = alix.fieldText(pars.field.name());
 
         boolean reverse = false;
         // if (pars.order == Order.last) reverse = true;
 
         FormEnum results = null;
         if (pars.q != null) {
-            FieldRail rail = alix.fieldRail(pars.field.name()); // get the tool for cooccurrences
+            // get the pivots
+            String[] words = alix.tokenize(pars.q, pars.field.name());
+            int[] formIds = ftext.formIds(words, filter);
             // prepare a result object to populate with co-occurences
-            results = new FormEnum(fieldText);
-            // parames for rail
+            FieldRail frail = alix.fieldRail(pars.field.name()); // get the tool for cooccurrences
+            results = new FormEnum(ftext);
             results.filter = filter; // book filter
             results.left = pars.left; // left context
             results.right = pars.right; // right context
             results.tags = pars.cat.tags(); // filter word list by tags
-            results.search = alix.tokenize(pars.q, pars.field.name()); // parse query as terms
             if (pars.edges > 0) { // record edges
                 results.edges();
             }
             
-            // for stats, global freq of searched terms
-            int pivotsOccs = 0;
-            for (String form : results.search) {
-                pivotsOccs += fieldText.formOccs(form);
-            }
-            long found = rail.coocs(results); // populate the wordlist
+            long found = frail.coocs(formIds, results); // populate the wordlist
             if (found > 0) {
                 // parameters for sorting
                 results.limit = pars.limit;
                 results.mi = OptionMI.g; // hard coded mutual-info algo, seems the best
-                results.reverse = reverse;
-                rail.score(results, pivotsOccs);
+                frail.score(results);
                 // throw new IllegalArgumentException("rail.fieldName="+rail.fieldName);
             } else {
                 // if nothing found, what should be done ?
@@ -349,9 +364,9 @@
             // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
             // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
             // pars.distrib.scorer()
-            results = fieldText.results(pars.cat.tags(), OptionDistrib.bm25.scorer(), filter); // hard coded distribution, seems the best
-            results.filter = filter; // keep en handle for later use
-            results.tags = pars.cat.tags(); // keep en handle for later use
+            results = ftext.results(pars.cat.tags(), OptionDistrib.bm25.scorer(), filter); // hard coded distribution, seems the best
+            results.filter = filter; // keep an handle for later use
+            results.tags = pars.cat.tags(); // keep an handle for later use
 
         }
         // is it good to sort freqList here ?
