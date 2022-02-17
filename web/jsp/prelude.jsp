@@ -207,6 +207,10 @@
         if (pars.nodes > 250) {
             pars.nodes = 250;
         }
+        pars.edges = tools.getInt("edges", pars.nodes*2);
+        if (pars.edges < 0 ) pars.edges = 0;
+        if (pars.edges > 500 ) pars.edges = 500;
+
         pars.dist = tools.getInt("dist", 50);
         if (pars.dist < 0) {
         	pars.dist = 1;
@@ -230,9 +234,6 @@
         if (pars.left > 30) pars.left = 30;
         if (pars.right > 30) pars.right = 30;
 
-        pars.edges = tools.getInt("edges", 90);
-        if (pars.edges < 0 ) pars.edges = 0;
-        if (pars.edges > 500 ) pars.edges = 500;
 
         // paging
         final int hppDefault = 100;
