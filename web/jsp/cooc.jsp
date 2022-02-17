@@ -79,18 +79,20 @@ boolean first;
 // for each pivot word, we need a separate word list, with separate scoring
 FormEnum[] stats = new FormEnum[pivotLen];
 for (int i = 0; i < pivotLen; i++) {
+    int[] pivotx = new int[]{pivotIds[i]};
     // build a freq list for coocs
     FormEnum results = new FormEnum(ftext);
+    results.limit = pars.nodes;
     results.filter = filter; // corpus filter
     results.left = pars.left; // left context
     results.right = pars.right; // right context
     results.tags = pars.cat.tags(); // filter word list by tags
     // DO NOT record edges here
-    long found = frail.coocs(pivotIds, results); // populate the wordlist
+    long found = frail.coocs(pivotx, results); // populate the wordlist
     // sort coocs by score 
     if (pars.order == OptionOrder.score) {
         // calculate score
-        frail.score(pivotIds, results);
+        frail.score(pivotx, results);
     }
     results.sort(pars.order.order());
     stats[i] = results;
@@ -110,20 +112,23 @@ while (nodeCount < pars.nodes) {
         break;
     }
     results.next();
-    final int pivot = pivotIds[mark];
+    final int pivotId = pivotIds[mark];
     int formId = results.formId();
     boolean isPivot = false;
+    // a pivot ?
     if (Arrays.binarySearch(pivotIds, formId) >= 0) {
-    	isPivot = true;
+        isPivot = true;
+        nodes.put(formId, Double.MIN_VALUE);
+        continue;
     }
+    // min-max size of nodes keps
+    double count = count(results, formId, pars.order);
+    // out.println(nodeCount+". "+ftext.form(pivotId)+"--"+ftext.form(formId)+" (" + count + ")");
     // node already recorded update its score 
     if (nodes.containsKey(formId)) {
         Double score = nodes.get(formId);
-        if (isPivot || score == Double.MIN_VALUE) { // is pivot
-            continue;
-        }
         // cooc shared
-        score += results.score();
+        score += count;
         if (score < nodeMin) {
             nodeMin = score;
         }
@@ -139,13 +144,6 @@ while (nodeCount < pars.nodes) {
     if (mark == pivotLen) {
         mark = 0;
     }
-    // a pivot ?
-    if (isPivot) {
-        nodes.put(formId, Double.MIN_VALUE);
-        continue;
-    }
-    // min-max size of nodes keps
-    double count = count(results, results.formId(), pars.order);
     if (count < nodeMin) {
         nodeMin = count;
     }
