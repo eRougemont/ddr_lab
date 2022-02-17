@@ -76,11 +76,11 @@ for (Edge edge: edges) {
     if (edge.source == edge.target) {
         continue;
     }
-    final double score = edge.score;
+    final double score = edge.score();
     if (first) first = false;
     else out.println(", ");
     out.print("    {id:'e" + (edgeCount) + "', source:'n" + edge.source + "', target:'n" + edge.target + "', size:" + (score<=0?0.1:score * 100) 
-    + ", color:'rgba(128, 128, 128, 0.2)'"
+    + ", color:'rgba(192, 192, 192, 0.2)'"
     // for debug
     // + ", srcLabel:'" + ftext.form(srcId).replace("'", "\\'") + "', srcOccs:" + ftext.formOccs(srcId) + ", dstLabel:'" + ftext.form(dstId).replace("'", "\\'") + "', dstOccs:" + ftext.formOccs(dstId) + ", freq:" + freqList.freq()
     + "}");
@@ -88,8 +88,8 @@ for (Edge edge: edges) {
         break;
     }
 }
-out.println("\n  ]");
-
+out.println("\n  ],");
+out.println("  time: '" + ( (System.nanoTime() - time) / 1000000) + "ms'");
 out.println("};");
 
  

@@ -226,14 +226,13 @@
             pars.left = 5;
             pars.right = 5;
         }
+        // against out of memory
+        if (pars.left > 30) pars.left = 30;
+        if (pars.right > 30) pars.right = 30;
+
         pars.edges = tools.getInt("edges", 100);
         if (pars.edges < 0 ) pars.edges = 0;
         if (pars.edges > 500 ) pars.edges = 500;
-        /*
-        else if (pars.left > 10) pars.left = 50;
-        pars.right = tools.getInt("right", 5);
-        else if (pars.right > 10) pars.right = 50;
-        */
 
         // paging
         final int hppDefault = 100;
@@ -337,7 +336,7 @@
         if (pars.q != null) {
             // get the pivots
             String[] words = alix.tokenize(pars.q, pars.field.name());
-            int[] formIds = ftext.formIds(words, filter);
+            int[] pivotIds = ftext.formIds(words, filter);
             // prepare a result object to populate with co-occurences
             FieldRail frail = alix.fieldRail(pars.field.name()); // get the tool for cooccurrences
             results = new FormEnum(ftext);
@@ -349,12 +348,12 @@
                 results.edges();
             }
             
-            long found = frail.coocs(formIds, results); // populate the wordlist
+            long found = frail.coocs(pivotIds, results); // populate the wordlist
             if (found > 0) {
                 // parameters for sorting
                 results.limit = pars.limit;
                 results.mi = OptionMI.g; // hard coded mutual-info algo, seems the best
-                frail.score(results);
+                frail.score(pivotIds, results);
                 // throw new IllegalArgumentException("rail.fieldName="+rail.fieldName);
             } else {
                 // if nothing found, what should be done ?

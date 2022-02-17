@@ -1,20 +1,19 @@
 @charset "UTF-8";
-
 :root {
-  --bg: #555550;
-  --bghi: #40403c;
-  --text: #eee;
-  --texthi: #afa;
-  --textlo: #aaa;
-  --textinv: #000;
-  --link: #9fb79f;
-  --bg2: #608060;
-  --text2: #000;
-  --textlo2:var(--bg);
-  --texthi2: #fff;
-  --textinv2: #fff;
-  --bg3: #ddd;
-  --text3: #333;
+    --bg: #555550;
+    --bghi: #40403c;
+    --text: #eee;
+    --texthi: #afa;
+    --textlo: #aaa;
+    --textinv: #000;
+    --link: #9fb79f;
+    --bg2: #608060;
+    --text2: #000;
+    --textlo2: var(--bg);
+    --texthi2: #fff;
+    --textinv2: #fff;
+    --bg3: #ddd;
+    --text3: #333;
 }
 
 
@@ -22,15 +21,17 @@
  * colors and fonts
  */
 
+
 /* floatfix */
+
 #graphcount::after,
 body::after,
 main::after,
 div.row::after,
 nav.tabs::after {
-  content: "";
-  clear: both;
-  display: table;
+    content: "";
+    clear: both;
+    display: table;
 }
 
 .mark,
@@ -39,88 +40,97 @@ table.sortable th,
 button.magnify,
 a.reset,
 .sortable td.title a:hover,
-article.res header a:hover, /* title in short result */
-article.res div.line a, /* pivot word in kwic */
-#chapters mark, /* hilite in chapter research */
+article.res header a:hover,
+
+/* title in short result */
+
+article.res div.line a,
+
+/* pivot word in kwic */
+
+#chapters mark,
+
+/* hilite in chapter research */
+
 a.delete,
 body.facet .active,
 h4 .occs,
 a.xred,
 .term .occs {
-  /* color: var(--bg2); */
+    /* color: var(--bg2); */
 }
-
-
 
 .mark b {
-  background: var(--text);
-  color: var(--bg)
+    background: var(--text);
+    color: var(--bg)
 }
 
-.mark a.prev, .mark a.next {
-  color: var(--bg3)
+.mark a.prev,
+.mark a.next {
+    color: var(--bg3)
 }
 
 a:target,
 mark:target,
-b.mark:target {
-}
+b.mark:target {}
 
 html {
-  scrollbar-color: var(--textlo) var(--bg);
+    scrollbar-color: var(--textlo) var(--bg);
 }
 
 body::-webkit-scrollbar {
-  background: var(--bg);
+    background: var(--bg);
 }
 
 body::-webkit-scrollbar-thumb {
-  background: var(--textlo);
-  border-radius: 20px;       /* roundness of the scroll thumb */
-  border: 3px solid transparent;  /* creates padding around scroll thumb */
+    background: var(--textlo);
+    border-radius: 20px;
+    /* roundness of the scroll thumb */
+    border: 3px solid transparent;
+    /* creates padding around scroll thumb */
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: sans-serif;
 }
 
 td.no {
-  color: var(--textlo);
+    color: var(--textlo);
 }
 
 nav.tabs a,
 nav.tabs {
-  background-color: var(--bg3);
-  color: var(--text3);
+    background-color: var(--bg3);
+    color: var(--text3);
 }
 
 nav.tabs {
-  border-bottom: 1px solid var(--texthi);
+    border-bottom: 1px solid var(--texthi);
 }
 
 nav.tabs a {
-  padding: 5px 0.5rem;
-  float: left;
-  border: 1px solid transparent;
-  border-bottom-color: var(--texthi);
-  margin-bottom: -1px;
+    padding: 5px 0.5rem;
+    float: left;
+    border: 1px solid transparent;
+    border-bottom-color: var(--texthi);
+    margin-bottom: -1px;
 }
 
 nav.tabs a.selected,
 nav.tabs a:hover {
-  background-color: var(--bghi);
-  color: var(--texthi);
-  text-decoration: none;
-  border-color: var(--texthi) var(--texthi) var(--bghi) var(--texthi);
+    background-color: var(--bghi);
+    color: var(--texthi);
+    text-decoration: none;
+    border-color: var(--texthi) var(--texthi) var(--bghi) var(--texthi);
 }
 
 nav.tabs form.base {
-  display: block;
-  padding: 2px 0.5rem;
-  margin: 0;
-  float: right;
+    display: block;
+    padding: 2px 0.5rem;
+    margin: 0;
+    float: right;
 }
 
 
@@ -131,177 +141,178 @@ nav.tabs form.base {
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
-
 
 table,
 select,
 textarea,
 input {
-  font-size: inherit;
+    font-size: inherit;
 }
 
 html,
 body {
-  width: 100%;
-  padding: 0;
-  margin: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 html {
-  height: 100%;
+    height: 100%;
 }
+
 body {
-  width: 100%;
+    width: 100%;
 }
 
 body,
 body main {
-  position: relative;
+    position: relative;
 }
 
 a {
-  background-color: transparent;
-  text-decoration: none;
-  color: var(--link);
-}
-a:hover {
-  text-decoration: underline;
+    background-color: transparent;
+    text-decoration: none;
+    color: var(--link);
 }
 
-a:focus, a:active {
-  outline: unset;
+a:hover {
+    text-decoration: underline;
+}
+
+a:focus,
+a:active {
+    outline: unset;
 }
 
 .alert {
-  background: #ff0;
-  font-size: 120%;
-  color: #000;
-  padding: 10px 2rem 10px 2rem;
+    background: #ff0;
+    font-size: 120%;
+    color: #000;
+    padding: 10px 2rem 10px 2rem;
 }
+
 em {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 strong,
 .b {
-  font-weight: bold;
+    font-weight: bold;
 }
 
-sub, sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
 }
 
 sup {
-  top: -0.5em;
+    top: -0.5em;
 }
 
 sub {
-  bottom: -0.25em;
+    bottom: -0.25em;
 }
 
 summary {
-  outline: unset;
-  cursor: pointer;
+    outline: unset;
+    cursor: pointer;
 }
 
-summary:hover {
-
-}
+summary:hover {}
 
 table {
-  border-spacing: 0;
+    border-spacing: 0;
 }
 
 dt strong {
-  color: var(--texthi);
+    color: var(--texthi);
 }
+
 
 /**
  * Forms
  */
+
 form.search {
-  background: var(--bghi);
-  color: var(--textlo);
-  padding: 10px 2rem 10px 2rem;
+    background: var(--bghi);
+    color: var(--textlo);
+    padding: 10px 2rem 10px 2rem;
 }
 
 .button,
 input,
 button,
 select {
-  background: var(--bg);
-  color: var(--text);
-  margin: 1px;
-  outline: none;
-  border-radius: 3px;
-  border: 1px solid var(--textinv);
-  /*
+    background: var(--bg);
+    color: var(--text);
+    margin: 1px;
+    outline: none;
+    border-radius: 3px;
+    border: 1px solid var(--textinv);
+    /*
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
   */
 }
 
-
 form.search .button,
 form.search input,
 form.search button,
 form.search select {
-  background: var(--bghi);
-  color: var(--texthi);
-  border-color: var(--bg);
+    background: var(--bghi);
+    color: var(--texthi);
+    border-color: var(--bg);
 }
 
 input.q {
-  font-weight: bold;
-  font-size: 120%;
-  padding: 2px 1em;
-  margin: 1px 0 1px 0;
+    font-weight: bold;
+    font-size: 120%;
+    padding: 2px 1em;
+    margin: 1px 0 1px 0;
 }
 
 label {
-  padding-left: 0px;
-  padding-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 form.search a.icon {
-  border: 1px transparent solid;
-  padding: 4px 4px 0px 4px;
-  margin-right: 4px;
-  float: right;
+    border: 1px transparent solid;
+    padding: 4px 4px 0px 4px;
+    margin-right: 4px;
+    float: right;
 }
 
-
 form.search a.icon:hover {
-  border-color: var(--text2);
+    border-color: var(--text2);
 }
 
 .button,
 button,
 select {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .button {
-  font-weight: bold;
-  line-height: 1.2;
-  color: var(--bg);
-  padding: 0 10px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--bg);
+    padding: 0 10px;
 }
 
 .button:hover {
-  color: var(--bg);
-  background: var(--text);
+    color: var(--bg);
+    background: var(--text);
 }
 
 select {
-
-  /*
+    /*
   line-height: 1.2em;
   font-size: 16px;
   font-weight: 700;
@@ -320,42 +331,44 @@ select {
 
 input[type=text]:focus,
 textarea:focus {
-  box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
+    box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
 }
 
 input.start {
-  text-align: right;
+    text-align: right;
 }
-
 
 input.year {
-  width: 10ex;
+    width: 10ex;
 }
-input.num1 {
-  width: 1ex;
-}
-input.num2 {
-  width: 2ex;
 
+input.num1 {
+    width: 1ex;
 }
+
+input.num2 {
+    width: 2ex;
+}
+
 input.num3 {
-  width: 4ex;
-  text-align: right;
+    width: 4ex;
+    text-align: right;
 }
+
 input.num4 {
-  width: 5.5ex;
-  text-align: right;
+    width: 5.5ex;
+    text-align: right;
 }
 
 button[type="submit"].right {
-  float: right;
+    float: right;
 }
 
 button[type="submit"] {
-  background: transparent;
-  color:var(--text);
-  font-size: 102%;
-  /*
+    background: transparent;
+    color: var(--text);
+    font-size: 102%;
+    /*
   outline: unset;
   padding: 0.1em 0.3em;
   margin: 0 2px 0 0;
@@ -366,9 +379,10 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: var(--text);
-  color:  var(--bg);
+    background: var(--text);
+    color: var(--bg);
 }
+
 
 /*
 select::-ms-expand {
@@ -388,73 +402,72 @@ select:after {
 */
 
 
-
-
 /**
  * Design global
  */
+
 div.container {
-  width: 40rem;
-  margin-left: auto;
-  margin-right: auto;
+    width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 html,
 body,
 main {
-  position: relative;
+    position: relative;
 }
 
 .row {
-  display: flex;
-  position: relative;
-  justify-content: center;
+    display: flex;
+    position: relative;
+    justify-content: center;
 }
 
 article.text,
 div.text {
-  width: 50rem;
-  padding: 2rem;
-  margin-left: auto;
-  margin-right: auto;
+    width: 50rem;
+    padding: 2rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #sidebar {
-  position: fixed;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  order: -1;
-  overflow-y: auto;
-  height: 100vh;
+    position: fixed;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    order: -1;
+    overflow-y: auto;
+    height: 100vh;
 }
 
 nav.terms,
 nav.seealso {
-  font-size: 16px;
-  width: 20rem;
-  padding: 0 2rem 2rem 1rem;
+    font-size: 16px;
+    width: 20rem;
+    padding: 0 2rem 2rem 1rem;
 }
 
 nav.terms {
-  width: 13rem;
+    width: 13rem;
 }
 
-
 nav.seealso div.bibl {
-  text-align: left;
-  line-height: 120%;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px var(--text) solid;
+    text-align: left;
+    line-height: 120%;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px var(--text) solid;
 }
 
 .seealso .analytic {
-  color: var(--text);
-  font-weight: 500;
+    color: var(--text);
+    font-weight: 500;
 }
+
 .seealso .byline {
-  display: none;
+    display: none;
 }
 
 
@@ -463,301 +476,314 @@ nav.seealso div.bibl {
  */
 
 td.title em {
-  display: block;
-  width: 25ex;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    display: block;
+    width: 25ex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-
 .snip .analytic {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 article.snip p.frags {
-  width: 40rem;
-  line-height: 130%;
-  margin: 0.5ex auto 0 auto;
-  text-indent: 0;
-  padding: 0;
-  text-align: justify;
+    width: 40rem;
+    line-height: 130%;
+    margin: 0.5ex auto 0 auto;
+    text-indent: 0;
+    padding: 0;
+    text-align: justify;
 }
 
 article.snip mark {
-  font-weight: bold;
+    font-weight: bold;
 }
+
 
 /**
  * Suggest
  */
 
 .suggest .bibl {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .suggest .bibl:hover {
-  background: var(--bghi);
+    background: var(--bghi);
 }
 
-
-
 .suggest {
-  /*
+    /*
   margin-top: -15px;
   padding-top: 25px;
   */
-  background: var(--bg);
-  color: var(--text);
-  border-top: none;
-  display: none;
-  text-align: left;
-  position: absolute;
-  padding: 5px 1rem;
-  z-index: 2;
-  border: 1px solid var(--bg);
-  border-radius: 10px;
-  box-shadow: 0 4px 4px #888;
-  right: 30px;
-  left: 30px;
+    background: var(--bg);
+    color: var(--text);
+    border-top: none;
+    display: none;
+    text-align: left;
+    position: absolute;
+    padding: 5px 1rem;
+    z-index: 2;
+    border: 1px solid var(--bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 4px #888;
+    right: 30px;
+    left: 30px;
 }
 
 .progress {
-  background: #ccc;
-  margin: 1px 1rem 0 1rem;
-  visibility: hidden;
+    background: #ccc;
+    margin: 1px 1rem 0 1rem;
+    visibility: hidden;
 }
 
 .progress div {
-  height: 2px;
-  background-color: #cf1308;
-  width: 25%;
- -webkit-animation: 0.5s ease-in 0s infinite alternate move_load;
-         animation: 0.5s ease-in 0s infinite alternate move_load;
-
+    height: 2px;
+    background-color: #cf1308;
+    width: 25%;
+    -webkit-animation: 0.5s ease-in 0s infinite alternate move_load;
+    animation: 0.5s ease-in 0s infinite alternate move_load;
 }
-@-webkit-keyframes move_load { from { margin-left:0%; } to { margin-left:75%; }  }
-        @keyframes move_load { from { margin-left:0%; } to { margin-left:75%; }  }
+
+@-webkit-keyframes move_load {
+    from {
+        margin-left: 0%;
+    }
+    to {
+        margin-left: 75%;
+    }
+}
+
+@keyframes move_load {
+    from {
+        margin-left: 0%;
+    }
+    to {
+        margin-left: 75%;
+    }
+}
 
 
 /**
  * Sortable
  */
+
 table.sortable {
-  border-spacing: 0;
-  border-bottom: 2px solid var(--bg2);
-}
-table.sortable th {
-  text-align: left;
-  font-weight: bold;
-  background: var(--bg3);
-  color: var(--text3);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 2px solid var(--text);
+    border-spacing: 0;
+    border-bottom: 2px solid var(--bg2);
 }
 
+table.sortable th {
+    text-align: left;
+    font-weight: bold;
+    background: var(--bg3);
+    color: var(--text3);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid var(--text);
+}
 
 .sortable thead td {
-  background: transparent;
+    background: transparent;
 }
 
 table.sortable caption {
-  padding: 1rem 2rem;
-  font-weight: 400;
-  text-align: justify;
-  line-height: 1.2em;
+    padding: 1rem 2rem;
+    font-weight: 400;
+    text-align: justify;
+    line-height: 1.2em;
 }
 
 caption a {
-  color: var(--bg2);
+    color: var(--bg2);
 }
 
 .sortable td a {
-  display: block;
+    display: block;
 }
-
 
 .mod3,
 .mod8 {
-  background-color: var(--bghi);
+    background-color: var(--bghi);
 }
-
 
 .mod1 td,
 .mod4 td,
 .mod6 td,
 .mod9 td {
-  border-bottom: 0.5px solid var(--textinv);
+    border-bottom: 0.5px solid var(--textinv);
 }
 
 .mod1 td.no,
 .mod4 td.no,
 .mod6 td.no,
 .mod9 td.no {
-  border: none;
+    border: none;
 }
 
-
 .mod0 td {
-  border-bottom: 2px solid var(--textlo);
+    border-bottom: 2px solid var(--textlo);
 }
 
 .mod5 td {
-  border-bottom: 0.6px solid var(--textlo);
+    border-bottom: 0.6px solid var(--textlo);
 }
 
 td.no {
-  vertical-align: middle;
-  font-size: 80%;
-
+    vertical-align: middle;
+    font-size: 80%;
 }
+
 table.sortable tr:hover {
-  box-shadow: 0px 0px 5px 0px var(--bg3);
+    box-shadow: 0px 0px 5px 0px var(--bg3);
 }
 
 table.sortable th.all,
 td.all,
 table.sortable th.num,
 td.num {
-  text-align: right;
-  padding-left: 1ex;
-  padding-right: 1ex;
+    text-align: right;
+    padding-left: 1ex;
+    padding-right: 1ex;
 }
+
 td.lo,
 td.all {
-  color: var(--textlo);
+    color: var(--textlo);
 }
 
 td.target {
-  cursor: pointer;
-  background: var(--bg2);
-  color: var(--bg);
+    cursor: pointer;
+    background: var(--bg2);
+    color: var(--bg);
 }
 
 td.no.left {
-  text-align: right;
-  padding-right: 5px;
+    text-align: right;
+    padding-right: 5px;
 }
+
 td.no.right {
-  text-align: left;
-  padding-left: 5px;
+    text-align: left;
+    padding-left: 5px;
 }
+
 th.form {
-  padding-left: 1rem;
+    padding-left: 1rem;
 }
+
 td.form {
-  white-space: nowrap;
-  font-weight: bold;
+    white-space: nowrap;
+    font-weight: bold;
 }
+
 td.form a {
-  display: block;
-  color: var(--link);
-  border: none;
-  padding: 1px 1rem;
+    display: block;
+    color: var(--link);
+    border: none;
+    padding: 1px 1rem;
 }
+
 td.form a.NAME {
-  color: #c80;
+    color: #c80;
 }
 
 td.form a.SUB,
 td.form a.ADJ {
-  color:var(--text);
+    color: var(--text);
 }
-
 
 td.form a:hover {
-  text-decoration: none;
-  color: var(--text3);
-  background-color: var(--bg3);
+    text-decoration: none;
+    color: var(--text3);
+    background-color: var(--bg3);
 }
 
-
 td.stats {
-  width: 100px;
-  text-align: left;
-  padding-left: 1ex;
-  padding-right: 1ex;
-  font-family: monospace;
-  position: relative;
+    width: 100px;
+    text-align: left;
+    padding-left: 1ex;
+    padding-right: 1ex;
+    font-family: monospace;
+    position: relative;
 }
 
 td.stats span.bar {
-  position: absolute;
-  left:0;
-  background-color: var(--bg2alpha);
+    position: absolute;
+    left: 0;
+    background-color: var(--bg2alpha);
 }
 
 table.sortable th.q {
-  font-weight: 300;
+    font-weight: 300;
 }
+
 table.sortable th.q i {
-  color: var(--bg2);
-  font-weight: bold;
+    color: var(--bg2);
+    font-weight: bold;
 }
+
 
 /** ???? */
 
-
 .gutter.but {
-  color: #92897F;
+    color: #92897F;
 }
 
 #chapters a:hover,
 .gutter {
-  background: #E1DDCF;
+    background: #E1DDCF;
 }
 
 header.biblbar {
-  background-color: #92897F;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0px 3px 2px 1px rgba(146, 137, 127, 0.5);
+    background-color: #92897F;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0px 3px 2px 1px rgba(146, 137, 127, 0.5);
 }
 
 header.biblbar,
-header.biblbar a {
-
-}
+header.biblbar a {}
 
 header.biblbar a:hover {
-  color: #000;
+    color: #000;
 }
 
 header.biblbar table {
-  border: none;
+    border: none;
 }
 
-header {
-}
+header {}
 
 ::-moz-selection {
-  /* let it alone for Chrome */
-  background: var(--bg3);
-  color: var(--text3);
+    /* let it alone for Chrome */
+    background: var(--bg3);
+    color: var(--text3);
 }
+
 ::selection {
-  background: var(--bg3);
-  color: var(--text3);
+    background: var(--bg3);
+    color: var(--text3);
 }
 
 #tabs button.here,
 #tabs a.here {
-  background: var(--bg3);
-  color: var(--text3);
+    background: var(--bg3);
+    color: var(--text3);
 }
 
-
 mark {
-  background: transparent;
+    background: transparent;
 }
 
 mark:target {
-  border: none;
+    border: none;
 }
 
 mark:target b {
-  /*
+    /*
   outline: #cf1308 solid 1px;
   outline-offset: 2px;
   */
@@ -765,10 +791,8 @@ mark:target b {
 
 #header .base mark,
 #rulhi {
-  border-color: rgba(146, 137, 127, 0.3);
+    border-color: rgba(146, 137, 127, 0.3);
 }
-
-
 
 .keywords a,
 details,
@@ -779,23 +803,19 @@ h4,
 select,
 body.facet,
 .sortable caption,
-.hit .bibl a {
-
-}
-
-
-
-
+.hit .bibl a {}
 
 .keywords a,
 .mark a.prev,
 .mark a.next {
-  rgba(128, 70, 13, 0.5);
+    rgba(128, 70, 13, 0.5);
 }
+
 
 /**
  * Global styling
  */
+
 
 /*
 #header form {
@@ -805,279 +825,281 @@ body.facet,
 }
 */
 
-
-
 main.right {
-  margin-right: 2rem;
+    margin-right: 2rem;
 }
 
 main.left {
-  margin-left: 2rem;
+    margin-left: 2rem;
 }
+
 
 /**
  * Default
  */
 
 details {
-  padding: 0 0.5rem 2px 0.5rem;
-  border-style: solid;
-  border-width: 1px;
+    padding: 0 0.5rem 2px 0.5rem;
+    border-style: solid;
+    border-width: 1px;
 }
 
 [type=checkbox] {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
-::-moz-placeholder, ::-webkit-input-placeholder {
-  /* does not work */
-  font-style: italic;
-  font-weight: 100;
-  color: #999;
-  font-size: 1rem;
+::-moz-placeholder,
+ ::-webkit-input-placeholder {
+    /* does not work */
+    font-style: italic;
+    font-weight: 100;
+    color: #999;
+    font-size: 1rem;
 }
 
 ::-ms-input-placeholder {
-  font-style: italic;
-  color: #999;
+    font-style: italic;
+    color: #999;
 }
-
 
 #gotop,
 .goright {
-  font-size: 3rem;
-  line-height: 3rem;
-  padding: 0 0.3rem 0 0.5rem;
-  text-decoration: none;
-  border-bottom: none;
-  opacity: 0.5;
-  z-index: 10;
+    font-size: 3rem;
+    line-height: 3rem;
+    padding: 0 0.3rem 0 0.5rem;
+    text-decoration: none;
+    border-bottom: none;
+    opacity: 0.5;
+    z-index: 10;
 }
 
 #gotop {
-  color: #888;
-  position: fixed;
-  bottom: 0.5rem;
-  right: 0rem;
-  z-index: 10;
+    color: #888;
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0rem;
+    z-index: 10;
 }
+
 
 /**
  * Search results, kwic or snips
  */
 
 article.kwic header {
-  color: var(--textlo);
-  border-bottom: 1px solid var(--textlo);
-  text-align: left;
-  margin: 1rem 0 0.2rem 0;
-  line-height: 120%;
-  padding: 1px 1rem;
-  font-weight: 400;
+    color: var(--textlo);
+    border-bottom: 1px solid var(--textlo);
+    text-align: left;
+    margin: 1rem 0 0.2rem 0;
+    line-height: 120%;
+    padding: 1px 1rem;
+    font-weight: 400;
 }
 
 article.kwic header a {
-  color: var(--textlo);
+    color: var(--textlo);
 }
+
 article.kwic header b,
 article.kwic header small {
-  float: left;
-  color: var(--bg2);
-  margin: 0.3ex 1ex 0 0;
+    float: left;
+    color: var(--bg2);
+    margin: 0.3ex 1ex 0 0;
 }
 
 article.kwic header a {
-  display: block;
+    display: block;
 }
 
 article.kwic header a:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 div.line a {
-  font-weight: bold;
-  color: var(--link);
+    font-weight: bold;
+    color: var(--link);
 }
+
 article.kwic div.line a:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 article.kwic div.line {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
-
-
 article.kwic .surname {
-  font-variant: small-caps;
-  font-size: 115%;
-  font-weight: bold;
+    font-variant: small-caps;
+    font-size: 115%;
+    font-weight: bold;
 }
 
 article.kwic .title {
-  font-style: italic;
+    font-style: italic;
 }
 
 article.kwic mark {
-  background: var(--bg);
-  font-weight: bold;
+    background: var(--bg);
+    font-weight: bold;
 }
+
 
 /** Liseuse */
 
 a.form {
-  display: block;
+    display: block;
 }
 
 .form small {
-  float: right;
-  color: #000;
+    float: right;
+    color: #000;
 }
 
 #ruloccs {
-  position: fixed;
-  z-index: 4;
-  right: 0;
-  background-color: var(--bg);
-  border-left: 1px solid var(--text);
-  top: 0;
-  bottom: 0;
-  width: 2rem;
-}
-#ruloccs div {
-  /* ?? */
-  margin-top: 2.2rem;
-  position: relative;
-  height: 100%;
+    position: fixed;
+    z-index: 4;
+    right: 0;
+    background-color: var(--bg);
+    border-left: 1px solid var(--text);
+    top: 0;
+    bottom: 0;
+    width: 2rem;
 }
 
+#ruloccs div {
+    /* ?? */
+    margin-top: 2.2rem;
+    position: relative;
+    height: 100%;
+}
 
 #ruloccs a {
-  /*
+    /*
   background-color: var(--redalpha);
   */
 }
 
 #ruloccs a:hover {
-  background-color: var(--bg2);
+    background-color: var(--bg2);
 }
 
 #rulhi a,
 #ruloccs a {
-  display: block;
-  text-decoration: none;
-  border-bottom: none;
-  background-color: var(--textlo);
-  width: 2rem;
-  font-size: 1px;
-  height: 6px;
-  margin-top: -3px;
-  border-radius: 5px;
+    display: block;
+    text-decoration: none;
+    border-bottom: none;
+    background-color: var(--textlo);
+    width: 2rem;
+    font-size: 1px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 5px;
 }
 
 #rulhi a:hover,
 #ruloccs a:hover {
-  z-index: 10;
-  text-decoration: none;
-  background-color: var(--text);
+    z-index: 10;
+    text-decoration: none;
+    background-color: var(--text);
 }
 
 #ruloccs a {
-  position: absolute;
+    position: absolute;
 }
 
 
 /** Chapters */
 
-#chapters > a {
-  color: #000;
-  display: block;
-  text-align: justify;
-  margin: 5px 0;
-  padding: 0 0.5rem;
+#chapters>a {
+    color: #000;
+    display: block;
+    text-align: justify;
+    margin: 5px 0;
+    padding: 0 0.5rem;
 }
 
-#chapters > a:hover {
-  text-decoration: none;
+#chapters>a:hover {
+    text-decoration: none;
 }
 
 #chapters .more {
-  margin-left: auto;
-  margin-right: auto;
-  width: 3rem;
-  font-size: 3rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 3rem;
+    font-size: 3rem;
 }
 
 #chapters span.title {
-  font-style: italic;
+    font-style: italic;
 }
 
 #chapters .surname {
-  font-variant: small-caps;
-  font-size: 115%;
-  font-weight: bold;
+    font-variant: small-caps;
+    font-size: 115%;
+    font-weight: bold;
 }
+
 
 /**
  * Word cloud
  */
+
 body.cloud {
-  padding: 25px;
+    padding: 25px;
 }
 
 body.cloud #filter {
-  top: 0;
-  right: 0;
-  z-index: 10;
-  position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    position: absolute;
 }
 
 svg.d3cloud {
-  background: #888;
+    background: #888;
 }
 
 svg.d3cloud text {
-  font-family: sans-serif;
-  text-anchor: middle;
-  font-weight: 500;
-  fill: #fff;
+    font-family: sans-serif;
+    text-anchor: middle;
+    font-weight: 500;
+    fill: #fff;
 }
 
 svg.d3cloud .SUB {
-  fill: #000;
+    fill: #000;
 }
 
 svg.d3cloud .NAME {
-  fill: #f00;
+    fill: #f00;
 }
 
-
 .wcframe {
-  padding: 30px;
-  background: var(--gray);
+    padding: 30px;
+    background: var(--gray);
 }
 
 #wordcloud2 {
-  height: 80vh;
-  font-family: "Fira Sans", "Open Sans", "Roboto", sans-serif;
+    height: 80vh;
+    font-family: "Fira Sans", "Open Sans", "Roboto", sans-serif;
 }
 
 #wordcloud2 a {
-  color: #000;
-  text-decoration: none;
-  line-height: 0.8em;
-  display: block;
-  position: absolute;
-  line-height: 100%;
-  white-space: nowrap;
-  -ms-transform-origin: 50% 40%;
-  -webkit-transform-origin: 50% 40%;
-  transform-origin: 50% 40%;
+    color: #000;
+    text-decoration: none;
+    line-height: 0.8em;
+    display: block;
+    position: absolute;
+    line-height: 100%;
+    white-space: nowrap;
+    -ms-transform-origin: 50% 40%;
+    -webkit-transform-origin: 50% 40%;
+    transform-origin: 50% 40%;
 }
 
 #wordcloud2 .SUB {
-  color: #fff;
+    color: #fff;
 }
 
 #wordcloud2 .ADJ {}
@@ -1087,166 +1109,171 @@ svg.d3cloud .NAME {
 #wordcloud2 .ADV {}
 
 #wordcloud2 .NAME {
-  color: var(--bg2);
+    color: var(--bg2);
 }
+
 
 /**
  * Dygraph (chronology)
  */
+
+
 /** Chart in chrono */
 
-
-
 #chart {
-  font-family: sans-serif;
-  cursor: pointer;
+    font-family: sans-serif;
+    cursor: pointer;
 }
 
 body.chapters #chart {
-  height: 400px;
-  width: 100%;
+    height: 400px;
+    width: 100%;
 }
 
 #chartframe {
-  background: #eee;
-  padding: 20px;
+    background: #eee;
+    padding: 20px;
 }
 
 body.chapters .dygraph-legend {
-  background: rgba(200, 200, 200, 0.5) !important;
+    background: rgba(200, 200, 200, 0.5) !important;
 }
 
 body.chrono {
-  overflow: hidden;
-  /*
+    overflow: hidden;
+    /*
   padding-bottom: 1rem;
   */
 }
 
 body.chrono form {
-  position: absolute;
-  z-index: 20;
-  right: 0;
+    position: absolute;
+    z-index: 20;
+    right: 0;
 }
 
-.dygraph-annotation, .dygraph-legend {
-  overflow: hidden
+.dygraph-annotation,
+.dygraph-legend {
+    overflow: hidden
 }
 
 .dygraph-legend {
-  background-color: rgba(255, 255, 255, 0.3);
-  font-weight: normal;
-  position: absolute;
-  pointer-events: none;
-  line-height: 100%;
-  left: 4em !important;
-  top: 0.5rem !important;
-  font-size: 17px;
-  z-index: 10;
-  width: 250px;
-  background: #fff;
-  line-height: normal;
-  text-align: left;
-  padding: 10px;
-  border: 1px solid #fff;
-  border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    line-height: 100%;
+    left: 4em !important;
+    top: 0.5rem !important;
+    font-size: 17px;
+    z-index: 10;
+    width: 250px;
+    background: #fff;
+    line-height: normal;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #fff;
+    border-radius: 10px;
 }
 
-.dygraph-legend-dash, .dygraph-legend-line {
-  display: inline-block;
-  position: relative;
-  bottom: .5ex;
-  height: 1px;
-  border-bottom-width: 2px;
-  border-bottom-style: solid
+.dygraph-legend-dash,
+.dygraph-legend-line {
+    display: inline-block;
+    position: relative;
+    bottom: .5ex;
+    height: 1px;
+    border-bottom-width: 2px;
+    border-bottom-style: solid
 }
 
 .dygraph-legend-line {
-  padding-left: 1em
+    padding-left: 1em
 }
 
-.dygraph-annotation, .dygraph-roller {
-  position: absolute;
-  z-index: 10
+.dygraph-annotation,
+.dygraph-roller {
+    position: absolute;
+    z-index: 10
 }
 
 .dygraph-default-annotation {
-  border: 1px solid #000;
-  background-color: #fff;
-  text-align: center
+    border: 1px solid #000;
+    background-color: #fff;
+    text-align: center
 }
 
 .dygraph-axis-label {
-  z-index: 10;
-  line-height: normal;
-  overflow: hidden;
-  color: #000
+    z-index: 10;
+    line-height: normal;
+    overflow: hidden;
+    color: #000
 }
 
 .dygraph-axis-label-x {
-  font-size: 12pt;
+    font-size: 12pt;
 }
 
 .dygraph-label {
-  color: #000;
-  font-size: 13px;
-  white-space: nowrap;
+    color: #000;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .dygraph-title {
-  color: #000;
-  padding-top: 3px;
-  font-weight: bold;
-  z-index: 10;
-  text-align: center;
-  font-size: 18px;
+    color: #000;
+    padding-top: 3px;
+    font-weight: bold;
+    z-index: 10;
+    text-align: center;
+    font-size: 18px;
 }
 
-
 .dygraph-xlabel {
-  text-align: center
+    text-align: center
 }
 
 .dygraph-label-rotate-left {
-  text-align: center;
-  transform: rotate(90deg);
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  -ms-transform: rotate(90deg)
+    text-align: center;
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg)
 }
 
 .dygraph-label-rotate-right {
-  text-align: center;
-  transform: rotate(-90deg);
-  -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg)
+    text-align: center;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg)
 }
+
 
 /** Word net */
 
-
 body.wordnet {
-  height: 100%;
+    height: 100%;
 }
 
 #graphcont {
-  background-color: var(--gray);
-  display: flex;
-  flex-direction: column;
-  height:100%;
+    background-color: #203020;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
+
 #graph {
-  position: relative;
-  flex-grow: 4;
-  width: 100%;
-  border: none;
-  overflow: hidden;
-  margin-left: auto;
-  margin-right: auto;
+    position: relative;
+    flex-grow: 4;
+    width: 100%;
+    border: none;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 
 /*
 form .line {
@@ -1263,46 +1290,49 @@ form .line .elastic input {
 */
 
 input.nb {
-  text-align: right;
-  width: 3rem;
+    text-align: right;
+    width: 3rem;
 }
+
 .butbar {
-  text-align: right;
-  padding-right: 3px;
+    text-align: right;
+    padding-right: 3px;
 }
+
 .butbar button {
-  cursor: pointer;
-  display: inline-block;
-  border: none;
-  margin: 0;
-  padding: 0;
-  font-size: 1.3rem;
-  line-height: 100%;
-  height: 1.5rem;
-  width: 2.5rem;
-  margin: 0;
-  text-decoration: none;
-  font-family: sans-serif;
-  text-align: center;
-  transition: background 250ms ease-in-out, transform 150ms ease;
-  /*
+    cursor: pointer;
+    display: inline-block;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-size: 1.3rem;
+    line-height: 100%;
+    height: 1.5rem;
+    width: 2.5rem;
+    margin: 0;
+    text-decoration: none;
+    font-family: sans-serif;
+    text-align: center;
+    transition: background 250ms ease-in-out, transform 150ms ease;
+    /*
   -webkit-appearance: none;
   -moz-appearance: none;
   */
 }
 
 #totop {
-  font-size: 3rem;
-  opacity: 0.5;
-  color: var(--textlo);
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+    font-size: 3rem;
+    opacity: 0.5;
+    color: var(--textlo);
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
 }
+
 #totop:hover {
-  opacity: 1;
+    opacity: 1;
 }
 
 p.speaker {
-  color: var(--textlo);
+    color: var(--textlo);
 }

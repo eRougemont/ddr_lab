@@ -25,12 +25,19 @@
       </header>
 
       <form id="form" class="search">
+        <label for="q">Co-occurrents de</label>
+        <input type="text" class="q" name="q" placeholder="Mots pivots" value="<% JspTools.escape(out, pars.q); %>" size="40" />,
+        <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
+        <label for="left" title="Largeur du contexte dont sont extraits les liens, en nombre de mots, à gauche">mots à gauche</label>
+        <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
+        <label for="right" title="Nombre de mots à capturer à droite">mots à droite</label>.
+         <br/>
+         <label>Dans </label>
         <%= selectCorpus(alix.name) %>,
         <%= selectBook(alix, pars.book) %>
-        <button type="submit">▶</button>
-        
         <br/>
-        <input name="limit" type="text" value="<%= pars.limit %>" class="num3" size="2"/>
+        <label for="nodes">Nœuds :</label>
+        <input name="nodes" type="text" value="<%= pars.nodes %>" class="num3" size="2"/>
         <select name="f" onchange="this.form.submit()">
           <option/>
           <%=pars.field.options()%>
@@ -44,19 +51,10 @@
         <select name="order" onchange="this.form.submit()">
           <option/>
           <%= pars.order.options("score freq hits")%>
-        </select>
-        
-        <br/>
-        <label for="left" title="Largeur du contexte dont sont extraits les liens, en nombre de mots, à gauche">Contexte gauche</label>
-        <input name="left" value="<%=pars.left%>" size="1" class="num3"/>
-        <label for="right" title="Nombre de mots à capturer à droite">à droite</label>
-        <input name="right" value="<%=pars.right%>" size="1" class="num3"/>
-        <label for="edges" title="Nombre de de liens">liens</label>
+        </select>.
+        <label for="edges" title="Nombre de de liens"> — Liens :</label>
         <input type="text" name="edges" value="<%=pars.edges%>"  class="num3" size="2"/>
-        
-         <br/>
-         <label for="words">Chercher</label>
-         <input type="text" class="q" name="q" value="<% JspTools.escape(out, pars.q); %>" size="40" />
+        <button type="submit">▶</button>
       </form>
       <div id="graph" class="graph" oncontextmenu="return false">
       </div>
@@ -82,7 +80,7 @@
        </div>
     </div>
     <script>
-<jsp:include page="jsp/netcooc.jsp" flush="true" />;
+<jsp:include page="jsp/cooc.jsp" flush="true" />;
 var graph = new sigmot('graph', data);
     </script>
     <!-- Edges <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
