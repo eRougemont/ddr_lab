@@ -230,7 +230,7 @@
         if (pars.left > 30) pars.left = 30;
         if (pars.right > 30) pars.right = 30;
 
-        pars.edges = tools.getInt("edges", 100);
+        pars.edges = tools.getInt("edges", 90);
         if (pars.edges < 0 ) pars.edges = 0;
         if (pars.edges > 500 ) pars.edges = 500;
 
