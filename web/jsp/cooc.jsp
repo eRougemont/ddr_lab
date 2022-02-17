@@ -24,6 +24,7 @@ private double count(FormEnum results, int formId, OptionOrder order)
 
 %>
 <%
+pars.q = tools.getString("q", "personne individu");
 final double radialWeight = 0.1; // lightnimg radial
 // final int edgeMax = 4; // may become parameter
 out.println("var data = {");
@@ -64,11 +65,11 @@ if (pivotIds == null) {
     return;
 }
 Arrays.sort(pivotIds); // sort pivots to make it esier to found later
-int pivotCount = pivotIds.length;
+int pivotLen = pivotIds.length;
 
 
 //normalize forms
-for (int i =0; i < pivotCount; i++) {
+for (int i =0; i < pivotLen; i++) {
     forms[i] = ftext.form(pivotIds[i]);
 }
 boolean first;
@@ -76,8 +77,8 @@ boolean first;
 
 
 // for each pivot word, we need a separate word list, with separate scoring
-FormEnum[] stats = new FormEnum[pivotCount];
-for (int i = 0; i < pivotCount; i++) {
+FormEnum[] stats = new FormEnum[pivotLen];
+for (int i = 0; i < pivotLen; i++) {
     // build a freq list for coocs
     FormEnum results = new FormEnum(ftext);
     results.filter = filter; // corpus filter
@@ -135,7 +136,7 @@ while (nodeCount < pars.nodes) {
     // new node
     nodeCount++;
     mark++; // pass to next results
-    if (mark == pivotCount) {
+    if (mark == pivotLen) {
         mark = 0;
     }
     // a pivot ?
@@ -160,6 +161,7 @@ int[] nodeIds = new int[nodes.size()];
 int nodeIndex = 0;
 out.println("  nodes: [");
 first = true;
+int hub = 0;
 for (Map.Entry<Integer, Double> entry : nodes.entrySet()) {
     // if (entry.getValue() < 1) continue;
     int formId = entry.getKey();
@@ -183,10 +185,27 @@ for (Map.Entry<Integer, Double> entry : nodes.entrySet()) {
         size = nodeMin + (nodeMax - nodeMin) / 2;
     }
     out.print("    {id:'n" + formId + "', label:'" + ftext.form(formId).replace("'", "\\'") + "', size:" + size); // node.count
-    out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+    
     out.print(", color:'" + color + "'");
     // is a pivot
-    if (entry.getValue() < 1) out.print(", type:'hub'");
+    if (entry.getValue() < 1) {
+        out.print(", type:'hub'");
+        if (pivotLen == 1) {
+            out.print(", x:" + 50 + ", y:" + 50 );
+        }
+        else if (hub < 8) {
+            final int[] xx = new int[]{0, 100, 50, 50, 0, 100, 100, 0};
+            final int[] yy = new int[]{50, 50, 0,  100, 0, 100, 0, 100};
+            out.print(", x:" + xx[hub] + ", y:" + yy[hub] );
+        }
+        else {
+            out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+        }
+        hub++;
+    }
+    else {
+        out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+    }
     out.print("}");
 }
 out.println("\n  ],");
