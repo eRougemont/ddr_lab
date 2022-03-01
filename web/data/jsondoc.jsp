@@ -50,7 +50,23 @@ JspTools tools = new JspTools(pageContext);
 final int edgeLen = tools.getInt("edges", 60);
 int nodeLen = tools.getInt("nodes", 30);
 int context = 20;
+String callback = tools.getString("callback", null);
 
+if (callback != null) {
+    if (!callback.matches("^\\w+$")) {
+        out.println("{");
+        out.println("  \"errors\": [");
+        out.println("    {");
+        out.println("      \"status\": \"401\",");
+        out.println("      \"title\": \"Attempt of XSS, no.\"");
+        out.println("    }");
+        out.println("  ]");
+        out.println("}");
+        response.setStatus(401);
+        return;
+    }
+    out.print(JspTools.escape(callback) +"(");
+}
 out.println("{");
 long time = System.nanoTime();
 //test if Alix available with at least on base
@@ -264,7 +280,11 @@ out.println("  \"meta\": {");
 out.println("    \"time\": \"" + ( (System.nanoTime() - time) / 1000000) + "ms\"");
 out.println("\n  }");
 
-out.println("}");
+out.print("}");
+if (callback != null) {
+    out.print(");");
+}
+out.println();
 
  
  %>
