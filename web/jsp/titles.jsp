@@ -5,7 +5,7 @@
 <%@include file="prelude.jsp"%>
 <%!
 final static Analyzer ANAMET = new MetaAnalyzer();
-final static HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Alix.ID, Alix.BOOKID, "bibl"}));
+final static HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl"}));
 
 %>
 <%
@@ -13,7 +13,7 @@ String q = tools.getString("q", null);
 int limit = tools.getInt("limit", 100);
 
 SortField sf1 = new SortField("year", SortField.Type.INT);
-SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
+SortField sf2 = new SortField(Names.ALIX_ID, SortField.Type.STRING);
 Sort sort = new Sort(sf1, sf2);
 
 Query query = null;
@@ -44,7 +44,7 @@ for (ScoreDoc hit: hits) {
   String text = doc.get("bibl");
   // fast hack because of links in links
   text = text.replaceAll("<(/?)a([ >])", "<$1span$2");
-  out.print("<div class=\"bibl\" id=\"" + doc.get(Alix.ID) + "\">");
+  out.print("<div class=\"bibl\" id=\"" + doc.get(Names.ALIX_ID) + "\">");
   if (marker != null) {
     // sb.append("<a class=\"bibl\" href=\"compdoc.jsp?id="+doc.get(Alix.ID)+paging+back+"\">");
     out.println(marker.mark(text));

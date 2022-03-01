@@ -4,16 +4,18 @@
 <%@ page import="java.nio.file.Paths" %>
 <%@ page import="java.util.Map" %>
 <%!
+
 static public enum Tab {
   index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{}) { },
   wordnet("Graphe", "wordnet.jsp", "Mots fréquents en réseau", new String[]{"nodes", "f", "cat", "order", "book", "q"}) { },
   cooc("Co-occurrents", "cooc.jsp", "Co-occurrents en réseau", new String[]{"nodes", "f", "cat", "order", "book", "q", "right", "left"}) { },
   freqs("Table", "table.jsp", "Fréquences par mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
-  cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
+  // cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
   books("Livres", "livres.jsp", "Fréquences par livres/compilations", new String[]{"f", "q"}) { },
   chapters("Chapitres", "chapitres.jsp", "Fréquences par texte (chapitres, articles)", new String[]{"f", "q"}) { },
   kwic("Concordance", "conc.jsp", "Recherche de mot", new String[]{"q", "book"}) { },
   doc("Liseuse", "doc.jsp", "Lire un texte", new String[]{"id", "q"}) { },
+  docnet("Relations", "docnet.jsp", "Fréquences par mots", new String[]{}) { },
   ;
 
   final public String label;

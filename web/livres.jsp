@@ -2,14 +2,14 @@
 <%@include file="jsp/prelude.jsp"%>
 <%
 //global variables
-FieldFacet facet = alix.fieldFacet(Alix.BOOKID, pars.field.name());
+FieldFacet facet = alix.fieldFacet(Names.ALIX_BOOKID, pars.field.name());
 String[] search = alix.tokenize(pars.q, pars.field.name());
 FormEnum results = facet.results(search, null, pars.distrib.scorer());
 //if no word searched, sort by date, not well optimized here
 if (search == null || search.length < 1) {
     IndexSearcher searcher = alix.searcher();
     // get book cover in date order
-    Query qBook = new TermQuery(new Term(Alix.TYPE, DocType.book.name()));
+    Query qBook = new TermQuery(new Term(Names.ALIX_TYPE, Names.BOOK));
     TopFieldDocs top = searcher.search(qBook, 10000, sortYear);
     int length = top.scoreDocs.length;
     ScoreDoc[] docs = top.scoreDocs;

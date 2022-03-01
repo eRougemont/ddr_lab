@@ -23,7 +23,7 @@ if (pars.book != null) {
     if (bookid < 0)
         pars.book = null;
     else
-        filter = Corpus.bits(alix, Alix.BOOKID, new String[] { pars.book });
+        filter = Corpus.bits(alix, Names.ALIX_BOOKID, new String[] { pars.book });
 }
 // collect nodes 
 int nodeLen = tools.getInt("nodes", 50);

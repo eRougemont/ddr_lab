@@ -1,75 +1,80 @@
 /* css Rougemont pour Alix */
 
-
 :root {
-  --bg: #ddd;
-  --bghi: #eee;
-  --text: #333;
-  --texthi: #cf1308;
-  --textlo: #666;
-  --textinv: #000;
-  --link: #cc6b66;
-  --bg2: #cf1308;
-  --text2: #ddd;
-  --textlo2: #333;
-  --texthi2: #fff;
-  --textinv2: #333;
-  --bg3: var(--bg);
-  --text3: #333;
-
-  --red: #cf1308;
-  --redlight: #fba19d;
-  --redmid: #cc6b66;
-  --redalpha: rgba(207, 19, 8, 0.5);
-  --light: #f5f4f5;
-  --black: #212529;
-  --gray: #4c555d;
+    --bg: #ddd;
+    --bghi: #eee;
+    --text: #333;
+    --texthi: #cf1308;
+    --textlo: #666;
+    --textinv: #000;
+    --link: #cc6b66;
+    --bg2: #cf1308;
+    --text2: #ddd;
+    --textlo2: #333;
+    --texthi2: #fff;
+    --textinv2: #333;
+    --bg3: var(--bg);
+    --text3: #333;
+    --red: #cf1308;
+    --redlight: #fba19d;
+    --redmid: #cc6b66;
+    --redalpha: rgba(207, 19, 8, 0.5);
+    --light: #f5f4f5;
+    --black: #212529;
+    --gray: #4c555d;
 }
 
 body {
-  font-family: 'Fira Sans', 'Open Sans', 'Roboto', sans-serif-light, sans-serif;
-  line-height: 1.5;
-  font-weight: 300;
-  font-size: 18px;
+    font-family: 'Fira Sans', 'Open Sans', 'Roboto', sans-serif-light, sans-serif;
+    line-height: 1.5;
+    font-weight: 300;
+    font-size: 18px;
 }
+
+div.text {
+    background-color: #fff;
+}
+
 
 /**
  * Welcome pages
  */
+
 #portrait {
-  margin-left: 100px;
-  height: 200px;
-  position: relative;
-  display: inline-block;
-  width: auto;
-  max-width: 500px;
-  min-width: 270px;
-}
-#header_ban {
-  background-image: url('https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/header_ban.png');
-  background-size: 100% 200px;
-  background-repeat: no-repeat;
-  position: relative;
-  height: 200px;
-}
-#moto {
-  font-weight: 300;
-  font-size: 14px;
-  line-height: 1.2;
-  color: #000;
-  display: block;
-  position: absolute;
-  top: 60px;
-  left: 120px;
+    margin-left: 100px;
+    height: 200px;
+    position: relative;
+    display: inline-block;
+    width: auto;
+    max-width: 500px;
+    min-width: 270px;
 }
 
-#header_container {
+#header_ban {
+    background-image: url('https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/header_ban.png');
+    background-size: 100% 200px;
+    background-repeat: no-repeat;
+    position: relative;
+    height: 200px;
 }
+
+#moto {
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.2;
+    color: #000;
+    display: block;
+    position: absolute;
+    top: 60px;
+    left: 120px;
+}
+
+#header_container {}
 
 #ddrtete {
-  position: absolute;
+    position: absolute;
 }
 
 #header-row {
-  margin-left: 150px;
+    margin-left: 150px;
 }

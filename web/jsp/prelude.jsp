@@ -29,11 +29,11 @@
 <%@ page import="org.apache.lucene.search.similarities.*"%>
 <%@ page import="org.apache.lucene.search.BooleanClause.*"%>
 <%@ page import="org.apache.lucene.util.BitSet"%>
+<%@ page import="alix.Names"%>
 <%@ page import="alix.fr.Tag"%>
 <%@ page import="alix.fr.Tag.TagFilter"%>
 <%@ page import="alix.lucene.Alix"%>
 <%@ page import="alix.lucene.Alix.FSDirectoryType"%>
-<%@ page import="alix.lucene.DocType"%>
 <%@ page import="alix.lucene.analysis.FrAnalyzer"%>
 <%@ page import="alix.lucene.analysis.FrDics"%>
 <%@ page import="alix.lucene.search.*"%>
@@ -42,12 +42,14 @@
 <%@ page import="alix.util.ML"%>
 <%@ page import="alix.util.TopArray"%>
 <%@ page import="alix.web.*"%>
-<%!/** Not yet used, to resolve relatice paths */
+<%!
+    /** Not yet used, to resolve relatice paths */
     static String hrefHome = "";
     /** Load bases from WEB-INF/, one time */
     static {
-        if (!Webinf.bases)
+        if (!Webinf.bases) {
             Webinf.bases();
+        }
     }
 
     final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
@@ -64,19 +66,19 @@
     static final DecimalFormat dfScore = new DecimalFormat("0.00000", ensyms);
     /** Fields to retrieve in document for a book */
     final static HashSet<String> BOOK_FIELDS = new HashSet<String>(
-            Arrays.asList(new String[] { Alix.BOOKID, "byline", "year", "title" }));
+            Arrays.asList(new String[] { Names.ALIX_BOOKID, "byline", "year", "title" }));
     final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(
-            Arrays.asList(new String[] { Alix.BOOKID, Alix.ID, "year", "title", "analytic", "pages" }));
+            Arrays.asList(new String[] { Names.ALIX_BOOKID, Names.ALIX_ID, "year", "title", "analytic", "pages" }));
 
     final static Sort sortYear = new Sort(new SortField[] { new SortField("year", SortField.Type.INT),
-            new SortField(Alix.ID, SortField.Type.STRING), });
+            new SortField(Names.ALIX_ID, SortField.Type.STRING), });
 
     /** Field Name with int date */
     final static String YEAR = "year";
     /** Key prefix for current corpus in session */
     final static String CORPUS_ = "corpus_";
     /** A filter for documents */
-    final static Query QUERY_CHAPTER = new TermQuery(new Term(Alix.TYPE, DocType.chapter.name()));
+    final static Query QUERY_CHAPTER = new TermQuery(new Term(Names.ALIX_TYPE, Names.CHAPTER));
 
     static String formatScore(double real) {
         if (real == 0)
@@ -199,7 +201,7 @@
 
         pars.limit = 100;
         pars.limit = tools.getInt("limit", pars.limit);
-        pars.nodes = 50;
+        pars.nodes = 40;
         pars.nodes = tools.getInt("nodes", pars.nodes);
         if (pars.nodes < 0) {
         	pars.nodes = 3;
@@ -298,7 +300,7 @@
             if (txt != null)
                 txt += ", ";
             txt += doc.get("title");
-            String abid = doc.get(Alix.BOOKID);
+            String abid = doc.get(Names.ALIX_BOOKID);
             sb.append("<option value=\"" + abid + "\" title=\"" + txt + "\"");
             if (abid.equals(bookid)) {
                 sb.append(" selected=\"selected\"");
@@ -325,7 +327,7 @@
             if (bookid < 0)
                 pars.book = null;
             else
-                filter = Corpus.bits(alix, Alix.BOOKID, new String[] { pars.book });
+                filter = Corpus.bits(alix, Names.ALIX_BOOKID, new String[] { pars.book });
         }
 
         FieldText ftext = alix.fieldText(pars.field.name());
@@ -379,13 +381,14 @@ JspTools tools = new JspTools(pageContext);
 //get default parameters from request
 Pars pars = pars(pageContext);
 //Default base name, first in the pool
-String corpusDefault = "alix";
+String baseName = "alix";
 if (Alix.pool.size() > 0) {
-    corpusDefault = (String) Alix.pool.keySet().toArray()[0];
+	baseName = (String) Alix.pool.keySet().toArray()[0];
 }
-Alix alix = (Alix) tools.getMap("corpus", Alix.pool, corpusDefault, "alixCorpus");
+Alix alix = (Alix) tools.getMap("corpus", Alix.pool, baseName, "alixCorpus");
 
 IndexReader reader = null;
-if (alix != null)
+if (alix != null) {
     reader = alix.reader();
+}
 %>

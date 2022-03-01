@@ -203,7 +203,7 @@ for (ScoreDoc hit: hits) {
   out.println("</td>");
 
   out.print("<td class=\"scope\">");
-  out.print("<a href=\"" + href + doc.get(Alix.ID) +"\">");
+  out.print("<a href=\"" + href + doc.get(Names.ALIX_ID) +"\">");
   out.print(doc.get("analytic"));
   out.print("</a>");
   out.println("</td>");

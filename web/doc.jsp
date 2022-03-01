@@ -40,7 +40,7 @@ catch (IllegalArgumentException e) { // doc not found
 String title = "";
 if (doc != null) title = ML.detag(doc.doc().get("scope"));
 
-SortField sf2 = new SortField(Alix.ID, SortField.Type.STRING);
+SortField sf2 = new SortField(Names.ALIX_ID, SortField.Type.STRING);
 %>
 <!DOCTYPE html>
 <html class="document">
@@ -180,12 +180,12 @@ if (mlt != null) {
   // searcher.setSimilarity(oldSim);
   ScoreDoc[] hits = topDocs.scoreDocs;
   final String href = "?id=";
-  final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Alix.ID, Alix.BOOKID, "bibl"}));
+  final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl"}));
   for (ScoreDoc hit: hits) {
     if (hit.doc == docId) continue;
     Document aDoc = reader.document(hit.doc, DOC_SHORT);
     out.print("<div class=\"bibl\">");
-    out.print("<a href=\"" + href + aDoc.get(Alix.ID) +"\">");
+    out.print("<a href=\"" + href + aDoc.get(Names.ALIX_ID) +"\">");
     out.print(aDoc.get("bibl"));
     out.print("</a>");
     out.print("</div>");

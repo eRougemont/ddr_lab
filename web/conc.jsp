@@ -4,6 +4,7 @@
 <%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton" %>
 <%@ page import="alix.lucene.util.WordsAutomatonBuilder" %>
 <%!
+
 public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs, Pars pars) throws IOException, NoSuchFieldException
 {
   JspWriter out = page.getOut();
@@ -39,8 +40,8 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     final int docId = scoreDocs[i].doc;
     i++; // loop now
     final Doc doc = new Doc(alix, docId);
-    String type = doc.doc().get(Alix.TYPE);
-    if (type.equals(DocType.book.name())) continue;
+    String type = doc.doc().get(Names.ALIX_TYPE);
+    if (type.equals(Names.BOOK)) continue;
     // if (doc.doc().get(pars.field.name()) == null) continue; // not a good test, field may be indexed but not store
     String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
@@ -110,7 +111,7 @@ if (pars.q != null) {
   qWords = alix.query(pars.field.name(), pars.q);
 }
 if (pars.book != null) {
-  qFilter = new TermQuery(new Term(Alix.BOOKID, pars.book));
+  qFilter = new TermQuery(new Term(Names.ALIX_BOOKID, pars.book));
 }
 if (qWords != null && qFilter != null) {
   query = new BooleanQuery.Builder()

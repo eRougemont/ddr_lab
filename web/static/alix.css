@@ -757,17 +757,6 @@ header.biblbar table {
 
 header {}
 
-::-moz-selection {
-    /* let it alone for Chrome */
-    background: var(--bg3);
-    color: var(--text3);
-}
-
-::selection {
-    background: var(--bg3);
-    color: var(--text3);
-}
-
 #tabs button.here,
 #tabs a.here {
     background: var(--bg3);
