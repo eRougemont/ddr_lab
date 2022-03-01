@@ -267,7 +267,7 @@ for (ScoreDoc hit: hits) {
     else {
         // ???
     }
-    out.println("          \"bibl\": \"" + aDoc.get("bibl").replace("\"", "\\\"").replaceAll("\\s+", " ").trim() +"\"");
+    out.println("          \"bibl\": \"" + aDoc.get("bibl").replace("\"", "\\\"").replaceAll("[ \\n\\t]+", " ").trim() +"\"");
     out.print("        }");
 }
 out.println("\n      ]");
