@@ -4,6 +4,8 @@
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.HashSet"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="java.util.regex.Pattern"%>
+<%@ page import="java.util.regex.Matcher"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="org.apache.lucene.document.Document"%>
 <%@ page import="org.apache.lucene.index.IndexReader"%>
@@ -214,14 +216,41 @@ TopDocs topDocs;
 topDocs = searcher.search(mlt, 20);
 ScoreDoc[] hits = topDocs.scoreDocs;
 final String href = "?id=";
-final Set<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl"}));
+final Set<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl", "type"}));
+Pattern journalRe = Pattern.compile("ddr\\d+([a-z]+)");
 for (ScoreDoc hit: hits) {
     if (hit.doc == docId) continue;
     if (first) first = false;
     else out.println(", ");
     Document aDoc = alix.reader().document(hit.doc, DOC_SHORT);
+    String aId = aDoc.get(Names.ALIX_ID);
+    String aType = aDoc.get("type");
     out.println("        {");
-    out.println("          \"id\": \"" + aDoc.get(Names.ALIX_ID) +"\",");
+    out.println("          \"id\": \"" + aId +"\",");
+    out.println("          \"type\": \"" + aType +"\",");
+    String url = "https://www.unige.ch/rougemont/";
+    if ("chapter".equals(aType)) {
+        url += "livres/";
+        url += aId.substring(0, aId.indexOf('_')) + "/";
+        url += Integer.parseInt(aId.substring(aId.indexOf('_')+1));
+        out.println("          \"url\": \"" + url +"\",");
+    }
+    else if ("article".equals(aDoc.get("type"))) {
+        url += "articles/";
+        Matcher m = journalRe.matcher(aId);
+        // url += journalRe.matcher(aId); // .group(1) + "/";
+        if (!m.find()) { // strange ?
+            out.println("          \"ERROR\": \"" + m.group(1) +"\",");
+        }
+        else {
+            url += m.group(1) + "/";
+            url += aId;
+            out.println("          \"url\": \"" + url +"\",");
+        }
+    }
+    else {
+        // ???
+    }
     out.println("          \"bibl\": \"" + aDoc.get("bibl").replace("\"", "\\\"").replaceAll("\\s+", " ").trim() +"\"");
     out.print("        }");
 }
