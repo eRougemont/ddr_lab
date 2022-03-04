@@ -121,12 +121,13 @@ if (docId < 0) {
     out.println("  ]");
     out.println("}");
     response.setStatus(404);
+    return;
 }
 
 Doc doc = new Doc(alix, docId);
 // get words
 String field = "text";
-FormEnum nodes = doc.results(field, OptionDistrib.g.scorer(), OptionCat.NOSTOP.tags());
+FormEnum nodes = doc.results(field, OptionDistrib.g.scorer(), OptionCat.NOSTOP.tags()); // 
 if (nodes.occsFreq() < 1) {
     out.println("  \"errors\": [");
     out.println("    {");
@@ -136,6 +137,7 @@ if (nodes.occsFreq() < 1) {
     out.println("  ]");
     out.println("}");
     response.setStatus(404);
+    return;
 }
 nodes.sort(FormEnum.Order.score, nodeLen);
 nodeLen = nodes.limit(); // if less than requested

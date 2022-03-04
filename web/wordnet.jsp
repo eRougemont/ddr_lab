@@ -42,7 +42,7 @@
         <label for="order" title="Sélectionner et ordonner le tableau selon une colonne">rangés par</label>
         <select name="order" onchange="this.form.submit()">
           <option/>
-          <%= pars.order.options("score freq hits")%>
+          <%= pars.order.options("score freq")%>
         </select>.
         
         <br/>
