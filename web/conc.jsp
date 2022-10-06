@@ -44,7 +44,7 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     String type = doc.doc().get(Names.ALIX_TYPE);
     if (type.equals(Names.BOOK)) continue;
     // if (doc.doc().get(pars.field.name()) == null) continue; // not a good test, field may be indexed but not store
-    String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
+    String href = pars.href + "&amp;q=" + JspTools.escUrl(pars.q.replaceAll("<[^>]*>", "")) + "&amp;id=" + doc.id() + "&amp;start=" + i + "&amp;sort=" + pars.sort.name();
     
     // show simple metadata
     out.println("<!-- docId=" + docId + " -->");
@@ -178,7 +178,7 @@ span.left {
             <button style="position: absolute; left: -9999px"
                 type="submit">▶</button>
             <input name="q" class="q" id="q"
-                value="<%=JspTools.escape(pars.q)%>" autocomplete="off"
+                value="<%=JspTools.escape(pars.q.replaceAll("<[^>]*>", ""))%>" autocomplete="off"
                 size="60" autofocus="autofocus"
                 onfocus="this.setSelectionRange(this.value.length,this.value.length);"
                 oninput="this.form['start'].value='';" /> <select

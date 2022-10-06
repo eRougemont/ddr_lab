@@ -52,7 +52,7 @@ static public enum Tab {
     for (String par: pars) {
       String value = request.getParameter(par);
       if (value == null) continue;
-      value = JspTools.escape(value);
+      value = JspTools.escape(value.replaceAll("<[^>]*>", ""));
       if (first) {
         first = false;
         sb.append("?");
