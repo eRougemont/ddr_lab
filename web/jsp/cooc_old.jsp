@@ -6,24 +6,20 @@
 <%@ page import="alix.util.Edge" %>
 
 
-<%!
-
-private double count(FormEnum results, int formId, OptionOrder order)
+<%!private double count(FormEnum results, int formId, OptionOrder order)
 {
     switch (order) {
-        case score:
+        case SCORE:
             return results.score(formId);
         case hits:
             return results.hits(formId);
-        case freq:
+        case FREQ:
             return results.freq(formId);
         default:
             return results.occs(formId);
     }
 
-}
-
-%>
+}%>
 <%
 final double radialWeight = 0.1; // lightnimg radial
 // final int edgeMax = 4; // may become parameter
@@ -90,7 +86,7 @@ for (int i = 0; i < formCount; i++) {
     results.edges();
     long found = frail.coocs(formIds, results); // populate the wordlist
     // sort coocs by score 
-    if (pars.order == OptionOrder.score) {
+    if (pars.order == OptionOrder.SCORE) {
         // calculate score
         frail.score(formIds, results);
     }
@@ -130,7 +126,7 @@ while (nodeCount < pars.nodes) {
         double value = (long)(results.freq() * radialWeight);
         Double edgeCount = edges.get(edge);
         if (edgeCount != null) {
-            value = value + edgeCount;
+    value = value + edgeCount;
         }
         edges.put(edge, value);
     }
@@ -138,15 +134,15 @@ while (nodeCount < pars.nodes) {
     if (nodes.containsKey(formId)) {
         Double score = nodes.get(formId);
         if (score == Double.MIN_VALUE) { // is pivot
-            continue;
+    continue;
         }
         // cooc shared
         score += results.score();
         if (score < nodeMin) {
-            nodeMin = score;
+    nodeMin = score;
         }
         if (score > nodeMax) {
-            nodeMax = score;
+    nodeMax = score;
         }
         nodes.put(formId, score);
         continue;
@@ -162,9 +158,9 @@ while (nodeCount < pars.nodes) {
     for (String word: forms) {
         // is a pivot, no score
         if (word.equals(results.form())) {
-            nodes.put(formId, Double.MIN_VALUE);
-            found = true;
-            break;
+    nodes.put(formId, Double.MIN_VALUE);
+    found = true;
+    break;
         }
     }
     if (found) {

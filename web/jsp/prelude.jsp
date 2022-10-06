@@ -8,18 +8,7 @@
 <%@ page import="java.lang.invoke.MethodHandles"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.text.DecimalFormatSymbols"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Arrays"%>
-<%@ page import="java.util.Collections"%>
-<%@ page import="java.util.HashMap"%>
-<%@ page import="java.util.HashSet"%>
-<%@ page import="java.util.InvalidPropertiesFormatException"%>
-<%@ page import="java.util.LinkedHashMap"%>
-<%@ page import="java.util.Locale"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.Map"%>
-<%@ page import="java.util.Properties"%>
-<%@ page import="java.util.Set"%>
+<%@ page import="java.util.*"%>
 
 <%@ page import="org.apache.lucene.analysis.Analyzer"%>
 <%@ page import="org.apache.lucene.document.Document"%>
@@ -42,8 +31,7 @@
 <%@ page import="alix.util.ML"%>
 <%@ page import="alix.util.TopArray"%>
 <%@ page import="alix.web.*"%>
-<%!
-    /** Not yet used, to resolve relatice paths */
+<%!/** Not yet used, to resolve relatice paths */
     static String hrefHome = "";
     /** Load bases from WEB-INF/, one time */
     static {
@@ -188,12 +176,12 @@
         pars.cat = (OptionCat) tools.getEnum("cat", OptionCat.NOSTOP); // 
 
         // ranking, sort… a bit a mess
-        pars.distrib = (OptionDistrib) tools.getEnum("distrib", OptionDistrib.g);
-        pars.mi = (OptionMI) tools.getEnum("mi", OptionMI.g);
+        pars.distrib = (OptionDistrib) tools.getEnum("distrib", OptionDistrib.G);
+        pars.mi = (OptionMI) tools.getEnum("mi", OptionMI.G);
         // default sort in documents
         pars.sort = (OptionSort) tools.getEnum("sort", OptionSort.score, "alixSort");
         //final FacetSort sort = (FacetSort)tools.getEnum("sort", FacetSort.freq, Cookies.freqsSort);
-        pars.order = (OptionOrder) tools.getEnum("order", OptionOrder.score, "alixOrder");
+        pars.order = (OptionOrder) tools.getEnum("order", OptionOrder.SCORE, "alixOrder");
 
         String format = tools.getString("format", null);
         //if (format == null) format = (String)request.getAttribute(Dispatch.EXT);
@@ -342,31 +330,23 @@
             int[] pivotIds = ftext.formIds(words, filter);
             // prepare a result object to populate with co-occurences
             FieldRail frail = alix.fieldRail(pars.field.name()); // get the tool for cooccurrences
-            results = new FormEnum(ftext);
+            results = ftext.forms();
             results.filter = filter; // book filter
             results.left = pars.left; // left context
             results.right = pars.right; // right context
             results.tags = pars.cat.tags(); // filter word list by tags
+            results.limit = pars.limit;
             if (pars.edges > 0) { // record edges
                 results.edges();
             }
-            
-            long found = frail.coocs(pivotIds, results); // populate the wordlist
-            if (found > 0) {
-                // parameters for sorting
-                results.limit = pars.limit;
-                results.mi = OptionMI.g; // hard coded mutual-info algo, seems the best
-                frail.score(pivotIds, results);
-                // throw new IllegalArgumentException("rail.fieldName="+rail.fieldName);
-            } else {
-                // if nothing found, what should be done ?
-            }
+            // coocs(final FormEnum results, final int[] pivotIds, final int left, final int right, OptionMI mi)
+            long found = frail.coocs(results, pivotIds, pars.left, pars.right, OptionMI.G); // populate the wordlist
         } 
         else {
             // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
             // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
             // pars.distrib.scorer()
-            results = ftext.results(pars.cat.tags(), OptionDistrib.bm25.scorer(), filter); // hard coded distribution, seems the best
+            results = ftext.forms(filter, pars.cat.tags(), OptionDistrib.BM25); // hard coded distribution, seems the best
             results.filter = filter; // keep an handle for later use
             results.tags = pars.cat.tags(); // keep an handle for later use
 
@@ -383,7 +363,7 @@ Pars pars = pars(pageContext);
 //Default base name, first in the pool
 String baseName = "alix";
 if (Alix.pool.size() > 0) {
-	baseName = (String) Alix.pool.keySet().toArray()[0];
+    baseName = (String) Alix.pool.keySet().toArray()[0];
 }
 Alix alix = (Alix) tools.getMap("corpus", Alix.pool, baseName, "alixCorpus");
 

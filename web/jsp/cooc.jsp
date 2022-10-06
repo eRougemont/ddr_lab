@@ -5,24 +5,20 @@
 <%@ page import="alix.util.Edge" %>
 
 
-<%!
-
-private double count(FormEnum results, int formId, OptionOrder order)
+<%!private double count(FormEnum results, int formId, OptionOrder order)
 {
     switch (order) {
-        case score:
+        case SCORE:
             return results.score(formId);
-        case hits:
+        case HITS:
             return results.hits(formId);
-        case freq:
+        case FREQ:
             return results.freq(formId);
         default:
             return results.occs(formId);
     }
 
-}
-
-%>
+}%>
 <%
 pars.q = tools.getString("q", "personne individu");
 final double radialWeight = 0.1; // lightnimg radial
@@ -81,19 +77,12 @@ FormEnum[] stats = new FormEnum[pivotLen];
 for (int i = 0; i < pivotLen; i++) {
     int[] pivotx = new int[]{pivotIds[i]};
     // build a freq list for coocs
-    FormEnum results = new FormEnum(ftext);
+    FormEnum results = ftext.forms();
     results.limit = pars.nodes;
     results.filter = filter; // corpus filter
-    results.left = pars.left; // left context
-    results.right = pars.right; // right context
     results.tags = pars.cat.tags(); // filter word list by tags
     // DO NOT record edges here
-    long found = frail.coocs(pivotx, results); // populate the wordlist
-    // sort coocs by score 
-    if (pars.order == OptionOrder.score) {
-        // calculate score
-        frail.score(pivotx, results);
-    }
+    long found = frail.coocs(results, pivotIds, pars.left, pars.right, OptionMI.G); // populate the wordlist
     results.sort(pars.order.order());
     stats[i] = results;
 }
@@ -130,10 +119,10 @@ while (nodeCount < pars.nodes) {
         // cooc shared
         score += count;
         if (score < nodeMin) {
-            nodeMin = score;
+    nodeMin = score;
         }
         if (score > nodeMax) {
-            nodeMax = score;
+    nodeMax = score;
         }
         nodes.put(formId, score);
         continue;
@@ -189,15 +178,15 @@ for (Map.Entry<Integer, Double> entry : nodes.entrySet()) {
     if (entry.getValue() < 1) {
         out.print(", type:'hub'");
         if (pivotLen == 1) {
-            out.print(", x:" + 50 + ", y:" + 50 );
+    out.print(", x:" + 50 + ", y:" + 50 );
         }
         else if (hub < 8) {
-            final int[] xx = new int[]{0, 100, 50, 50, 0, 100, 100, 0};
-            final int[] yy = new int[]{50, 50, 0,  100, 0, 100, 0, 100};
-            out.print(", x:" + xx[hub] + ", y:" + yy[hub] );
+    final int[] xx = new int[]{0, 100, 50, 50, 0, 100, 100, 0};
+    final int[] yy = new int[]{50, 50, 0,  100, 0, 100, 0, 100};
+    out.print(", x:" + xx[hub] + ", y:" + yy[hub] );
         }
         else {
-            out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
+    out.print(", x:" + ((int)(Math.random() * 100)) + ", y:" + ((int)(Math.random() * 100)) );
         }
         hub++;
     }
@@ -232,7 +221,6 @@ for (Edge edge: edges) {
 out.println("\n  ],");
 out.println("  time: '" + ( (System.nanoTime() - time) / 1000000) + "ms'");
 out.println("};");
-
 %>
 
 

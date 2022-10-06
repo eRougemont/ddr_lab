@@ -3,11 +3,9 @@
 <%@ page import="alix.util.Edge" %>
 <%@ page import="alix.util.EdgeSquare" %>
 
-<%!
-/**
+<%!/**
  * Frequent words linked by co-occurrence
- */
-%>
+ */%>
 <%
 out.println("var data = {");
 // global data handlers
@@ -28,7 +26,7 @@ if (pars.book != null) {
 // collect nodes 
 int nodeLen = tools.getInt("nodes", 50);
 
-FormEnum nodes = ftext.results(pars.cat.tags(), OptionDistrib.bm25.scorer(), filter);
+FormEnum nodes = ftext.forms(filter, pars.cat.tags(), OptionDistrib.BM25);
 nodes.sort(pars.order.order(), nodeLen);
 nodeLen = nodes.limit(); // if less than requested
 // Collect the formIds
@@ -77,6 +75,8 @@ for (Edge edge: edges) {
         continue;
     }
     final double score = edge.score();
+    // seen but not explained
+    if (Double.isNaN(score)) continue;
     if (first) first = false;
     else out.println(", ");
     out.print("    {id:'e" + (edgeCount) + "', source:'n" + edge.source + "', target:'n" + edge.target + "', size:" + (score<=0?0.1:score * 100) 
@@ -91,9 +91,7 @@ for (Edge edge: edges) {
 out.println("\n  ],");
 out.println("  time: '" + ( (System.nanoTime() - time) / 1000000) + "ms'");
 out.println("};");
-
- 
- %>
+%>
 
 
 

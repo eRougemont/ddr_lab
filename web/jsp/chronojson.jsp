@@ -9,7 +9,7 @@
 <%@ include file="prelude.jsp" %>
 <%
 final String YEAR = "year";
-FieldInt fint = alix.fieldInt(YEAR, pars.field.name());
+FieldInt fint = alix.fieldInt(YEAR);
 IntEnum iterator = fint.iterator();
 
 out.println("{");
@@ -18,15 +18,15 @@ String formsLabel = "";
 String[] forms = null;
 int formsLenght = 0;
 if (pars.q != null) {
-  out.print( "  \"q\": \"" + pars.q.replace("\"", "\\\"").replaceAll("[\\<\\>]", "")+"\",\n");
-  // get words in the query
-  forms = alix.tokenize(pars.q, pars.field.name());
-  // get the count of occurrences found by year
-  for (String form: forms) {
-    fint.form(iterator, form);
-    formsLabel += ", \"" + form.replace("\"", "\\\"") + "\"";
-  }
-  formsLenght = forms.length;
+    out.print("  \"q\": \"" + pars.q.replace("\"", "\\\"").replaceAll("[\\<\\>]", "") + "\",\n");
+    // get words in the query
+    forms = alix.tokenize(pars.q, pars.field.name());
+    // get the count of occurrences found by year
+    for (String form : forms) {
+        // fint.form(iterator, form);
+        formsLabel += ", \"" + form.replace("\"", "\\\"") + "\"";
+    }
+    formsLenght = forms.length;
 }
 
 out.println("  labels: [\"Date\", \"Taille des textes\"" + formsLabel + "],");
@@ -34,24 +34,25 @@ out.println("  labels: [\"Date\", \"Taille des textes\"" + formsLabel + "],");
 out.println("  \"data\": [");
 boolean first = true;
 while (iterator.hasNext()) {
-  iterator.next();
-  if (first) first = false;
-  else out.print(",\n");
-  out.print("    [" + iterator.value() + ", " + iterator.occs());
-  for (int i = 0; i < formsLenght; i++) {
-    final String form = forms[i];
-    long occs = iterator.occs(form);
-    if (occs > 0)  out.print(", " + occs);
-    else out.print(", null");
-  }
-  out.print("]");
+    iterator.next();
+    if (first)
+        first = false;
+    else
+        out.print(",\n");
+    out.print("    [" + iterator.value() + ", " +  0);// iterator.occs());
+    for (int i = 0; i < formsLenght; i++) {
+        final String form = forms[i];
+        long occs = -2 ; // iterator.occs(form);
+        if (occs > 0)
+    out.print(", " + occs);
+        else
+    out.print(", null");
+    }
+    out.print("]");
 }
 out.println();
 out.println("  ]"); // data end
 out.print("}");
-
-
-
 
 /*
 // display ticks

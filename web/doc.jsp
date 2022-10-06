@@ -4,8 +4,6 @@
 <%@ page import="alix.util.Top" %>
 <%@include file="jsp/prelude.jsp" %>
 <%
-
-
 // params for the page
 int max = 100;
 pars.limit = tools.getInt("limit", 50);
@@ -45,16 +43,14 @@ SortField sf2 = new SortField(Names.ALIX_ID, SortField.Type.STRING);
 <!DOCTYPE html>
 <html class="document">
   <head>
-    <link href="<%= hrefHome %>vendor/teinte.css" rel="stylesheet"/>
+    <link href="<%=hrefHome%>vendor/teinte.css" rel="stylesheet"/>
     <%@ include file="local/head.jsp" %>
     <title>Livres</title>
     <script>
-<%
-if (doc != null) { // document id is verified, give it to javascript
+<%if (doc != null) { // document id is verified, give it to javascript
   out.println("var docLength = " + doc.length(field) + ";");
   out.println("var docId = \""+doc.id()+"\";");
-}
-%>
+}%>
     </script>
   </head>
   <body class="document">
@@ -73,7 +69,7 @@ if (doc != null) { // document id is verified, give it to javascript
           </svg>
         </button>
        -->
-        <%= selectCorpus(alix.name) %>,
+        <%=selectCorpus(alix.name)%>,
         <label for="titles">Chercher un titre</label>
         <input id="titles" name="titles" aria-describedby="titles-hint" placeholder="am… dia… eu… fed…" size="50"/>
         <div class="progress"><div></div></div>
@@ -83,50 +79,50 @@ if (doc != null) { // document id is verified, give it to javascript
          <label for="cat">Filtrer</label>
          <select name="cat" onchange="this.form.submit()">
             <option></option>
-            <%= pars.cat.options() %>
+            <%=pars.cat.options()%>
          </select>
         <label for="distrib">Score</label>
         <select name="distrib" onchange="this.form.submit()">
            <option></option>
-           <%= pars.distrib.options() %>
+           <%=pars.distrib.options()%>
         </select>
         <label for="q">Surligner</label>
          <input id="q" name="q" value="<%=JspTools.escape(q)%>" autocomplete="off"/>
         <button type="submit">▶</button>
         
         <%
-        /*
-        if (topDocs != null && start > 1) {
-          out.println("<button name=\"prev\" type=\"submit\" onclick=\"this.form['start'].value="+(start - 1)+"\">◀</button>");
-        }
-        */
-        %>
+                /*
+                        if (topDocs != null && start > 1) {
+                          out.println("<button name=\"prev\" type=\"submit\" onclick=\"this.form['start'].value="+(start - 1)+"\">◀</button>");
+                        }
+                        */
+                %>
                <%
                /*
-        if (topDocs != null) {
-          long max = topDocs.totalHits.value;
-          out.println("<span class=\"hits\"> / "+ max  + "</span>");
-          if (start < max) {
-            out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+(start + 1)+"\">▶</button>");
-          }
-        }
-               */
-        %>
+                       if (topDocs != null) {
+                         long max = topDocs.totalHits.value;
+                         out.println("<span class=\"hits\"> / "+ max  + "</span>");
+                         if (start < max) {
+                   out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+(start + 1)+"\">▶</button>");
+                         }
+                       }
+                      */
+               %>
       </form>
     </header>
     <main>
       <div class="row">
         <nav class="terms" id="sidebar">
         <%
-          Query mlt = null;
-        if (doc != null) {
-          out.println(" <h5>Mots clés</h5>");
-          BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
-          FormEnum forms = doc.results(field, pars.distrib.scorer(), pars.cat.tags());
-          forms.sort(FormEnum.Order.score, pars.limit, false);
-          int no = 1;
-          forms.reset();
-          while (forms.hasNext()) {
+        Query mlt = null;
+                if (doc != null) {
+                  out.println(" <h5>Mots clés</h5>");
+                  BooleanQuery.Builder qBuilder = new BooleanQuery.Builder();
+                  FormEnum forms = doc.forms(field, pars.distrib, pars.cat.tags());
+                  forms.sort(FormEnum.Order.SCORE, pars.limit, false);
+                  int no = 1;
+                  forms.reset();
+                  while (forms.hasNext()) {
             forms.next();
             String form = forms.form();
             if (form.trim().isEmpty()) continue;
@@ -140,9 +136,9 @@ if (doc != null) { // document id is verified, give it to javascript
               qBuilder.add(tq, BooleanClause.Occur.SHOULD);
             }
             no++;
-          }
-          mlt = qBuilder.build();
-        }
+                  }
+                  mlt = qBuilder.build();
+                }
         %>
         </nav>
         <div class="text">

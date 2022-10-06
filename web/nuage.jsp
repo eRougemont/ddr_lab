@@ -68,9 +68,9 @@ while (results.hasNext()) {
   if (first) first = false;
   else out.print(",\n");
   double score = results.score();
-  if (pars.distrib.equals(OptionDistrib.g)) score = Math.sqrt(score);
+  if (pars.distrib.equals(OptionDistrib.G)) score = Math.sqrt(score);
   // else if (distrib.equals(Distrib.tfidf)) score = Math.sqrt(score) ;
-  else if (pars.distrib.equals(OptionDistrib.bm25)  || pars.distrib.equals(OptionDistrib.tfidf) ) score = score * score;
+  else if (pars.distrib.equals(OptionDistrib.BM25)  || pars.distrib.equals(OptionDistrib.TFIDF) ) score = score * score;
   out.print("  {'word': '" + results.form().replace("'", "\\'") + "', 'weight': "+score+", 'attributes': {'class': '" + Tag.parent(results.tag()).toString() +"'}}");
 }%>
 ];

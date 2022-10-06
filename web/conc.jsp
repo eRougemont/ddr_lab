@@ -1,8 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.Arrays" %>
-<%@ page import="org.apache.lucene.util.automaton.Automaton" %>
-<%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton" %>
-<%@ page import="alix.lucene.util.WordsAutomatonBuilder" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page import="java.util.Arrays"%>
+<%@ page import="org.apache.lucene.util.automaton.Automaton"%>
+<%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton"%>
+<%@ page import="alix.lucene.util.WordsAutomatonBuilder"%>
 <%!
 
 public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs, Pars pars) throws IOException, NoSuchFieldException
@@ -67,9 +68,17 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
       continue;
     }
     
-    String[] lines = null;
-    lines = doc.kwic(pars.field.name(), include, href.toString(), 200, pars.left, pars.right, gap, expression, repetitions);
-    if (lines == null || lines.length < 1) continue;
+    List<String[]>  lines = null;
+    lines = doc.kwic(
+        pars.field.name(), 
+        include, 200, 
+        pars.left, 
+        pars.right,
+        gap, 
+        expression, 
+        repetitions
+    );
+    if (lines == null || lines.size() < 1) continue;
     // doc.kwic(field, include, 50, 50, 100);
     out.println("<article class=\"kwic\">");
     out.println("<header>");
@@ -85,16 +94,30 @@ public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs,
     out.print(". ");
     out.print(doc.get("analytic"));
     out.println("</a></header>");
+    for (String[] l: lines) {
+        out.println("  <div class=\"line\">");
+        out.println("    <small class=\"num\">" + ++occ +"</small>");
+        out.println("    <span class=\"left\">" + l[1] + "</span>");
+        out.println("    <a class=\"concline\" href=\""+ href + "#" + l[0] +"\">");
+        // out.println("      <span class=\"pivot\">" + l[2] + "</span>");
+        out.println(l[2]);
+        out.println("</a>");
+        out.println("    <span class=\"right\">" + l[3] + "</span>");
+        out.println("  </div>");
+    }
+
+    /*
     for (String l: lines) {
       out.println("<div class=\"line\"><small>"+ ++occ +"</small>"+l+"</div>");
     }
+    */
     out.println("</article>");
     if (++docs >= pars.hpp) break;
   }
 
 }
 %>
-<%@ include file="jsp/prelude.jsp" %>
+<%@ include file="jsp/prelude.jsp"%>
 <%
 pars.forms = alix.tokenize(pars.q, pars.field.name());
 // local param
@@ -131,93 +154,103 @@ out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" 
 %>
 <!DOCTYPE html>
 <html>
-  <head>
-   <jsp:include page="local/head.jsp" flush="true" />
-   <title>Concordance, <%= alix.props.get("label")%> [Alix]</title>
-   <style>
-span.left {display: inline-block; text-align: right; width: <%= Math.round(10+pars.left * 1.0)%>ex; padding-right: 1ex;}
-    </style>
-  </head>
-  <body>
+<head>
+<jsp:include page="local/head.jsp" flush="true" />
+<title>Concordance, <%= alix.props.get("label")%> [Alix]
+</title>
+<style>
+span.left {
+    display: inline-block;
+    text-align: right;
+    width: <%= Math.round ( 10 + pars.left * 1.0) %>ex;
+    padding-right: 1ex;
+}
+</style>
+</head>
+<body>
     <header>
-      <jsp:include page="local/tabs.jsp" flush="true" />
-      <form  class="search">
-        <%= selectCorpus(alix.name) %>,
-        <%= selectBook(alix, pars.book) %>
-        
-        <br/>
-        
-        <label for="q">Chercher</label>
-        <button style="position: absolute; left: -9999px" type="submit">▶</button>
-        <input name="q" class="q" id="q" value="<%=JspTools.escape(pars.q)%>" autocomplete="off" size="60" autofocus="autofocus" 
-          onfocus="this.setSelectionRange(this.value.length,this.value.length);"
-          oninput="this.form['start'].value='';"
-        />
-        <select name="f" onchange="this.form.submit()">
-          <option/>
-          <%=pars.field.options()%>
-        </select>
-        <!-- 
+        <jsp:include page="local/tabs.jsp" flush="true" />
+        <form class="search">
+            <%= selectCorpus(alix.name) %>,
+            <%= selectBook(alix, pars.book) %>
+
+            <br /> <label for="q">Chercher</label>
+            <button style="position: absolute; left: -9999px"
+                type="submit">▶</button>
+            <input name="q" class="q" id="q"
+                value="<%=JspTools.escape(pars.q)%>" autocomplete="off"
+                size="60" autofocus="autofocus"
+                onfocus="this.setSelectionRange(this.value.length,this.value.length);"
+                oninput="this.form['start'].value='';" /> <select
+                name="f" onchange="this.form.submit()">
+                <option />
+                <%=pars.field.options()%>
+            </select>
+            <!-- 
         <label>Expressions <input type="checkbox" name="expression" value="true" <%= (pars.expression)?"checked=\"checked\"":"" %>/></label>
          -->
-        <br/>
-        <% // prev / next nav
-        if (pars.start > 1 && pars.q != null) {
-          int n = Math.max(1, pars.start - pars.hpp);
-          out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
-        }
-        if (topDocs != null) {
-          long max = topDocs.totalHits.value;
-          out.println("<input  name=\"start\" value=\""+ pars.start+"\" autocomplete=\"off\" class=\"start num3\"/>");
-          out.println("<span class=\"hits\"> / "+ max  + "</span>");
-          int n = pars.start + pars.hpp;
-          if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
-        }
+            <br />
+            <%
+            // prev / next nav
+            if (pars.start > 1 && pars.q != null) {
+                int n = Math.max(1, pars.start - pars.hpp);
+                out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value=" + n + "\">◀</button>");
+            }
+            if (topDocs != null) {
+                long max = topDocs.totalHits.value;
+                out.println("<input  name=\"start\" value=\"" + pars.start + "\" autocomplete=\"off\" class=\"start num3\"/>");
+                out.println("<span class=\"hits\"> / " + max + "</span>");
+                int n = pars.start + pars.hpp;
+                if (n < max)
+                    out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value=" + n + "\">▶</button>");
+            }
+            /*
+            if (forms == null || forms.length < 2 );
+            else if (expression) {
+              out.println("<button title=\"Cliquer pour dégrouper les locutions\" type=\"submit\" name=\"expression\" value=\"false\">✔ Locutions</button>");
+            }
+            else {
+              out.println("<button title=\"Cliquer pour grouper les locutions\" type=\"submit\" name=\"expression\" value=\"true\">☐ Locutions</button>");
+            }
+            */
+            %>
+            <select name="sort"
+                onchange="this.form['start'].value=''; this.form.submit()"
+                title="Ordre">
+                <option />
+                <%=pars.sort.options()%>
+            </select>
+        </form>
+    </header>
+    <main>
+        <!-- 
+       queryqueryery %> 
+       totalHits=?? 
+       formsArrays.toString(pars.forms)ms) %> -->
+        <%
+        pars.href = "doc.jsp?";
+        kwic(pageContext, alix, topDocs, pars);
+        %>
+
+        <%
         /*
-        if (forms == null || forms.length < 2 );
-        else if (expression) {
-          out.println("<button title=\"Cliquer pour dégrouper les locutions\" type=\"submit\" name=\"expression\" value=\"false\">✔ Locutions</button>");
+        if (start > 1 && q != null) {
+        int n = Math.max(1, start-hppDefault);
+        out.println("<button name=\"prev\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
         }
-        else {
-          out.println("<button title=\"Cliquer pour grouper les locutions\" type=\"submit\" name=\"expression\" value=\"true\">☐ Locutions</button>");
+
+        //  <input type="hidden" id="q" name="q" 
+        if (topDocs != null) {
+        long max = topDocs.totalHits.value;
+        out.println("<input  name=\"start\" value=\""+start+"\" autocomplete=\"off\" class=\"start\"/>");
+        out.println("<span class=\"hits\"> / "+ max  + "</span>");
+        int n = start + hpp;
+        if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
         }
         */
         %>
-        <select name="sort" onchange="this.form['start'].value=''; this.form.submit()" title="Ordre">
-          <option/>
-          <%= pars.sort.options() %>
-        </select>
-       </form> 
-    </header>
-    <main>
-       <!-- 
-       query=<%= query %> 
-       totalHits=?? 
-       forms=<%= Arrays.toString(pars.forms) %> -->
-       <% 
-       pars.href = "doc.jsp?";
-       kwic(pageContext, alix, topDocs, pars); 
-       %>
-
-    <% 
-    /*
-if (start > 1 && q != null) {
-  int n = Math.max(1, start-hppDefault);
-  out.println("<button name=\"prev\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">◀</button>");
-}
-    
-    //  <input type="hidden" id="q" name="q" 
-if (topDocs != null) {
-  long max = topDocs.totalHits.value;
-  out.println("<input  name=\"start\" value=\""+start+"\" autocomplete=\"off\" class=\"start\"/>");
-  out.println("<span class=\"hits\"> / "+ max  + "</span>");
-  int n = start + hpp;
-  if (n < max) out.println("<button name=\"next\" type=\"submit\" onclick=\"this.form['start'].value="+n+"\">▶</button>");
-}
-    */
-        %>
-      <p> </p>
+        <p> </p>
     </main>
-  </body>
-  <!-- <%= ((System.nanoTime() - time) / 1000000.0) %> ms  -->
+</body>
+<!--((System.nanoTime() - time) / 1000000.0).0) %> ms  -->
 </html>

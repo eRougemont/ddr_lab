@@ -16,7 +16,7 @@ int floor = tools.getInt("floor", 0);
 boolean parceque = tools.getBoolean("parceque", false);
 boolean locs = tools.getBoolean("locs", false);
 String book = tools.getString("book", null);
-OptionMI mi = (OptionMI)tools.getEnum("mi", OptionMI.g);
+OptionMI mi = (OptionMI)tools.getEnum("mi", OptionMI.G);
 final String fieldName = "text" + "_orth";
 
 FieldText ftext = alix.fieldText(fieldName);

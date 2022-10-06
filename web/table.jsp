@@ -17,8 +17,8 @@ results.sort(pars.order.order(), pars.limit);
     <header id="top">
       <jsp:include page="local/tabs.jsp" flush="true"/>
       <form class="search" action="#">
-        <a  class="icon" href="csv.jsp?<%= tools.url(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi"}) %>"><img src="static/icon_csv.svg" alt="Export intégral des données au format "></a>
-        <a class="icon" href="tableur.jsp?<%= tools.url(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi", "limit"}) %>"><img src="static/icon_excel.svg" alt="Export des données visibles pour Excel"></a>
+        <a  class="icon" href="csv.jsp?<%= tools.queryString(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi"}) %>"><img src="static/icon_csv.svg" alt="Export intégral des données au format "></a>
+        <a class="icon" href="tableur.jsp?<%= tools.queryString(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi", "limit"}) %>"><img src="static/icon_excel.svg" alt="Export des données visibles pour Excel"></a>
         <%= selectCorpus(alix.name) %>,
         <%= selectBook(alix, pars.book) %>
         <button type="submit">▶</button>
@@ -121,7 +121,7 @@ results.sort(pars.order.order(), pars.limit);
         <tbody>
           <%
             // todo, book selector
-          String urlForm = "conc.jsp?" + tools.url(new String[]{"book"}) + "&amp;q=";
+          String urlForm = "conc.jsp?" + tools.queryString(new String[]{"book"}) + "&amp;q=";
           // String urlOccs = "kwic.jsp?" + tools.url(new String[]{"left", "right", "ranking"}) + "&amp;q=";
           int no = 0;
           results.reset();

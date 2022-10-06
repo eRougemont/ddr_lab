@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="application/vnd.api+json; charset=utf-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page language="java" contentType="text/javascript; charset=utf-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.text.DecimalFormatSymbols"%>
 <%@ page import="java.util.Arrays"%>
@@ -44,7 +44,7 @@ static final DecimalFormat scoref = new DecimalFormat("0.000", DecimalFormatSymb
 
 %>
 <%
-
+response.setHeader("Access-Control-Allow-Origin", "*"); // cross domain fo browsers
 // parameters
 JspTools tools = new JspTools(pageContext);
 final int edgeLen = tools.getInt("edges", 60);
@@ -127,7 +127,7 @@ if (docId < 0) {
 Doc doc = new Doc(alix, docId);
 // get words
 String field = "text";
-FormEnum nodes = doc.results(field, OptionDistrib.g.scorer(), OptionCat.NOSTOP.tags()); // 
+FormEnum nodes = doc.forms(field, OptionDistrib.G, OptionCat.NOSTOP.tags()); // 
 if (nodes.occsFreq() < 1) {
     out.println("  \"errors\": [");
     out.println("    {");
@@ -139,7 +139,7 @@ if (nodes.occsFreq() < 1) {
     response.setStatus(404);
     return;
 }
-nodes.sort(FormEnum.Order.score, nodeLen);
+nodes.sort(FormEnum.Order.SCORE, nodeLen);
 nodeLen = nodes.limit(); // if less than requested
 
 BitSet filter = new SparseFixedBitSet(docId +2);
@@ -234,7 +234,7 @@ TopDocs topDocs;
 topDocs = searcher.search(mlt, 20);
 ScoreDoc[] hits = topDocs.scoreDocs;
 final String href = "?id=";
-final Set<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl", "type"}));
+final Set<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, Names.ALIX_FILENAME, "bibl", "type"}));
 Pattern journalRe = Pattern.compile("ddr\\d+([a-z]+)");
 for (ScoreDoc hit: hits) {
     if (hit.doc == docId) continue;
@@ -258,12 +258,12 @@ for (ScoreDoc hit: hits) {
         Matcher m = journalRe.matcher(aId);
         // url += journalRe.matcher(aId); // .group(1) + "/";
         if (!m.find()) { // strange ?
-            out.println("          \"ERROR\": \"" + m.group(1) +"\",");
+    out.println("          \"ERROR\": \"" + m.group(1) +"\",");
         }
         else {
-            url += m.group(1) + "/";
-            url += aId;
-            out.println("          \"url\": \"" + url +"\",");
+    url += aDoc.get(Names.ALIX_FILENAME).substring(4) + "/"; // strip 'ddr-'
+    url += aId;
+    out.println("          \"url\": \"" + url +"\",");
         }
     }
     else {
@@ -287,9 +287,7 @@ if (callback != null) {
     out.print(");");
 }
 out.println();
-
- 
- %>
+%>
 
 
 

@@ -74,7 +74,7 @@ comment { display:none;  }
          <th>Score</th>
        </tr>
        <%
-       String urlForm = "https://oeuvres.unige.ch/ddrlab/conc.jsp?" + tools.url(new String[]{"book"}) + "&amp;q=";
+       String urlForm = "https://oeuvres.unige.ch/ddrlab/conc.jsp?" + tools.queryString(new String[]{"book"}) + "&amp;q=";
        results.reset();
        while (results.hasNext()) {
           results.next();
