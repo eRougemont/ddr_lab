@@ -104,7 +104,7 @@ if (search == null || search.length < 1) {
 
                 <%
                 // build a resizable href link
-                final String href = "conc.jsp?q=" + JspTools.escape(pars.q.replaceAll("<[^>]*>", "")) + "&amp;book=";
+                final String href = "conc.jsp?q=" + JspTools.escape(pars.q) + "&amp;book=";
                 // resend a query somewhere ?
                 boolean zero = false;
                 int no = 1;

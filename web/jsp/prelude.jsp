@@ -324,10 +324,22 @@
         // if (pars.order == Order.last) reverse = true;
 
         FormEnum results = null;
+        int[] pivotIds = null;
         if (pars.q != null) {
             // get the pivots
             String[] words = alix.tokenize(pars.q, pars.field.name());
-            int[] pivotIds = ftext.formIds(words, filter);
+            pivotIds = ftext.formIds(words, filter);
+            // no word found, what shall we do here ?
+        }
+        if (pivotIds == null) {
+            // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
+            // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
+            // pars.distrib.scorer()
+            results = ftext.forms(filter, pars.cat.tags(), OptionDistrib.BM25); // hard coded distribution, seems the best
+            results.filter = filter; // keep an handle for later use
+            results.tags = pars.cat.tags(); // keep an handle for later use
+        }
+        else {
             // prepare a result object to populate with co-occurences
             FieldRail frail = alix.fieldRail(pars.field.name()); // get the tool for cooccurrences
             results = ftext.forms();
@@ -342,15 +354,6 @@
             // coocs(final FormEnum results, final int[] pivotIds, final int left, final int right, OptionMI mi)
             long found = frail.coocs(results, pivotIds, pars.left, pars.right, OptionMI.G); // populate the wordlist
         } 
-        else {
-            // final int limit, Specif specif, final BitSet filter, final TagFilter tags, final boolean reverse
-            // dic = fieldText.iterator(pars.limit, pars.ranking.specif(), filter, pars.cat.tags(), reverse);
-            // pars.distrib.scorer()
-            results = ftext.forms(filter, pars.cat.tags(), OptionDistrib.BM25); // hard coded distribution, seems the best
-            results.filter = filter; // keep an handle for later use
-            results.tags = pars.cat.tags(); // keep an handle for later use
-
-        }
         // is it good to sort freqList here ?
         return results;
     }%>
