@@ -7,6 +7,8 @@
 FieldFacet facet = alix.fieldFacet(Names.ALIX_BOOKID);
 String[] search = alix.tokenize(pars.q, pars.field.name());
 FieldText ftext = alix.fieldText(pars.field.name());
+
+
 FormEnum results = facet.forms(ftext, null, search, pars.distrib);
 //if no word searched, sort by date, not well optimized here
 if (search == null || search.length < 1) {
@@ -108,7 +110,7 @@ if (search == null || search.length < 1) {
                 // resend a query somewhere ?
                 boolean zero = false;
                 int no = 1;
-                // results.reset();
+                results.reset();
                 while (results.hasNext()) {
                     results.next();
                     // n = results.n();

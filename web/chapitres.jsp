@@ -195,7 +195,7 @@ g = new Dygraph(div, json.data, attrs);
                         out.print("<td>");
                         String pages = doc.get("pages");
                         if (pages != null)
-                            out.print(pages);
+                            out.print(pages.replace('-', '‑'));
                         out.println("</td>");
 
                         out.print("<td class=\"scope\">");

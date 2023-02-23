@@ -258,12 +258,12 @@ for (ScoreDoc hit: hits) {
         Matcher m = journalRe.matcher(aId);
         // url += journalRe.matcher(aId); // .group(1) + "/";
         if (!m.find()) { // strange ?
-    out.println("          \"ERROR\": \"" + m.group(1) +"\",");
+            out.println("          \"ERROR\": \"" + aId +"\",");
         }
         else {
-    url += aDoc.get(Names.ALIX_FILENAME).substring(4) + "/"; // strip 'ddr-'
-    url += aId;
-    out.println("          \"url\": \"" + url +"\",");
+            url += aDoc.get(Names.ALIX_FILENAME).substring(4) + "/"; // strip 'ddr-'
+            url += aId;
+            out.println("          \"url\": \"" + url +"\",");
         }
     }
     else {
