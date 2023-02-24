@@ -26,7 +26,7 @@
           <h1><a href="https://www.unige.ch/rougemont/">Rougemont 2.0</a>, Labo</h1>
           <p>Cette interface permet d’explorer l’édition complète de <a href="https://www.unige.ch/rougemont/">Denis de Rougemont</a> développée par des chercheurs du <a href="https://www.unige.ch/gsi/fr/">GSI de l’université de Genève</a>. L’application est en développement actif pour régler les algorithmes les plus utiles aux spécialistes de l’œuvre, les fonctionnalités évoluent. Chaque onglet de la barre du haut propose un outil autonome pour explorer les mots du corpus, avec son formulaire, selon des approches plus ou moins globales ou analytiques. On trouvera :</p>
           <ul>
-            <li><a href="reseau.jsp">Réseau</a> : une vue de mots en réseau, reliés à leurs co-occurrents les plus fréquents, sur tout ou parties du corpus, ou autour de mots recherchés.</li>
+            <li><a href="graphe.jsp">Graphe</a> : une vue de mots en réseau, reliés à leurs co-occurrents les plus fréquents, sur tout ou parties du corpus, ou autour de mots recherchés.</li>
             <li><a href="table.jsp">Table</a> : une table de mots en ordre de fréquence, sur tout ou partie du corpus, ou autour de mots recherchés.</li>
             <li><a href="nuage.jsp">Nuage</a> : une nuage de mots, sur tout ou partie du corpus, ou autour de mots recherchés.</li>
             <li><a href="livres.jsp">Livres</a> : répartition sur le corpus, par livre/compilation, d’un ou plusieurs mots recherchés</li>

@@ -1247,7 +1247,7 @@ body.wordnet {
 }
 
 #graphcont {
-    background-color: #203020;
+    background-color:var(--gray);
     display: flex;
     flex-direction: column;
     height: 100%;

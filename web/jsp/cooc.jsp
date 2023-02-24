@@ -157,14 +157,14 @@ for (Map.Entry<Integer, Double> entry : nodes.entrySet()) {
     if (first) first = false;
     else out.println(", ");
     int tag = ftext.tag(formId);
-    String color = "rgba(255, 255, 255, 1)";
-    if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.8)";
-    else if (Tag.ADJ.sameParent(tag)) color = "rgba(240, 255, 240, 0.7)";
+    String color = "rgba(0, 0, 0, 1)";
+    if (Tag.SUB.sameParent(tag)) color = "rgba(255, 255, 255, 0.9)";
+    else if (Tag.VERB.sameParent(tag)) color = "rgba(0, 0, 0, 0.8)";
+    else if (Tag.NAME.sameParent(tag)) color = "rgba(207, 19, 8, 0.8)";
+    else if (Tag.ADJ.sameParent(tag)) color = "rgba(160, 160, 160, 1)";
     // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
-    else if (Tag.NAME.sameParent(tag)) color = "rgba(255, 192, 0, 1)";
     // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";
     // else if (Tag.isAdj(tag)) color = "rgba(255, 128, 0, 1)";
-    else color = "rgba(159, 183, 159, 1)";
     // {id:'n204', label:'coeur', x:-16, y:99, size:86, color:'hsla(0, 86%, 42%, 0.95)'},
     double size = entry.getValue();
     // pivot medium size

@@ -59,8 +59,8 @@ results.sort(pars.order.order(), pars.limit);
         <select name="order" onchange="this.form.submit()">
           <option/>
           <%
-          if (pars.book != null || pars.q != null) out.println(pars.order.options("score freq hits occs docs"));
-          else out.println(pars.order.options("score freq hits"));
+          if (pars.book != null || pars.q != null) out.println(pars.order.options("SCORE FREQ HITS OCCS DOCS"));
+          else out.println(pars.order.options("SCORE FREQ HITS"));
           %>
         </select>
         <br/>

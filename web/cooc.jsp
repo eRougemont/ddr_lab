@@ -52,7 +52,7 @@ pars.q = tools.getString("q", "personne individu");
         <label for="order" title="Sélectionner et ordonner le tableau selon une colonne">rangés par</label>
         <select name="order" onchange="this.form.submit()">
           <option/>
-          <%= pars.order.options("score freq")%>
+          <%= pars.order.options("SCORE FREQ")%>
         </select>.
         <label for="edges" title="Nombre de de liens"> — Liens :</label>
         <input type="text" name="edges" value="<%=pars.edges%>"  class="num3" size="2"/>
