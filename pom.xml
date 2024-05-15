@@ -11,7 +11,7 @@
     <packaging>war</packaging>
 
     <name>Rougemont, labo</name>
-    <url>https://obtic.huma-num.fr/obvie/</url>
+    <url>https://oeuvres.unige.ch/ddr_lab/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,12 +26,25 @@
             <version>0.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>5.1.3</version>
+        </dependency>
+        <!-- Not provided by alix -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
             <version>2.3.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 
     <build>
         <finalName>ddr_lab</finalName>
@@ -40,38 +53,26 @@
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
-                    <!-- Do not try 11, =servlet 5.0, =incompatible with common server  -->
+                    <!-- Do not try 11, =servlet 5.0, =incompatible with common
+                    server  -->
                     <version>10.0.19</version>
                     <configuration>
                         <systemProperties>
-                            <!--
-                            <obvie.datadir>${basedir}/work/gallica</obvie.datadir>
-                            -->
+                            <textolyse.datadir>${basedir}/work/bases</textolyse.datadir>
                             <jetty.port>8888</jetty.port>
                         </systemProperties>
                         <scan>5</scan>
                         <webApp>
-                          <contextPath>/</contextPath>
-                          <defaultsDescriptor>${basedir}/lib/webdefault.xml</defaultsDescriptor>
+                            <contextPath>/ddrlab/</contextPath>
+                            <defaultsDescriptor>${basedir}/res/webdefault.xml</defaultsDescriptor>
                         </webApp>
-                        <contextXml>jetty-context.xml</contextXml>
+                        <contextXml>${basedir}/res/jetty-context.xml</contextXml>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>3.4.0</version>
-                    <configuration>
-                        <webResources>
-                            <resource>
-                                <directory>lib/</directory>
-                                <targetPath>WEB-INF/lib</targetPath>
-                                <includes>
-                                    <include>**/*.jar</include>
-                                </includes>
-                            </resource>
-                        </webResources>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
