@@ -1,8 +1,5 @@
+.~*
 .*.swp
-*.jardesc
-/web/WEB-INF/*.xml
-!/web/WEB-INF/web.xml
-!/web/WEB-INF/_corpus.xml
-/web/WEB-INF/bases
-/web/WEB-INF/ddr-glob.csv
-/build/
+/work
+
+/target/
