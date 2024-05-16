@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ page import="alix.lucene.analysis.MetaAnalyzer"%>
-<%@ page import="alix.lucene.search.Doc"%>
-<%@ page import="alix.lucene.search.Marker"%>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.MetaAnalyzer"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Doc"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Marker"%>
 <%@include file="prelude.jsp"%>
 <%!
 final static Analyzer ANAMET = new MetaAnalyzer();
 final static HashSet<String> DOC_SHORT = new HashSet<String>(
-    Arrays.asList(new String[] { Names.ALIX_ID, Names.ALIX_BOOKID, "bibl" })
+    Arrays.asList(new String[] { ALIX_ID, ALIX_BOOKID, "bibl" })
 );
 %>
 <%
@@ -15,7 +15,7 @@ String q = tools.getString("q", null);
 int limit = tools.getInt("limit", 100);
 
 SortField sf1 = new SortField("year", SortField.Type.INT);
-SortField sf2 = new SortField(Names.ALIX_ID, SortField.Type.STRING);
+SortField sf2 = new SortField(ALIX_ID, SortField.Type.STRING);
 Sort sort = new Sort(sf1, sf2);
 
 Query query = null;
@@ -44,7 +44,7 @@ for (ScoreDoc hit : hits) {
     String text = doc.get("bibl");
     // fast hack because of links in links
     text = text.replaceAll("<(/?)a([ >])", "<$1span$2");
-    out.print("<div class=\"bibl\" id=\"" + doc.get(Names.ALIX_ID) + "\">");
+    out.print("<div class=\"bibl\" id=\"" + doc.get(ALIX_ID) + "\">");
     if (marker != null) {
         // sb.append("<a class=\"bibl\" href=\"compdoc?id="+doc.get(Alix.ID)+paging+back+"\">");
         out.println(marker.mark(text));

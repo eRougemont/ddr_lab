@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="prelude.jsp" %>
-<%@ page import="alix.util.Edge" %>
-<%@ page import="alix.util.EdgeSquare" %>
+<%@ page import="com.github.oeuvres.alix.util.Edge" %>
+<%@ page import="com.github.oeuvres.alix.util.EdgeSquare" %>
 
 <%!/**
  * Frequent words linked by co-occurrence
@@ -21,7 +21,7 @@ if (pars.book != null) {
     if (bookid < 0)
         pars.book = null;
     else
-        filter = Corpus.bits(alix, Names.ALIX_BOOKID, new String[] { pars.book });
+        filter = Corpus.bits(alix, ALIX_BOOKID, new String[] { pars.book });
 }
 // collect nodes 
 int nodeLen = tools.getInt("nodes", 50);

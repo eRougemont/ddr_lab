@@ -12,11 +12,11 @@
     </Call>
     <Call name="setInitParameter">
         <Arg>alix.datadir</Arg>
-        <Arg><SystemProperty name="alix.datadir"/></Arg>
+        <Arg><SystemProperty name="alix.lucenedir"/></Arg>
         <!-- 
         If Jetty runs as a service on a debian system, 
         only a few folders are allowed for write
-        <Arg>/var/lib/jetty9/data/gallica-obvie</Arg>
+        <Arg>/var/lib/jetty9/data/lucenedir</Arg>
          -->
     </Call>
 </Configure>

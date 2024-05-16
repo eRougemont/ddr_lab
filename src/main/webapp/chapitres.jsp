@@ -4,7 +4,7 @@
 <%@ page import="org.apache.lucene.search.uhighlight.UnifiedHighlighter"%>
 <%@ page
     import="org.apache.lucene.search.uhighlight.DefaultPassageFormatter"%>
-<%@ page import="alix.lucene.search.Doc"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Doc"%>
 <%@include file="jsp/prelude.jsp"%>
 <%!%>
 <%
@@ -199,7 +199,7 @@ g = new Dygraph(div, json.data, attrs);
                         out.println("</td>");
 
                         out.print("<td class=\"scope\">");
-                        out.print("<a href=\"" + href + doc.get(Names.ALIX_ID) + "\">");
+                        out.print("<a href=\"" + href + doc.get(ALIX_ID) + "\">");
                         out.print(doc.get("analytic"));
                         out.print("</a>");
                         out.println("</td>");

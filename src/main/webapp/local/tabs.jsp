@@ -1,6 +1,6 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ page import="alix.lucene.Alix" %>
-<%@ page import="alix.web.JspTools" %>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix" %>
+<%@ page import="com.github.oeuvres.alix.web.JspTools" %>
 <%@ page import="java.nio.file.Paths" %>
 <%@ page import="java.util.Map" %>
 <%!

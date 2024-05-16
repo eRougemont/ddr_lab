@@ -19,19 +19,19 @@
 <%@ page import="org.apache.lucene.search.TopDocs"%>
 <%@ page import="org.apache.lucene.util.BitSet"%>
 <%@ page import="org.apache.lucene.util.SparseFixedBitSet"%>
-<%@ page import="alix.Names" %>
-<%@ page import="alix.fr.Tag" %>
-<%@ page import="alix.lucene.Alix" %>
-<%@ page import="alix.lucene.search.Doc" %>
-<%@ page import="alix.lucene.search.FieldRail" %>
-<%@ page import="alix.lucene.search.FieldText" %>
-<%@ page import="alix.lucene.search.FormEnum" %>
-<%@ page import="alix.util.Edge" %>
-<%@ page import="alix.util.EdgeSquare" %>
-<%@ page import="alix.web.JspTools" %>
-<%@ page import="alix.web.OptionCat" %>
-<%@ page import="alix.web.OptionDistrib" %>
-<%@ page import="alix.web.Webinf" %>
+<%@ page import="com.github.oeuvres.alix.Names" %>
+<%@ page import="com.github.oeuvres.alix.fr.Tag" %>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Doc" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FieldRail" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FieldText" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FormEnum" %>
+<%@ page import="com.github.oeuvres.alix.util.Edge" %>
+<%@ page import="com.github.oeuvres.alix.util.EdgeSquare" %>
+<%@ page import="com.github.oeuvres.alix.web.JspTools" %>
+<%@ page import="com.github.oeuvres.alix.web.OptionCat" %>
+<%@ page import="com.github.oeuvres.alix.web.OptionDistrib" %>
+<%@ page import="com.github.oeuvres.alix.web.Webinf" %>
 <%!
 /** Load bases from WEB-INF/, one time */
 static {

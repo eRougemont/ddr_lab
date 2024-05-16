@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="alix.lucene.search.Doc" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Doc" %>
 <%@ page import="org.apache.lucene.search.similarities.*" %>
-<%@ page import="alix.util.Top" %>
+<%@ page import="com.github.oeuvres.alix.util.Top" %>
 <%@include file="jsp/prelude.jsp" %>
 <%
 // params for the page
@@ -38,7 +38,7 @@ catch (IllegalArgumentException e) { // doc not found
 String title = "";
 if (doc != null) title = ML.detag(doc.doc().get("scope"));
 
-SortField sf2 = new SortField(Names.ALIX_ID, SortField.Type.STRING);
+SortField sf2 = new SortField(ALIX_ID, SortField.Type.STRING);
 %>
 <!DOCTYPE html>
 <html class="document">
@@ -176,12 +176,12 @@ if (mlt != null) {
   // searcher.setSimilarity(oldSim);
   ScoreDoc[] hits = topDocs.scoreDocs;
   final String href = "?id=";
-  final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {Names.ALIX_ID, Names.ALIX_BOOKID, "bibl"}));
+  final HashSet<String> DOC_SHORT = new HashSet<String>(Arrays.asList(new String[] {ALIX_ID, ALIX_BOOKID, "bibl"}));
   for (ScoreDoc hit: hits) {
     if (hit.doc == docId) continue;
     Document aDoc = reader.document(hit.doc, DOC_SHORT);
     out.print("<div class=\"bibl\">");
-    out.print("<a href=\"" + href + aDoc.get(Names.ALIX_ID) +"\">");
+    out.print("<a href=\"" + href + aDoc.get(ALIX_ID) +"\">");
     out.print(aDoc.get("bibl"));
     out.print("</a>");
     out.print("</div>");

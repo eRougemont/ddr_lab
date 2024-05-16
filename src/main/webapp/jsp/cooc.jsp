@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="prelude.jsp" %>
 <%@ page import="java.util.Iterator" %>
-<%@ page import="alix.util.EdgeSquare" %>
-<%@ page import="alix.util.Edge" %>
+<%@ page import="com.github.oeuvres.alix.util.EdgeSquare" %>
+<%@ page import="com.github.oeuvres.alix.util.Edge" %>
 
 
 <%!private double count(FormEnum results, int formId, OptionOrder order)
@@ -46,7 +46,7 @@ if (pars.book != null) {
     if (bookid < 0)
         pars.book = null;
     else
-        filter = Corpus.bits(alix, Names.ALIX_BOOKID, new String[] { pars.book });
+        filter = Corpus.bits(alix, ALIX_BOOKID, new String[] { pars.book });
 }
 
 int[] pivotIds = ftext.formIds(forms, filter);

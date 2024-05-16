@@ -1,11 +1,11 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
-<%@ page import="alix.lucene.analysis.FrDics" %>
-<%@ page import="alix.lucene.analysis.FrDics.LexEntry" %>
-<%@ page import="alix.util.IntPair" %>
-<%@ page import="alix.util.Top" %>
-<%@ page import="alix.lucene.search.FieldRail.Bigram" %>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.FrDics" %>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.FrDics.LexEntry" %>
+<%@ page import="com.github.oeuvres.alix.util.IntPair" %>
+<%@ page import="com.github.oeuvres.alix.util.Top" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FieldRail.Bigram" %>
 <%!
 
 %>
@@ -79,16 +79,16 @@ FieldRail frail = alix.fieldRail(fieldName);
 <%
 
 
-final long N = ftext.occsAll;
-final long[] formOccs = ftext.formOccsAll;;
+final long N = ftext.occs;
+final long[] formOccs = ftext.formOccs;
 
 BitSet filter = null; // if a corpus is selected, filter results with a bitset
 if (book != null) {
-  filter = Corpus.bits(alix, Alix.BOOKID, new String[]{book});
+  filter = Corpus.bits(alix, ALIX_BOOKID, new String[]{book});
   // formOccs = field.formOccs(filter);
   // N = formOccs[0];
 }
-TagFilter tags = new TagFilter().setAll().noStop(true).clear(Tag.SUB).clear(Tag.VERB); // .clearGroup(Tag.SUB).clearGroup(Tag.VERB);
+TagFilter tags = new TagFilter().setAll().nostop(true).clear(Tag.SUB).clear(Tag.VERB); // .clearGroup(Tag.SUB).clearGroup(Tag.VERB);
 BitSet rule = ftext.formRule(tags);
 Map<IntPair, Bigram> dic = frail.expressions(filter, tags);
 

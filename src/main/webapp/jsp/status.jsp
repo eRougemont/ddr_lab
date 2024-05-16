@@ -3,11 +3,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.nio.file.Path" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="alix.lucene.Alix" %>
-<%@ page import="alix.lucene.Alix.FSDirectoryType" %>
-<%@ page import="alix.lucene.analysis.FrAnalyzer" %>
-<%@ page import="alix.util.Dir" %>
-<%@ page import="alix.web.Webinf" %>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix" %>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix.FSDirectoryType" %>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.FrAnalyzer" %>
+<%@ page import="com.github.oeuvres.alix.util.Dir" %>
+<%@ page import="com.github.oeuvres.alix.web.Webinf" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
   <head>

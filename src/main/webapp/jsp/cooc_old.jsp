@@ -2,8 +2,8 @@
 <%@ include file="prelude.jsp" %>
 <%@ page import="java.util.Iterator" %>
 
-<%@ page import="alix.util.EdgeHash" %>
-<%@ page import="alix.util.Edge" %>
+<%@ page import="com.github.oeuvres.alix.util.EdgeHash" %>
+<%@ page import="com.github.oeuvres.alix.util.Edge" %>
 
 
 <%!private double count(FormEnum results, int formId, OptionOrder order)

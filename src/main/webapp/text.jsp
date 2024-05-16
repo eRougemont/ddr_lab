@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="alix.lucene.search.Doc" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.Doc" %>
 <%@ page import="org.apache.lucene.search.similarities.*" %>
-<%@ page import="alix.util.Top" %>
+<%@ page import="com.github.oeuvres.alix.util.Top" %>
 <%@include file="jsp/prelude.jsp" %>
 <%
 String id = tools.getString("id", "");

@@ -15,8 +15,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -30,7 +31,7 @@
             <artifactId>urlrewritefilter</artifactId>
             <version>5.1.3</version>
         </dependency>
-        <!-- Not provided by alix -->
+        <!-- Not provided by alix/pom.xml -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -58,7 +59,7 @@
                     <version>10.0.19</version>
                     <configuration>
                         <systemProperties>
-                            <textolyse.datadir>${basedir}/work/bases</textolyse.datadir>
+                            <alix.lucenedir>${basedir}/work/ddr_lucene</alix.lucenedir>
                             <jetty.port>8888</jetty.port>
                         </systemProperties>
                         <scan>5</scan>

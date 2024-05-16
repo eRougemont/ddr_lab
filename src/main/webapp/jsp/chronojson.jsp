@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ page import="alix.lucene.Alix" %>
-<%@ page import="alix.lucene.search.*" %>
-<%@ page import="alix.lucene.search.FieldInt.IntEnum" %>
-<%@ page import="alix.web.*" %>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.*" %>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FieldInt.IntEnum" %>
+<%@ page import="com.github.oeuvres.alix.web.*" %>
 
 <%!
 %>

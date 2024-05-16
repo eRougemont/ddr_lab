@@ -17,33 +17,26 @@
 <%@ page import="org.apache.lucene.search.similarities.*"%>
 <%@ page import="org.apache.lucene.search.BooleanClause.*"%>
 <%@ page import="org.apache.lucene.util.BitSet"%>
-<%@ page import="alix.Names"%>
-<%@ page import="alix.fr.Tag"%>
-<%@ page import="alix.fr.Tag.TagFilter"%>
-<%@ page import="alix.lucene.Alix"%>
-<%@ page import="alix.lucene.Alix.FSDirectoryType"%>
-<%@ page import="alix.lucene.analysis.FrAnalyzer"%>
-<%@ page import="alix.lucene.analysis.FrDics"%>
-<%@ page import="alix.lucene.search.*"%>
+<%@ page import="static com.github.oeuvres.alix.Names.*"%>
+<%@ page import="com.github.oeuvres.alix.fr.Tag"%>
+<%@ page import="com.github.oeuvres.alix.fr.Tag.TagFilter"%>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix"%>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix.FSDirectoryType"%>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.FrAnalyzer"%>
+<%@ page import="com.github.oeuvres.alix.lucene.analysis.FrDics"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.*"%>
 
-<%@ page import="alix.lucene.search.FieldRail"%>
-<%@ page import="alix.util.ML"%>
-<%@ page import="alix.util.TopArray"%>
-<%@ page import="alix.web.*"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FieldRail"%>
+<%@ page import="com.github.oeuvres.alix.util.ML"%>
+<%@ page import="com.github.oeuvres.alix.util.TopArray"%>
+<%@ page import="com.github.oeuvres.alix.web.*"%>
 <%!/** Not yet used, to resolve relatice paths */
     static String hrefHome = "";
-    /** Load bases from WEB-INF/, one time */
-    static {
-        if (!Webinf.bases) {
-            Webinf.bases();
-        }
-    }
-
-    final static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
-    final static DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
-
+    static final String ALIX_LUCENEDIR = "alix.lucenedir";
+    static final String ALIX_BASENAME = "rougemont";
+    static final DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+    static final DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
     static final DecimalFormat frdec = new DecimalFormat("###,###,###,###", frsyms);
-
     static final DecimalFormat dfdec3 = new DecimalFormat("0.000", ensyms);
     static final DecimalFormat dfdec2 = new DecimalFormat("0.00", ensyms);
     static final DecimalFormat frdec2 = new DecimalFormat("###,###,###,##0.00", frsyms);
@@ -52,20 +45,19 @@
     static final DecimalFormat frdec5 = new DecimalFormat("0.0000E0", frsyms);
     static final DecimalFormat dfScore = new DecimalFormat("0.00000", ensyms);
     /** Fields to retrieve in document for a book */
-    final static HashSet<String> BOOK_FIELDS = new HashSet<String>(
-            Arrays.asList(new String[] { Names.ALIX_BOOKID, "byline", "year", "title" }));
-    final static HashSet<String> CHAPTER_FIELDS = new HashSet<String>(
-            Arrays.asList(new String[] { Names.ALIX_BOOKID, Names.ALIX_ID, "year", "title", "analytic", "pages" }));
-
-    final static Sort sortYear = new Sort(new SortField[] { new SortField("year", SortField.Type.INT),
-            new SortField(Names.ALIX_ID, SortField.Type.STRING), });
-
+    static final HashSet<String> BOOK_FIELDS = new HashSet<String>(
+            Arrays.asList(new String[] { ALIX_BOOKID, "byline", "year", "title" }));
+    static final HashSet<String> CHAPTER_FIELDS = new HashSet<String>(
+            Arrays.asList(new String[] { ALIX_BOOKID, ALIX_ID, "year", "title", "analytic", "pages" }));
+    static final Sort sortYear = new Sort(new SortField[] { new SortField("year", SortField.Type.INT),
+            new SortField(ALIX_ID, SortField.Type.STRING), });
     /** Field Name with int date */
-    final static String YEAR = "year";
+    static final String YEAR = "year";
     /** Key prefix for current corpus in session */
-    final static String CORPUS_ = "corpus_";
+    static final String CORPUS_ = "corpus_";
     /** A filter for documents */
-    final static Query QUERY_CHAPTER = new TermQuery(new Term(Names.ALIX_TYPE, Names.CHAPTER));
+    static final Query QUERY_CHAPTER = new TermQuery(new Term(ALIX_TYPE, CHAPTER));
+    File lucenedir;
 
     static String formatScore(double real) {
         if (real == 0)
@@ -96,6 +88,33 @@
       public String hint() { return null; }
     }
     */
+    
+    /**
+     * Get basedir to write
+     * 
+     * @return
+     * @throws ServletException
+     */
+    public void jspInit() throws ServletException {
+        ServletContext context = getServletContext();
+        String value = context.getInitParameter(ALIX_LUCENEDIR);
+        lucenedir = new File(value);
+        if (!lucenedir.isAbsolute()) {
+            throw new ServletException(
+                    "Init param datadir is not an absolute file path: <Parameter name=\"datadir\" value=\"" + value
+                            + "\" override=\"false\"/>");
+        }
+        if (!lucenedir.exists() && !lucenedir.mkdirs()) {
+            throw new ServletException("Init param datadir, impossible to create: <Parameter name=\"datadir\" value=\""
+                    + value + "\" override=\"false\"/>");
+        } else if (!lucenedir.isDirectory()) {
+            throw new ServletException(
+                    "Init param datadir, exists but is not a directory: <Parameter name=\"datadir\" value=\"" + value
+                            + "\" override=\"false\"/>");
+        }
+    }
+
+    
 
     public enum Field implements Option {
         text("Lemmes",
@@ -287,7 +306,7 @@
             if (txt != null)
                 txt += ", ";
             txt += doc.get("title");
-            String abid = doc.get(Names.ALIX_BOOKID);
+            String abid = doc.get(ALIX_BOOKID);
             sb.append("<option value=\"" + abid + "\" title=\"" + txt + "\"");
             if (abid.equals(bookid)) {
                 sb.append(" selected=\"selected\"");
@@ -314,7 +333,7 @@
             if (bookid < 0)
                 pars.book = null;
             else
-                filter = Corpus.bits(alix, Names.ALIX_BOOKID, new String[] { pars.book });
+                filter = Corpus.bits(alix, ALIX_BOOKID, new String[] { pars.book });
         }
 
         FieldText ftext = alix.fieldText(pars.field.name());

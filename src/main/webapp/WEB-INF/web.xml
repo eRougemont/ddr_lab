@@ -24,19 +24,4 @@
         <extension>json</extension>
         <mime-type>application/vnd.api+json; charset=utf-8</mime-type>
     </mime-mapping>
-    <filter>
-      <filter-name>UrlRewriteFilter</filter-name>
-      <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
-      <init-param>
-          <!-- for dev -->
-          <param-name>confReloadCheckInterval</param-name>
-          <param-value>1</param-value>
-      </init-param>
-      <init-param>
-          <param-name>logLevel</param-name>
-          <!-- TRACE, DEBUG, INFO (default), WARN, ERROR, FATAL
-          <param-value>DEBUG</param-value>
-           -->
-      </init-param>
-    </filter>
 </web-app>
