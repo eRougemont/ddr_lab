@@ -383,10 +383,7 @@ JspTools tools = new JspTools(pageContext);
 Pars pars = pars(pageContext);
 //Default base name, first in the pool
 String baseName = "alix";
-if (Alix.pool.size() > 0) {
-    baseName = (String) Alix.pool.keySet().toArray()[0];
-}
-Alix alix = (Alix) tools.getMap("corpus", Alix.pool, baseName, "alixCorpus");
+Alix alix = Alix.
 
 IndexReader reader = null;
 if (alix != null) {

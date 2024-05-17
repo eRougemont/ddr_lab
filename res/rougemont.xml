@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- Ce fichier est lu à l’indexation et au redémarrage de l’application -->
+<properties>
+  <!-- Intitulé affichable du corpus -->
+  <entry key="label">Rougemont</entry>
+  <!-- Liste de fichiers à indexer -->
+  <entry key="src">
+# ../../ddr-livres/ddr1929mip_mefaits-instruction-publique.xml
+../../ddr-livres/ddr1932paysan_paysan-du-danube.xml
+# ../../ddr-livres/ddr1934polpers_politique-personne.xml
+# ../../ddr-livres/ddr1936pm_penser-mains.xml
+../../ddr-livres/ddr1937jic_journal-intellectuel-chomage.xml
+../../ddr-livres/ddr1938ja_journal-allemagne.xml
+# ../../ddr-livres/ddr1939ao_amour-occident.xml
+../../ddr-livres/ddr1940mds_mission-demission-suisse.xml
+../../ddr-livres/ddr1940lg.xml
+# ../../ddr-livres/ddr1942partdia_part-diable.xml
+# ../../ddr-livres/ddr1944partdia_part-diable.xml
+../../ddr-livres/ddr1944persdram_personnes-drame.xml
+../../ddr-livres/ddr1946jdm_journal-deux-mondes.xml
+# ../../ddr-livres/ddr1946lba1_lettre-bombe-atomique-1.xml
+../../ddr-livres/ddr1946lba2_lettres-bombe-atomique.xml
+../../ddr-livres/ddr1946polpers_politique-personne.xml
+../../ddr-livres/ddr1947df_doctrine-fabuleuse.xml
+../../ddr-livres/ddr1947va_vivre-amerique.xml
+../../ddr-livres/ddr1948ej_europe-en-jeu.xml
+../../ddr-livres/ddr1948sn_suite-neuchateloise.xml
+../../ddr-livres/ddr1950lde_lettres-deputes-europeens.xml
+../../ddr-livres/ddr1951lpp.xml
+../../ddr-livres/ddr1953ch_confederation-helvetique.xml
+# ../../ddr-livres/ddr1956ao_amour-occident.xml
+../../ddr-livres/ddr1957aoh_aventure-occidentale-homme.xml
+../../ddr-livres/ddr1958dver.xml
+../../ddr-livres/ddr1961ctm_comme-toi-meme-mythes-amour.xml
+../../ddr-livres/ddr1961vhse_vingt-huit-siecles-europe.xml
+../../ddr-livres/ddr1962ce_chances-europe.xml
+../../ddr-livres/ddr1965shph_suisse-histoire-peuple-heureux.xml
+../../ddr-livres/ddr1965fc.xml
+# ../../ddr-livres/ddr1968jde_journal-epoque.xml
+../../ddr-livres/ddr1970cde_cheminements-esprits.xml
+../../ddr-livres/ddr1970loe_lettre-ouverte-europeens.xml
+../../ddr-livres/ddr1970udce_un-divers-cite-europenne.xml
+../../ddr-livres/ddr1972ao_amour-occident.xml
+../../ddr-livres/ddr1972mip_mefaits-instruction-publique.xml
+../../ddr-livres/ddr1972pm_penser-mains.xml
+../../ddr-livres/ddr1972dfso.xml
+../../ddr-livres/ddr1973resea.xml
+../../ddr-livres/ddr1974jdef.xml
+../../ddr-livres/ddr1977aena_avenir-est-notre-affaire.xml
+../../ddr-livres/ddr1979rpe_rapport-peuple-europeen.xml
+../../ddr-livres/ddr1982partdia_part-diable.xml
+# ../../ddr-livres/ddr1982paysan_paysan-du-danube.xml
+../../ddr-articles/*.xml
+../../ddr_inedits/*.xml
+  </entry>
+  <!-- 
+    ../../ddr_livres/*.xml
+    ../../ddr_articles/*.xml
+  
+  -->
+  <entry key="dicfile">ddr-dic.csv</entry>
+  <!-- Chemin du dossier où écrire les index lucene -->
+  <entry key="dstdir">./</entry>
+</properties>

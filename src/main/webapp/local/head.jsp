@@ -6,10 +6,10 @@
     <link rel="preconnect" href="https://www.google-analytics.com/"/>
     <link rel="dns-prefetch" href="https://www.google-analytics.com/"/>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com/" crossorigin/>
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com/" crossorigin/>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin/>
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com/" crossorigin/>
+    <link rel="preconnect" href="https://fonts.googleapis.com/" crossorigin=""/>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com/" crossorigin=""/>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com/" crossorigin=""/>
     <!-- 
     <link
       rel="preload" 
