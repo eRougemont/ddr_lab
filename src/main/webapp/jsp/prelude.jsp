@@ -4,6 +4,7 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.FileNotFoundException"%>
 <%@ page import="java.io.PrintWriter"%>
+<%@ page import="java.nio.file.Path"%>
 <%@ page import="java.lang.invoke.MethodHandles"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.text.DecimalFormatSymbols"%>
@@ -57,7 +58,36 @@
     static final String CORPUS_ = "corpus_";
     /** A filter for documents */
     static final Query QUERY_CHAPTER = new TermQuery(new Term(ALIX_TYPE, CHAPTER));
-    File lucenedir;
+    /** File path for a lucene index */
+    Path lucenepath;
+    /** error message */
+    String initErr;
+    /**
+     * Get basedir to write
+     * 
+     * @return
+     * @throws ServletException
+     */
+    public void jspInit() {
+        ServletContext context = getServletContext();
+        String value = context.getInitParameter(ALIX_LUCENEDIR);
+        lucenepath = Path.of(value);
+        if (!lucenepath.isAbsolute()) {
+            initErr = "Init param datadir is not an absolute file path: <Parameter name=\"datadir\" value=\"" + value
+                            + "\" override=\"false\"/>";
+            return;
+        }
+        if (!lucenepath.toFile().exists()) {
+            initErr = "Init param datadir, impossible to create: <Parameter name=\"datadir\" value=\""
+                    + value + "\" override=\"false\"/>";
+            return;
+        }
+        if (!lucenepath.toFile().isDirectory()) {
+            initErr = "Init param datadir, exists but is not a directory: <Parameter name=\"datadir\" value=\"" + value
+                            + "\" override=\"false\"/>";
+            return;
+        }
+    }
 
     static String formatScore(double real) {
         if (real == 0)
@@ -89,30 +119,7 @@
     }
     */
     
-    /**
-     * Get basedir to write
-     * 
-     * @return
-     * @throws ServletException
-     */
-    public void jspInit() throws ServletException {
-        ServletContext context = getServletContext();
-        String value = context.getInitParameter(ALIX_LUCENEDIR);
-        lucenedir = new File(value);
-        if (!lucenedir.isAbsolute()) {
-            throw new ServletException(
-                    "Init param datadir is not an absolute file path: <Parameter name=\"datadir\" value=\"" + value
-                            + "\" override=\"false\"/>");
-        }
-        if (!lucenedir.exists() && !lucenedir.mkdirs()) {
-            throw new ServletException("Init param datadir, impossible to create: <Parameter name=\"datadir\" value=\""
-                    + value + "\" override=\"false\"/>");
-        } else if (!lucenedir.isDirectory()) {
-            throw new ServletException(
-                    "Init param datadir, exists but is not a directory: <Parameter name=\"datadir\" value=\"" + value
-                            + "\" override=\"false\"/>");
-        }
-    }
+
 
     
 
@@ -381,9 +388,7 @@ long time = System.nanoTime();
 JspTools tools = new JspTools(pageContext);
 //get default parameters from request
 Pars pars = pars(pageContext);
-//Default base name, first in the pool
-String baseName = "alix";
-Alix alix = Alix.
+Alix alix = Alix.instance("rougemont", lucenepath, null, null);
 
 IndexReader reader = null;
 if (alix != null) {

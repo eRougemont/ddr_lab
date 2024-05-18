@@ -11,7 +11,7 @@
         <Arg>false</Arg>
     </Call>
     <Call name="setInitParameter">
-        <Arg>alix.datadir</Arg>
+        <Arg>alix.lucenedir</Arg>
         <Arg><SystemProperty name="alix.lucenedir"/></Arg>
         <!-- 
         If Jetty runs as a service on a debian system, 
