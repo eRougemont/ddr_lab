@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.github.oeuvres</groupId>
             <artifactId>alix</artifactId>
-            <version>[0.9.0-SNAPSHOT,)</version>
+            <version>[0.9.1-SNAPSHOT,)</version>
         </dependency>
         <dependency>
             <groupId>org.tuckey</groupId>
@@ -59,7 +59,7 @@
                     <version>10.0.19</version>
                     <configuration>
                         <systemProperties>
-                            <alix.lucenedir>${basedir}/work/ddr_lucene</alix.lucenedir>
+                            <alix.lucenedir>${basedir}/work/rougemont</alix.lucenedir>
                             <jetty.port>8888</jetty.port>
                         </systemProperties>
                         <scan>5</scan>

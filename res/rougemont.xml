@@ -6,52 +6,57 @@
   <entry key="label">Rougemont</entry>
   <!-- Liste de fichiers à indexer -->
   <entry key="src">
-# ../../ddr-livres/ddr1929mip_mefaits-instruction-publique.xml
-../../ddr-livres/ddr1932paysan_paysan-du-danube.xml
-# ../../ddr-livres/ddr1934polpers_politique-personne.xml
-# ../../ddr-livres/ddr1936pm_penser-mains.xml
-../../ddr-livres/ddr1937jic_journal-intellectuel-chomage.xml
-../../ddr-livres/ddr1938ja_journal-allemagne.xml
-# ../../ddr-livres/ddr1939ao_amour-occident.xml
-../../ddr-livres/ddr1940mds_mission-demission-suisse.xml
-../../ddr-livres/ddr1940lg.xml
-# ../../ddr-livres/ddr1942partdia_part-diable.xml
-# ../../ddr-livres/ddr1944partdia_part-diable.xml
-../../ddr-livres/ddr1944persdram_personnes-drame.xml
-../../ddr-livres/ddr1946jdm_journal-deux-mondes.xml
-# ../../ddr-livres/ddr1946lba1_lettre-bombe-atomique-1.xml
-../../ddr-livres/ddr1946lba2_lettres-bombe-atomique.xml
-../../ddr-livres/ddr1946polpers_politique-personne.xml
-../../ddr-livres/ddr1947df_doctrine-fabuleuse.xml
-../../ddr-livres/ddr1947va_vivre-amerique.xml
-../../ddr-livres/ddr1948ej_europe-en-jeu.xml
-../../ddr-livres/ddr1948sn_suite-neuchateloise.xml
-../../ddr-livres/ddr1950lde_lettres-deputes-europeens.xml
-../../ddr-livres/ddr1951lpp.xml
-../../ddr-livres/ddr1953ch_confederation-helvetique.xml
-# ../../ddr-livres/ddr1956ao_amour-occident.xml
-../../ddr-livres/ddr1957aoh_aventure-occidentale-homme.xml
-../../ddr-livres/ddr1958dver.xml
-../../ddr-livres/ddr1961ctm_comme-toi-meme-mythes-amour.xml
-../../ddr-livres/ddr1961vhse_vingt-huit-siecles-europe.xml
-../../ddr-livres/ddr1962ce_chances-europe.xml
-../../ddr-livres/ddr1965shph_suisse-histoire-peuple-heureux.xml
-../../ddr-livres/ddr1965fc.xml
-# ../../ddr-livres/ddr1968jde_journal-epoque.xml
-../../ddr-livres/ddr1970cde_cheminements-esprits.xml
-../../ddr-livres/ddr1970loe_lettre-ouverte-europeens.xml
-../../ddr-livres/ddr1970udce_un-divers-cite-europenne.xml
-../../ddr-livres/ddr1972ao_amour-occident.xml
-../../ddr-livres/ddr1972mip_mefaits-instruction-publique.xml
-../../ddr-livres/ddr1972pm_penser-mains.xml
-../../ddr-livres/ddr1972dfso.xml
-../../ddr-livres/ddr1973resea.xml
-../../ddr-livres/ddr1974jdef.xml
-../../ddr-livres/ddr1977aena_avenir-est-notre-affaire.xml
-../../ddr-livres/ddr1979rpe_rapport-peuple-europeen.xml
-../../ddr-livres/ddr1982partdia_part-diable.xml
-# ../../ddr-livres/ddr1982paysan_paysan-du-danube.xml
-../../ddr-articles/*.xml
+
+# ../../ddr_livres/ddr19290300mip_mefaits-instruction-publique.xml
+../../ddr_livres/ddr19320900paysan_paysan-du-danube.xml
+# ../../ddr_livres/ddr19341025polpers_politique-personne.xml
+# ../../ddr_livres/ddr19361100pm_penser-mains.xml
+../../ddr_livres/ddr19370600jic_journal-intellectuel-chomage.xml
+../../ddr_livres/ddr19381012ja_journal-allemagne.xml
+# ../../ddr_livres/ddr19390600ao_amour-occident.xml
+../../ddr_livres/ddr19390815nf_nicolas-flue.xml
+../../ddr_livres/ddr19400430mds_mission-demission-suisse.xml
+../../ddr_livres/ddr19400800lg.xml
+# ../../ddr_livres/ddr19421200partdia_part-diable.xml
+# ../../ddr_livres/ddr19441100partdia_part-diable.xml
+../../ddr_livres/ddr19441210persdram_personnes-drame.xml
+# ../../ddr_livres/ddr19460615lba1_lettre-bombe-atomique-1.xml
+../../ddr_livres/ddr19460701lba2_lettres-bombe-atomique.xml
+../../ddr_livres/ddr19460900polpers_politique-personne.xml
+../../ddr_livres/ddr19461206jdm_journal-deux-mondes.xml
+../../ddr_livres/ddr19470307va_vivre-amerique.xml
+../../ddr_livres/ddr19470703df_doctrine-fabuleuse.xml
+../../ddr_livres/ddr19480401sn_suite-neuchateloise.xml
+../../ddr_livres/ddr19480630ej_europe-en-jeu.xml
+../../ddr_livres/ddr19500813lde_lettres-deputes-europeens.xml
+../../ddr_livres/ddr19510300lpp.xml
+../../ddr_livres/ddr19531215ch_confederation-helvetique.xml
+# ../../ddr_livres/ddr19560200ao_amour-occident.xml
+../../ddr_livres/ddr19570200aoh_aventure-occidentale-homme.xml
+../../ddr_livres/ddr19581200dver.xml
+../../ddr_livres/ddr19590300oe.xml
+../../ddr_livres/ddr19610400ctm_comme-toi-meme-mythes-amour.xml
+../../ddr_livres/ddr19611200vhse_vingt-huit-siecles-europe.xml
+../../ddr_livres/ddr19620830ce_chances-europe.xml
+../../ddr_livres/ddr19650600shph_suisse-histoire-peuple-heureux.xml
+../../ddr_livres/ddr19651030fc.xml
+# ../../ddr_livres/ddr19680314jde_journal-epoque.xml
+../../ddr_livres/ddr19700900loe_lettre-ouverte-europeens.xml
+../../ddr_livres/ddr19701000cde_cheminements-esprits.xml
+../../ddr_livres/ddr19701005udce_un-divers-cite-europenne.xml
+../../ddr_livres/ddr19720400dfso.xml
+../../ddr_livres/ddr19720600pm_penser-mains.xml
+../../ddr_livres/ddr19721000mip_mefaits-instruction-publique.xml
+../../ddr_livres/ddr19721100ao_amour-occident.xml
+../../ddr_livres/ddr19730100resea.xml
+../../ddr_livres/ddr19740600jdef.xml
+../../ddr_livres/ddr19750200cernfec.xml
+../../ddr_livres/ddr19770721aena_avenir-est-notre-affaire.xml
+../../ddr_livres/ddr19790423rpe_rapport-peuple-europeen.xml
+../../ddr_livres/ddr19820500partdia_part-diable.xml
+# ../../ddr_livres/ddr19820900paysan_paysan-du-danube.xml
+../../ddr_livres/ddr19880300in.xml
+../../ddr_articles/*.xml
 ../../ddr_inedits/*.xml
   </entry>
   <!-- 
@@ -61,5 +66,5 @@
   -->
   <entry key="dicfile">ddr-dic.csv</entry>
   <!-- Chemin du dossier où écrire les index lucene -->
-  <entry key="dstdir">./</entry>
+  <entry key="dstdir">../work</entry>
 </properties>
