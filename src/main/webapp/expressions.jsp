@@ -32,7 +32,6 @@ FieldRail frail = alix.fieldRail(fieldName);
      <header>
       <%@ include file="local/tabs.jsp"%>
       <form class="search">
-        <%= selectCorpus(alix.name) %>
         <%= selectBook(alix, book) %>
         <br/>
         <label>Score</label>

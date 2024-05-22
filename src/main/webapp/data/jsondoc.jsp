@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/javascript; charset=utf-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page import="java.nio.file.Path"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.text.DecimalFormatSymbols"%>
 <%@ page import="java.util.Arrays"%>
@@ -31,16 +32,25 @@
 <%@ page import="com.github.oeuvres.alix.web.JspTools" %>
 <%@ page import="com.github.oeuvres.alix.web.OptionCat" %>
 <%@ page import="com.github.oeuvres.alix.web.OptionDistrib" %>
-<%@ page import="com.github.oeuvres.alix.web.Webinf" %>
+
 <%!
-/** Load bases from WEB-INF/, one time */
-static {
-    if (!Webinf.bases) {
-        Webinf.bases();
-    }
-}
 
 static final DecimalFormat scoref = new DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+/** File path for a lucene index */
+Path lucenepath;
+/**
+ * Get lucene index path
+ * 
+ * @return
+ * @throws ServletException
+ */
+public void jspInit() {
+    ServletContext context = getServletContext();
+    String value = context.getInitParameter("alix.lucenedir");
+    lucenepath = Path.of(value);
+}
+
 
 %>
 <%
@@ -78,10 +88,11 @@ if (Alix.pool.size() < 1) {
     out.println("    }");
     out.println("  ]");
     out.println("}");
+    if (callback != null) out.println(")");
     response.setStatus(500);
     return;
 }
-Alix alix = (Alix) tools.getMap("base", Alix.pool, null, "alix.base");
+Alix alix = Alix.instance("rougemont", lucenepath);
 String baseName = request.getParameter("base");
 if (alix == null && baseName != null) {
     out.println("  \"errors\": [");
@@ -91,6 +102,7 @@ if (alix == null && baseName != null) {
     out.println("    }");
     out.println("  ]");
     out.println("}");
+    if (callback != null) out.println(")");
     response.setStatus(404);
     return;
 }
@@ -108,6 +120,7 @@ if (id == null) {
     out.println("    }");
     out.println("  ]");
     out.println("}");
+    if (callback != null) out.println(")");
     response.setStatus(400);
     return;
 }
@@ -120,6 +133,7 @@ if (docId < 0) {
     out.println("    }");
     out.println("  ]");
     out.println("}");
+    if (callback != null) out.println(")");
     response.setStatus(404);
     return;
 }

@@ -19,7 +19,6 @@ results.sort(pars.order.order(), pars.limit);
       <form class="search" action="#">
         <a  class="icon" href="csv.jsp?<%= tools.queryString(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi"}) %>"><img src="static/icon_csv.svg" alt="Export intégral des données au format "></a>
         <a class="icon" href="tableur.jsp?<%= tools.queryString(new String[]{"q", "cat", "book", "left", "right", "distrib", "mi", "limit"}) %>"><img src="static/icon_excel.svg" alt="Export des données visibles pour Excel"></a>
-        <%= selectCorpus(alix.name) %>,
         <%= selectBook(alix, pars.book) %>
         <button type="submit">▶</button>
         

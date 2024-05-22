@@ -73,17 +73,17 @@
         String value = context.getInitParameter(ALIX_LUCENEDIR);
         lucenepath = Path.of(value);
         if (!lucenepath.isAbsolute()) {
-            initErr = "Init param datadir is not an absolute file path: <Parameter name=\"datadir\" value=\"" + value
+            initErr = "Init param: " + ALIX_LUCENEDIR + " is not an absolute file path: <Parameter name=\"" + ALIX_LUCENEDIR + "\" value=\"" + value
                             + "\" override=\"false\"/>";
             return;
         }
         if (!lucenepath.toFile().exists()) {
-            initErr = "Init param datadir, impossible to create: <Parameter name=\"datadir\" value=\""
+            initErr = "Init param: " + ALIX_LUCENEDIR + ", impossible to create: <Parameter name=\"" + ALIX_LUCENEDIR + "\" value=\""
                     + value + "\" override=\"false\"/>";
             return;
         }
         if (!lucenepath.toFile().isDirectory()) {
-            initErr = "Init param datadir, exists but is not a directory: <Parameter name=\"datadir\" value=\"" + value
+            initErr = "Init param: " + ALIX_LUCENEDIR + ", exists but is not a directory: <Parameter name=\"" + ALIX_LUCENEDIR + "\" value=\"" + value
                             + "\" override=\"false\"/>";
             return;
         }
@@ -276,6 +276,11 @@
         StringBuilder sb = new StringBuilder();
         if (Alix.pool.size() == 1) {
             for (Map.Entry<String, Alix> entry : Alix.pool.entrySet()) {
+                label = (String)entry.getValue().props.get("label");
+                if (label == null) {
+                    // no name for the corpus
+                    return "";
+                }
                 sb.append("<strong>" + entry.getValue().props.get("label") + "</strong>");
             }
         } 

@@ -19,7 +19,6 @@ results.sort(pars.order.order(), pars.limit);
     <header>
       <jsp:include page="local/tabs.jsp"/>
       <form  class="search">
-        <%=selectCorpus(alix.name)%>,
         <label for="book" title="Limiter la sélection à un seul livre">Livre</label>
         <%=selectBook(alix, pars.book)%>
         <button type="submit">▶</button>

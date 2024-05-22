@@ -24,7 +24,6 @@
       </header>
 
       <form id="form" class="search">
-        <%= selectCorpus(alix.name) %>,
         <%= selectBook(alix, pars.book) %>
         <button type="submit">▶</button>
         

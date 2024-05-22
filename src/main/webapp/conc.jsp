@@ -3,7 +3,8 @@
 <%@ page import="java.util.Arrays"%>
 <%@ page import="org.apache.lucene.util.automaton.Automaton"%>
 <%@ page import="org.apache.lucene.util.automaton.ByteRunAutomaton"%>
-<%@ page import="com.github.oeuvres.alix.lucene.util.WordsAutomatonBuilder"%>
+<%@ page
+    import="com.github.oeuvres.alix.lucene.util.WordsAutomatonBuilder"%>
 <%!
 
 public void kwic(final PageContext page, final Alix alix, final TopDocs topDocs, Pars pars) throws IOException, NoSuchFieldException
@@ -162,7 +163,7 @@ out.println("<!-- get topDocs "+(System.nanoTime() - nanos) / 1000000.0 + "ms\" 
 span.left {
     display: inline-block;
     text-align: right;
-    width: <%= Math.round ( 10 + pars.left * 1.0) %>ex;
+    width: <%= Math.round ( 10 + pars.left * 1.0) %> ex;
     padding-right: 1ex;
 }
 </style>
@@ -171,7 +172,6 @@ span.left {
     <header>
         <jsp:include page="local/tabs.jsp" flush="true" />
         <form class="search">
-            <%= selectCorpus(alix.name) %>,
             <%= selectBook(alix, pars.book) %>
 
             <br /> <label for="q">Chercher</label>

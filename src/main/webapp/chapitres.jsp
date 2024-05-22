@@ -22,7 +22,7 @@ FieldText ftext = alix.fieldText(pars.field.name());
     <header>
         <jsp:include page="local/tabs.jsp" flush="true" />
         <form id="qform" class="search">
-            <%=selectCorpus(alix.name)%>, <label>Rechercher <input
+            <label>Rechercher <input
                 id="q" class="q" name="q"
                 value="<%=JspTools.escape(pars.q)%>" width="100"
                 autocomplete="off" />

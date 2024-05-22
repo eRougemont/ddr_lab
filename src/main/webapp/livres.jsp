@@ -42,7 +42,7 @@ if (search == null || search.length < 1) {
     <header>
         <jsp:include page="local/tabs.jsp" flush="true" />
         <form class="search">
-            <%=selectCorpus(alix.name)%>, <label for="q"
+            <label for="q"
                 title="Classer les livres selon un ou plusieurs mots">Chercher</label>
             <input name="q" class="q" onclick="this.select()"
                 type="text" value="<%=tools.escape(pars.q)%>" size="40" />
