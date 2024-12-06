@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- Ce fichier est lu à l’indexation et au redémarrage de l’application -->
+<properties>
+  <!-- Intitulé affichable du corpus -->
+  <entry key="label">Rougemont</entry>
+  <!-- Liste de fichiers à indexer -->
+  <entry key="src">
+../../ddr_livres/*.xml
+../../ddr_articles/*.xml
+../../ddr_inedits/*.xml
+  </entry>
+    <entry key="exclude">
+../../ddr_livres/ddr19290300mip_mefaits-instruction-publique.xml
+../../ddr_livres/ddr19341025polpers_politique-personne.xml
+../../ddr_livres/ddr19361100pm_penser-mains.xml
+../../ddr_livres/ddr19390600ao_amour-occident.xml
+../../ddr_livres/ddr19421200partdia_part-diable.xml
+../../ddr_livres/ddr19441100partdia_part-diable.xml
+../../ddr_livres/ddr19460615lba1_lettre-bombe-atomique-1.xml
+../../ddr_livres/ddr19820900paysan_paysan-du-danube.xml
+../../ddr_livres/ddr19680314jde_journal-epoque.xml
+../../ddr_livres/ddr19560200ao_amour-occident.xml
+    </entry>
+  <entry key="dicfile">ddr-dic.csv</entry>
+  <!-- Chemin du dossier où écrire les index lucene -->
+  <entry key="dstdir">../lucene</entry>
+</properties>

@@ -16,8 +16,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -27,9 +27,15 @@
             <version>[0.9.1-SNAPSHOT,)</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-highlighter</artifactId>
+            <version>[10.0.0,)</version>
+        </dependency>
+        <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
-            <version>5.1.3</version>
+            <!-- 5.* is servlet 5.0, and jakarta/servlet/Filter -->
+            <version>[4.0.4,)</version>
         </dependency>
         <!-- Not provided by alix/pom.xml -->
         <dependency>
@@ -46,8 +52,7 @@
         </dependency>
     </dependencies>
 
-
-    <build>
+     <build>
         <finalName>ddr_lab</finalName>
         <pluginManagement>
             <plugins>
@@ -56,18 +61,19 @@
                     <artifactId>jetty-maven-plugin</artifactId>
                     <!-- Do not try 11, =servlet 5.0, =incompatible with common
                     server  -->
-                    <version>10.0.19</version>
+                    <version>[10.0.21,)</version>
                     <configuration>
                         <systemProperties>
-                            <alix.lucenedir>${basedir}/work/rougemont</alix.lucenedir>
+                            <alix.lucenedir>${basedir}/lucene/rougemont</alix.lucenedir>
                             <jetty.port>8888</jetty.port>
                         </systemProperties>
                         <scan>5</scan>
                         <webApp>
-                            <contextPath>/ddrlab/</contextPath>
-                            <defaultsDescriptor>${basedir}/res/webdefault.xml</defaultsDescriptor>
+                            <contextPath>/rougemont/</contextPath>
+                            <!-- Needed for dev on windows, useFileMappedBuffer = false -->
+                            <defaultsDescriptor>${basedir}/src/test/resources/webdefault.xml</defaultsDescriptor>
                         </webApp>
-                        <contextXml>${basedir}/res/jetty-context.xml</contextXml>
+                        <contextXml>${basedir}/install/jetty-context.xml</contextXml>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -76,28 +82,34 @@
                     <version>3.4.0</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
                 <!-- see
                 http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.0.2</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.1</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>2.5.2</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
                 </plugin>

@@ -1,5 +1,4 @@
-.~*
-.*.swp
-/work
-
 /target/
+/lucene/
+/tmp/
+install/debug-alix.xml
