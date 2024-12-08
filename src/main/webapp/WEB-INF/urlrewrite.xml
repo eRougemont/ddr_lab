@@ -7,52 +7,44 @@
 
 -->
 <urlrewrite>
-
-    
-
-    <rule>
-        <name>Welcome page</name>
-        <from>^/$</from>
-        <set name="path">$0</set>
-        <to last="true" qsappend="true">/jsp/bases.jsp</to>
-    </rule>
-
+    <!--  qsappend is a bad idea, it appends params to filename -->
 
     <rule>
         <name>Resource exists</name>
         <condition type="request-filename" operator="isfile"/>
-        <to last="true" qsappend="true">-</to>
+        <to last="true">-</to>
+    </rule>
+    
+    <rule>
+        <name>Action</name>
+        <from>^/([a-z]+)$</from>
+        <!-- send to next -->
+        <to last="true">/$1.jsp</to>
     </rule>
 
-
     <rule>
-        <name>Data, correspondents suggestion</name>
-        <condition type="request-filename" operator="notfile"/>
-        <from>^/data/(corres1|corres2|receiver|sender)(\.ndjson|\.js|\.json)?$</from>
-        <to last="true">/data/corres.jsp?f=$1&amp;ext=$2</to>
+        <name>Book</name>
+        <from casesensitive="true">^/(piaget\d\d\d\d[A-Z][A-Z0-9]+)$</from>
+        <set name="path">$0</set>
+        <to last="true">/book.jsp?book=$1</to>
     </rule>
 
+    <rule>
+        <name>Text</name>
+        <from casesensitive="true">^/(piaget\d\d\d\d[^\./]+)</from>
+        <set name="path">$0</set>
+        <to last="true">/doc.jsp?id=$1</to>
+    </rule>
 
     <rule>
-        <name>Data multi formats</name>
+        <name>Data</name>
         <condition type="request-filename" operator="notfile"/>
         <from>^/data/([^\./]+)(\.csv|\.js|\.json|\.ndjson|\.tsv|\.txt)?$</from>
         <to last="true">/data/$1.jsp?ext=$2</to>
     </rule>
 
-    <rule>
-        <name>Welcome page of a base</name>
-        <from>^/([^\./]+)/$</from>
-        <set name="path">$0</set>
-        <to last="true">/jsp/desk.jsp?base=$1</to>
-    </rule>
 
-    <rule>
-        <name>A letter</name>
-        <from>^/([^\./]+)/doc.jsp</from>
-        <set name="path">$0</set>
-        <to last="true" qsappend="true">/jsp/doc.jsp?base=$1</to>
-    </rule>
+    <!-- 
 
     <rule>
         <name>Static pages, root</name>
@@ -75,6 +67,7 @@
         <set name="path">$0</set>
         <to last="true">/jsp/html.jsp</to>
     </rule>
+     -->
 
 
 <!-- 

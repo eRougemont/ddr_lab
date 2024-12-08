@@ -35,7 +35,7 @@
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
             <!-- 5.* is servlet 5.0, and jakarta/servlet/Filter -->
-            <version>[4.0.4,)</version>
+            <version>[4.0.4,5)</version>
         </dependency>
         <!-- Not provided by alix/pom.xml -->
         <dependency>
@@ -61,7 +61,7 @@
                     <artifactId>jetty-maven-plugin</artifactId>
                     <!-- Do not try 11, =servlet 5.0, =incompatible with common
                     server  -->
-                    <version>[10.0.21,)</version>
+                    <version>10.0.24</version>
                     <configuration>
                         <systemProperties>
                             <alix.lucenedir>${basedir}/lucene/rougemont</alix.lucenedir>

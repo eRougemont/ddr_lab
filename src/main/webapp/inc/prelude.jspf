@@ -1,0 +1,172 @@
+<%@ page language="java" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.io.StringReader"%>
+<%@ page import="java.lang.StringBuilder"%>
+<%@ page import="java.nio.file.Path"%>
+<%@ page import="java.text.DecimalFormat"%>
+<%@ page import="java.text.DecimalFormatSymbols"%>
+<%@ page import="java.util.*"%>
+
+<%@ page import="org.json.JSONArray"%>
+<%@ page import="org.json.JSONObject"%>
+
+<%@ page import="org.apache.lucene.analysis.Analyzer"%>
+<%@ page import="org.apache.lucene.analysis.TokenStream"%>
+<%@ page import="org.apache.lucene.analysis.tokenattributes.CharTermAttribute"%>
+<%@ page import="org.apache.lucene.analysis.tokenattributes.FlagsAttribute"%>
+<%@ page import="org.apache.lucene.document.Document"%>
+<%@ page import="org.apache.lucene.document.IntField"%>
+<%@ page import="org.apache.lucene.index.DirectoryReader"%>
+<%@ page import="org.apache.lucene.index.FieldInfo"%>
+<%@ page import="org.apache.lucene.index.FieldInfos"%>
+<%@ page import="org.apache.lucene.index.IndexReader"%>
+<%@ page import="org.apache.lucene.index.StoredFields"%>
+<%@ page import="org.apache.lucene.index.Term"%>
+<%@ page import="org.apache.lucene.search.*"%>
+<%@ page import="static org.apache.lucene.search.BooleanClause.Occur.*"%>
+<%@ page import="org.apache.lucene.search.highlight.DefaultEncoder"%>
+<%@ page import="org.apache.lucene.search.highlight.Encoder"%>
+<%@ page import="org.apache.lucene.search.vectorhighlight.*"%>
+<%@ page import="org.apache.lucene.search.vectorhighlight.FieldTermStack.TermInfo"%>
+<%@ page import="org.apache.lucene.util.BytesRef"%>
+<%@ page import="org.apache.lucene.util.BitSet"%>
+
+
+
+<%@ page import="static com.github.oeuvres.alix.Names.*"%>
+<%@ page import="com.github.oeuvres.alix.fr.Tag"%>
+<%@ page import="com.github.oeuvres.alix.fr.TagFilter"%>
+<%@ page import="com.github.oeuvres.alix.lucene.Alix"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.*"%>
+<%@ page import="com.github.oeuvres.alix.lucene.search.FormIterator.Order"%>
+<%@ page import="com.github.oeuvres.alix.util.Char"%>
+<%@ page import="com.github.oeuvres.alix.util.MI"%>
+<%@ page import="com.github.oeuvres.alix.util.ML"%>
+<%@ page import="com.github.oeuvres.alix.web.*"%>
+<%!
+static final String _CLOUD = "_cloud";
+static final String ALIX_LUCENEDIR = "alix.lucenedir";
+static final String ALIX_BASENAME = "piaget";
+static final String BIBL = "bibl";
+static final String F = "f";
+static final String Q = "q";
+static final String QFIELD = "qfield";
+static final String QTYPE = "qtype";
+static final String TAG = "tag";
+static final String TEXT = "text";
+static final String TEXT_CLOUD = "text_cloud";
+static final String TITLE = "title";
+static final String TOC = "toc";
+static final String WILD = "wild";
+static final String YEAR = "year";
+static final DecimalFormatSymbols ensyms = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
+static final String[] EMPTY = new String[0];
+static final DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+
+
+static String formatScore(double real) {
+    final DecimalFormat frdec2 = new DecimalFormat("###,###,###,##0.00", frsyms);
+    final DecimalFormat frdec5 = new DecimalFormat("0.0000E0", frsyms);
+    if (real == 0)
+        return "0";
+    if (real == (int) real)
+        return "" + (int) real;
+    int offset = (int) Math.log10(real);
+    if (offset < -3)
+        return frdec5.format(real);
+    if (offset > 4)
+        return "" + (int) real;
+
+    // return String.format("%,." + (digits - offset) + "f", real)+" "+offset;
+    return frdec2.format(real);
+}
+
+//parse text
+static Query qText(Analyzer analyzer, String qField, String q) throws IOException {
+    if (q == null || q.trim().isEmpty()) return null;
+    BooleanQuery.Builder qBuild = new BooleanQuery.Builder();
+    TokenStream ts = analyzer.tokenStream(qField, q);
+    final CharTermAttribute token = ts.addAttribute(CharTermAttribute.class);
+    final FlagsAttribute flagsAttribute = ts.addAttribute(FlagsAttribute.class);
+    ArrayList<String> phrase = new ArrayList<String>();
+    try {
+        ts.reset();
+        boolean quote = false;
+        while (ts.incrementToken()) {
+            final String word = token.toString();
+            if (word.length() == 0) continue;
+            final char c1=word.charAt(0);
+            final boolean wild = word.contains("*") && word.replace("*", "").length() > 3;
+            if (wild) {
+                // finish possible phrase query (")
+                quote = false;
+                qPhrase(qField, qBuild, phrase);
+                qBuild.add(new WildcardQuery(new Term(qField, word)), BooleanClause.Occur.SHOULD);
+                continue;
+            }
+            // start or end a phrase query
+            if (c1 == '"' ) {
+                if (!quote) {
+                    quote = true;
+                }
+                else {
+                    quote = false;
+                    qPhrase(qField, qBuild, phrase);
+                }
+            }
+            if (Char.isPunctuation(c1)) continue;
+            if (quote) {
+                phrase.add(word);
+                continue;
+            }
+            else {
+                qBuild.add(new TermQuery(new Term(qField, word)), BooleanClause.Occur.SHOULD);
+            }
+        }
+        ts.end();
+    }
+    finally {
+        ts.close();
+    }
+
+    qPhrase(qField, qBuild, phrase);
+
+    BooleanQuery qBool = qBuild.build();
+    if (qBool.clauses().size() > 1) {
+        return qBool;
+    }
+    else if (qBool.clauses().size() == 1) {
+        return qBool.clauses().get(0).query();
+    }
+    else {
+        return null;
+    }
+}
+
+static void qPhrase(String qField, BooleanQuery.Builder qBuild, ArrayList<String> phrase)
+{
+    final int slop = 5;
+    if (phrase.size() == 1) {
+        qBuild.add(new TermQuery(new Term(qField, phrase.get(0))), BooleanClause.Occur.SHOULD);
+    }
+    else if (phrase.size() > 1) {
+        qBuild.add(new PhraseQuery(slop, qField, phrase.toArray(EMPTY)), BooleanClause.Occur.SHOULD);
+        // inverse, needed for hilite phrase
+        Collections.reverse(phrase);
+        qBuild.add(new PhraseQuery(slop, qField, phrase.toArray(EMPTY)), BooleanClause.Occur.SHOULD);
+    }
+    phrase.clear();
+}
+
+%>
+<%
+//Common to all pages, get an alix base and other shared data
+final long timeStart = System.nanoTime();
+final Path lucenepath = Path.of(getServletContext().getInitParameter(ALIX_LUCENEDIR));
+final Alix alix = Alix.instance(ALIX_BASENAME, lucenepath);
+final JspTools tools = new JspTools(pageContext);
+final String hrefHome = "./";
+final IndexSearcher searcher = alix.searcher();
+final IndexReader reader = alix.reader();
+%>

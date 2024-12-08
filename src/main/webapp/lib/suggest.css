@@ -1,0 +1,24 @@
+@charset "UTF-8";
+div.suggestions {
+    position: absolute;
+    background: #fff;
+    padding: 1rem 24px;
+    width: 100%;
+}
+
+div.suggest.option.focus {
+    background: #eee;
+}
+
+input.suggest {
+    width: 100%;
+    padding: 3px 24px;
+    border: none;
+    background: #eee;
+    outline: 1px solid #fff;
+}
+
+input.suggest:focus {
+    outline: none;
+    background: #fff;
+}
