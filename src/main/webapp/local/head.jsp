@@ -28,6 +28,7 @@
     />
     </noscript>
      -->
+    <link href="<%=hrefHome %>lib/sortable.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>static/alix.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>local/ddr.css" rel="stylesheet"/>
     <link rel="icon" sizes="32x32"    href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon32.png">

@@ -59,6 +59,7 @@
         ctx.textBaseline = "middle";
        
         // Pivot
+        /*
         if (node.type == 'pivot') {
             ctx.shadowColor = "#fff";
             ctx.shadowBlur = 2;
@@ -74,6 +75,7 @@
             ctx.shadowBlur = 0;
             return;
         }
+        */
 
         
             
@@ -84,7 +86,10 @@
         
         let fontStyle = (settings('fontStyle') ? settings('fontStyle') + ' ' : '');
         let alpha = 1;
-        if (settings('labelSize') != 'fixed') {
+        if (node.type == 'pivot') {
+            // keep alpha 100% for pivot
+        }
+        else if (settings('labelSize') != 'fixed') {
             let ratio = (size - settings('minNodeSize')) / (settings('maxNodeSize') - settings('minNodeSize'));
             fontStyle = '' + (200 + Math.round(ratio * 700)) + ' ';
             alpha = 0.2 + (0.8 - ratio * 0.8);
@@ -302,7 +307,7 @@
                 // sideMargin: 1,
                 
                 defaultNodeColor: "rgba(0, 255, 0, 0.5)",
-                defaultEdgeColor: 'rgba(255, 255, 255, 0.3)',
+                defaultEdgeColor: 'rgba(255, 255, 255, 0.4)',
                 edgeColor: "default",
                 drawLabels: true,
                 defaultLabelSize: 15,

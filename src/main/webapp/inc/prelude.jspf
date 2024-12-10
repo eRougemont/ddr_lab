@@ -56,6 +56,7 @@ static final String QTYPE = "qtype";
 static final String TAG = "tag";
 static final String TEXT = "text";
 static final String TEXT_CLOUD = "text_cloud";
+static final String TEXT_ORTH = "text_orth";
 static final String TITLE = "title";
 static final String TOC = "toc";
 static final String WILD = "wild";

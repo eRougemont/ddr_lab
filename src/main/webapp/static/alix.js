@@ -1,7 +1,7 @@
 /**
  * 
  */
-const piagetlabo = function()
+const alix = function()
 {
     /**
      * Get form values as url pars
@@ -146,7 +146,7 @@ const piagetlabo = function()
         xhr.abort();
         const formData = new FormData(form);
         const url = new URL(window.location);
-        url.search = piagetlabo.pars(form);
+        url.search = alix.pars(form);
         window.history.replaceState({}, '', url);
         const q = form['q'].value;
         
@@ -304,11 +304,11 @@ const piagetlabo = function()
         
         const url = new URL(window.location);
         
-        url.search = piagetlabo.pars(form);
+        url.search = alix.pars(form);
         window.history.pushState({}, '', url);
 
         
-        const graphUrl = "data/graph.json?win=1o&nodes=100&" + search.toString();
+        const graphUrl = "data/graph.json?win=100&nodes=50&" + search.toString();
         fetchGraph(graphUrl);
         const biblioUrl = "data/kwicdate?" + search.toString();
         biblioLoad(biblioUrl);

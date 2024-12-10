@@ -74,6 +74,8 @@ a:target,
 mark:target,
 b.mark:target {}
 
+
+/*
 html {
     scrollbar-color: var(--textlo) var(--bg);
 }
@@ -85,10 +87,9 @@ body::-webkit-scrollbar {
 body::-webkit-scrollbar-thumb {
     background: var(--textlo);
     border-radius: 20px;
-    /* roundness of the scroll thumb */
     border: 3px solid transparent;
-    /* creates padding around scroll thumb */
 }
+*/
 
 body {
     background-color: var(--bg);
@@ -1239,28 +1240,6 @@ body.chrono form {
 }
 
 
-/** Word net */
-
-body.wordnet {
-    height: 100%;
-}
-
-#graphcont {
-    background-color:var(--gray);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-#graph {
-    position: relative;
-    flex-grow: 4;
-    width: 100%;
-    border: none;
-    overflow: hidden;
-    margin-left: auto;
-    margin-right: auto;
-}
 
 
 /*
@@ -1343,7 +1322,7 @@ div.graphcont {
     overflow: hidden;
     margin-left: auto;
     margin-right: auto;
-    background-color: var(--bgdarker);
+    background-color: #DDD;
 }
 
 .graphbuts {
@@ -1412,7 +1391,7 @@ div.body {
 
 #kwic_nav {
     position: fixed;
-    left: 22rem;
+    left: 2.5rem;
     width: 1rem;
     top: 3rem;
     height: calc(100vh - 5rem);
@@ -1421,6 +1400,10 @@ div.body {
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0.5);
     border-style: solid solid solid none;
+}
+
+main {
+    padding-left: 3rem;
 }
 
 #kwic_nav a {

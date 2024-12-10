@@ -24,9 +24,12 @@ final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
 // count of nodes to collect
 final int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
 // count of edges
-double edgeCoef = 1.7;
+double edgeCoef = 2;
 //context width where to capture co-occurency
 final int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
+final int left = (int)(winsize / 2);
+final int right = (int)(winsize / 2);
+
 
 if (q == null) {
     edgeCoef = 2.5;
@@ -95,7 +98,6 @@ FormIterator nodeEnum = null;
 int[] nodeIds = null;
 Set<Integer> pivotLookup = new HashSet<>();
 EdgeMatrix matrix = null;
-long freqMax = Long.MIN_VALUE;
 if (q != null) {
     //context width where to capture co-occurency
     // let’s try to find pivots words for coocs
@@ -115,8 +117,6 @@ if (q != null) {
     }
     int pivotLen = pivots.length;
 
-    final int left = 50;
-    final int right = 50;
     // if 2+ pivots, coocs should be colected separately, because freqs may be very different,
     // so that scoring may show coocs from one pivot only.
     FormEnum[] pivotCoocs = new FormEnum[pivotLen];
@@ -174,7 +174,6 @@ if (q != null) {
             // new node
             else if (!nodes.contains(formId)) {
                 final long freq = pivotCoocs[i].freq();
-                if (freq > freqMax) freqMax = freq;
                 nodes.put(formId, freq, pivotCoocs[i].score());
                 continue;
             }
@@ -184,7 +183,6 @@ if (q != null) {
                 final long freq = stats.freq + pivotCoocs[i].freq();
                 stats.freq = freq;
                 // what to do with scores ? Are they additive ?
-                if (freq > freqMax) freqMax = freq;
             }
         }
         if (pivotRemain < 1) break;
@@ -197,12 +195,13 @@ if (q != null) {
 }
 // no query, get words from corpus
 else {
+    edgeCoef = 2;
     // G score seems the best to get most significant words of a corpus
     nodeEnum = ftext.formEnum(docFilter, TagFilter.NOSTOP, Distrib.G);
     nodeEnum.sort(order, nodeLimit);
     nodeIds = nodeEnum.sorter();
     // nodeLimit = nodeEnum.limit(); // if less than requested
-    matrix = frail.edges(nodeIds, 50, 50, nodeIds, docFilter);
+    matrix = frail.edges(nodeIds, left, right, nodeIds, docFilter);
     matrix.mi(MI.G);
 }
 
@@ -210,6 +209,8 @@ else {
 int nodeIdMax = -1;
 double nodeScoreMin = Double.MAX_VALUE;
 double nodeScoreMax = Double.MIN_VALUE;
+long freqMax = Long.MIN_VALUE;
+long freqMin = Long.MAX_VALUE;
 nodeEnum.reset();
 while (nodeEnum.hasNext()) {
     nodeEnum.next();
@@ -217,6 +218,13 @@ while (nodeEnum.hasNext()) {
     final double score = nodeEnum.score();
     nodeScoreMax = Math.max(score, nodeScoreMax);
     nodeScoreMin = Math.min(score, nodeScoreMin);
+    if (pivotLookup.contains(nodeEnum.formId())) {
+        // do not keep freqMax of pivots
+        continue;
+    }
+    final long freq = nodeEnum.freq();
+    if (freq > freqMax) freqMax = freq;
+    if (freq < freqMin) freqMin = freq;
 }
 //collect edges first, to hide orphan nodes
 BitSet bros = new SparseFixedBitSet(nodeIdMax + 1);
@@ -300,31 +308,35 @@ while (nodeEnum.hasNext()) {
     String type = Tag.name(tag);
     
     // score for size is not intuitive, freq() is better
-    double size = nodeEnum.freq();
+    // but log is better
+    double size = Math.sqrt(1 + nodeEnum.freq() - freqMin);
+    if (q != null) size = nodeEnum.freq();
     // double alpha = 
     
     String color = "rgba(255, 255, 255, 1)";
     if (pivotLookup.contains(formId)) {
         size = freqMax;
-        color = "#000";
         type = "pivot";
+        
     }
-    else if (Tag.NAME.sameParent(tag)) {
+    
+    
+    if (Tag.NAME.sameParent(tag)) {
+        color = "#cf1408"; // ddr_red
+    }
+    else if (Tag.SUB.flag() == tag) {
+        color = "#000";
+    }
+    else if (Tag.ADJ.flag() == tag) {
         color = "#008";
-    }
-    else if (Tag.SUB.sameParent(tag)) {
-        color = "#2f4858";
     }
     /*
     else if (Tag.VERB.sameParent(tag)) {
         color = "rgba(0, 0, 0, 0.7)";
     }
-    else if (Tag.ADJ.sameParent(tag)) {
-        color = "rgba(160, 160, 160, 0.7)";
-    }
     */
     else  {
-        color = "#be1622";
+        color = "#888";
     }
     // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
     // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";

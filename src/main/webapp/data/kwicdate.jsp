@@ -127,7 +127,7 @@ else {
     query = new TermQuery(new Term(ALIX_TYPE, TEXT));
 }
 
-
+// sort by date (not by id)
 final Sort sort = new Sort(new SortField(ALIX_ID, SortField.Type.STRING));
 TopDocs results = searcher.search(query, 5000, sort, false);
 ScoreDoc[] hits = results.scoreDocs;
