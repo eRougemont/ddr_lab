@@ -308,7 +308,7 @@ const piagetlabo = function()
         window.history.pushState({}, '', url);
 
         
-        const graphUrl = "data/graph.json?win=1o&nodes=50&edges=100&" + search.toString();
+        const graphUrl = "data/graph.json?win=1o&nodes=100&" + search.toString();
         fetchGraph(graphUrl);
         const biblioUrl = "data/kwicdate?" + search.toString();
         biblioLoad(biblioUrl);

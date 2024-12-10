@@ -31,7 +31,6 @@ final int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
 if (q == null) {
     edgeCoef = 2.5;
 }
-int edgeLimit = tools.getInt("edges", (int) (nodeLimit * edgeCoef));
 //what kind of word to filter ?
 TagFilter wordFilter = TagFilter.ALL;
 // get words by score
@@ -123,8 +122,9 @@ if (q != null) {
     FormEnum[] pivotCoocs = new FormEnum[pivotLen];
     
     TagFilter tagFilter = TagFilter.NOSTOP;
-    if (pivots.length > 1) {
-        // tagFilter = new TagFilter().setGroup(Tag.NAME).set(Tag.SUB).set(Tag.ADJ);
+    if (pivotLen > 1 || Tag.parent(ftext.tag(pivots[0])) == Tag.NAME ) {
+        tagFilter = new TagFilter().setGroup(Tag.NAME).set(Tag.SUB).set(Tag.ADJ);
+        edgeCoef = 1.7;
     }
     
     for (int i = 0; i < pivotLen; i++) {
@@ -202,8 +202,8 @@ else {
     nodeEnum.sort(order, nodeLimit);
     nodeIds = nodeEnum.sorter();
     // nodeLimit = nodeEnum.limit(); // if less than requested
-    matrix = frail.edges(nodeIds, 10, 10, nodeIds, docFilter);
-    matrix.mi(MI.DICE_LOG);
+    matrix = frail.edges(nodeIds, 50, 50, nodeIds, docFilter);
+    matrix.mi(MI.G);
 }
 
 // Collect the formIds in score order
@@ -227,6 +227,7 @@ out.println("{");
 out.println("  \"edges\": [");
 first = true;
 int edgeCount = 0;
+int edgeLimit = tools.getInt("edges", new int[]{20, 400}, (int)(nodeLimit * edgeCoef));
 for (Edge edge : matrix) {
     if (edge.sourceId == edge.targetId) {
         continue;
@@ -240,7 +241,7 @@ for (Edge edge : matrix) {
     }
     // reduce size of radial edges
     if (pivotLookup.contains(sourceId) || pivotLookup.contains(targetId)) {
-        score = 1;
+        // score = 1;
     }
     bros.set(edge.sourceId);
     bros.set(edge.targetId);
@@ -254,10 +255,10 @@ for (Edge edge : matrix) {
     + ", \"t\":\"" + ftext.form(targetId).replace("\"", "\\\"") + "\""
     + ", \"source\":\"n" + sourceId + "\""
     + ", \"target\":\"n" + targetId + "\""
-    + ", \"color\":\"rgba(255, 255, 255, 0.7)\""
+    // + ", \"color\":\"rgba(255, 255, 255, 0.3    )\""
     // for debug
-    + ", \"sourceOccs\":" + ftext.occs(sourceId) 
-    + ", \"targetOccs\":" + ftext.occs(targetId) 
+    // + ", \"sourceOccs\":" + ftext.occs(sourceId) 
+    // + ", \"targetOccs\":" + ftext.occs(targetId) 
     // + ", freq:" + freqList.freq()
     + "}");
     if (++edgeCount >= edgeLimit) {

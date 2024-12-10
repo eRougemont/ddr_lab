@@ -78,3 +78,116 @@ div.text {
 #header-row {
     margin-left: 150px;
 }
+
+.bg-black {
+    background-color: #000;
+}
+
+.bg-dark {
+    background-color: #343a40;
+}
+
+.row img {
+    display: block;
+    width: 100%;
+}
+
+#footer {
+    margin: 0;
+    margin-top: auto;
+    /* always bottom trick */
+    text-align: left;
+    position: relative;
+    color: #ccc;
+    font-size: 16px;
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width:540px
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width:720px
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width:960px
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width:1140px
+    }
+}
+
+.pb-5, .py-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+#footer .row {
+    align-items: flex-start;
+    justify-content: center;
+}
+
+#footer a {
+    color: #ccc;
+    text-decoration: underline;
+}
+
+#footer div.label {
+    font-weight: bold;
+    font-size: 110%;
+    line-height: 1.05;
+    text-align: center;
+    color: #666;
+    margin: 0 0 15px 0;
+    border-bottom: 1px solid;
+    hyphens: none;
+    text-indent: 0;
+    padding-left: 0;
+}
+
+#footer address,
+#footer p {
+    margin: 0 0 0 2rem;
+}
+
+#footer ul {
+    padding-left: 2rem;
+}
+
+#footer-small {
+    color: #ccc;
+    padding: 30px;
+}
+
+#footer-small img {
+    margin: 0;
+    width: 100%;
+    mix-blend-mode: screen;
+}
+
+.logos .col {
+    /*
+    min-width: 150px;
+    max-width: 50%;
+    */
+    width: 20%;
+}
+
+.sponsors > * {
+    width: 25%;
+    padding: 3rem 1rem 3rem 1rem;
+    
+}
+
+#loginout {
+    display: none;
+}

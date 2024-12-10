@@ -23,7 +23,7 @@
   </div>
   <div class="bg-dark">
     <div class="container ">
-      <div class="row">
+      <div class="row sponsors">
         <div class="col-md-6 col-lg-3  pt-3 pb-3 pt-md-5 pb-md-5">
           <div class="label">Soutiens financiers</div>
           <ul>

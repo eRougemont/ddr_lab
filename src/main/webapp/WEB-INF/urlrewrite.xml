@@ -22,16 +22,18 @@
         <to last="true">/$1.jsp</to>
     </rule>
 
+    <!-- 
     <rule>
         <name>Book</name>
         <from casesensitive="true">^/(piaget\d\d\d\d[A-Z][A-Z0-9]+)$</from>
         <set name="path">$0</set>
         <to last="true">/book.jsp?book=$1</to>
     </rule>
+    -->
 
     <rule>
         <name>Text</name>
-        <from casesensitive="true">^/(piaget\d\d\d\d[^\./]+)</from>
+        <from casesensitive="true">^/(ddr\d\d\d\d[^\./]+)</from>
         <set name="path">$0</set>
         <to last="true">/doc.jsp?id=$1</to>
     </rule>

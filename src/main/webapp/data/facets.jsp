@@ -85,41 +85,47 @@ do {
     formsBytes = ftext.bytesSorted(forms);
 } while (false);
 
-
-// get the stats from the tag field
-final FieldFacet tagField = alix.fieldFacet(TAG);
-FormEnum tagEnum = tagField.formEnum(ftext, docFilter, formsBytes, Distrib.G);
-
-final JSONObject data = new JSONObject();
-json.put("data", data);
 desc.put("filter", filterQuery);
 desc.put("q", formsBytes);
 desc.put("docsAll", ftext.docsAll());
-desc.put("hitsAll", tagEnum.hitsAll());
 desc.put("occsAll", ftext.occsAll());
-desc.put("freqAll", tagEnum.freqAll());
 
 
-// maybe use in loop, even if same info is in desc
-data.put("ALL", new JSONObject()
-    .put("docs", ftext.docsAll())
-    .put("hits", tagEnum.hitsAll())
-    .put("occs", ftext.occsAll())
-    .put("freq", tagEnum.freqAll())
-);
+//get the stats from the tag field
+final FieldInfo info = FieldInfos.getMergedFieldInfos(reader).fieldInfo(TAG);
+if (info != null) {
+    final FieldFacet tagField = alix.fieldFacet(TAG);
+    FormEnum tagEnum = tagField.formEnum(ftext, docFilter, formsBytes, Distrib.G);
+    desc.put("hitsAll", tagEnum.hitsAll());
+    desc.put("freqAll", tagEnum.freqAll());
+    
+    final JSONObject data = new JSONObject();
+    json.put("data", data);
 
-// if nothing found, no Freq for sort
-// tagEnum.sort(FormIterator.Order.FREQ);
-tagEnum.reset();
-while (tagEnum.hasNext()) {
-    tagEnum.next();
-    data.put(tagEnum.form(), new JSONObject()
-        .put("docs", tagEnum.docs())
-        .put("hits", tagEnum.hits())
-        .put("occs", tagEnum.occs())
-        .put("freq", tagEnum.freq())
+
+    // maybe use in loop, even if same info is in desc
+    data.put("ALL", new JSONObject()
+        .put("docs", ftext.docsAll())
+        .put("hits", tagEnum.hitsAll())
+        .put("occs", ftext.occsAll())
+        .put("freq", tagEnum.freqAll())
     );
+
+    // if nothing found, no Freq for sort
+    // tagEnum.sort(FormIterator.Order.FREQ);
+    tagEnum.reset();
+    while (tagEnum.hasNext()) {
+        tagEnum.next();
+        data.put(tagEnum.form(), new JSONObject()
+            .put("docs", tagEnum.docs())
+            .put("hits", tagEnum.hits())
+            .put("occs", tagEnum.occs())
+            .put("freq", tagEnum.freq())
+        );
+    }
+
 }
+
 desc.put("time", ((System.nanoTime() - timeStart) / 1000000) + "ms");
 out.println(json.toString(2));
 

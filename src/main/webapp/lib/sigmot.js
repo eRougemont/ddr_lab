@@ -302,7 +302,7 @@
                 // sideMargin: 1,
                 
                 defaultNodeColor: "rgba(0, 255, 0, 0.5)",
-                defaultEdgeColor: 'rgba(255, 255, 255, 0.9)',
+                defaultEdgeColor: 'rgba(255, 255, 255, 0.3)',
                 edgeColor: "default",
                 drawLabels: true,
                 defaultLabelSize: 15,
@@ -318,8 +318,8 @@
 
                 minNodeSize: 10,
                 maxNodeSize: maxNodeSize,
-                minEdgeSize: 0.4,
-                maxEdgeSize: maxNodeSize*2,
+                minEdgeSize: 0.2,
+                maxEdgeSize: maxNodeSize,
 
                 // minArrowSize: 15,
                 // maxArrowSize: 20,
