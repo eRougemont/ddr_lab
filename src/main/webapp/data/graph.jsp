@@ -106,6 +106,9 @@ if (q != null) {
         out.println("{\"error\": \"Aucun mot dans la requête (" + q + ").\"}");
         return;
     }
+    // 
+    
+    
     int[] pivots = ftext.formIds(forms, docFilter);
     if (pivots == null) {
         if (forms.length == 1) {

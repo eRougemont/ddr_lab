@@ -1,19 +1,20 @@
 @charset "UTF-8";
 :root {
-    --bg: #555550;
-    --bghi: #40403c;
-    --text: #eee;
-    --texthi: #afa;
-    --textlo: #aaa;
-    --textinv: #000;
-    --link: #9fb79f;
-    --bg2: #608060;
-    --text2: #000;
-    --textlo2: var(--bg);
-    --texthi2: #fff;
-    --textinv2: #fff;
-    --bg3: #ddd;
-    --text3: #333;
+    --bg: #f5f4f5;
+    --text: #000;
+    --textlow: #666;
+
+    --headerheight: 2.5rem;
+    --bgtext: #fff;
+    --red: #f00;
+    
+
+    --col1: #800; 
+    --col2: #008; 
+    --col3: #080; 
+    --col4: #f80; 
+    --col5: #c0c;
+    --col6: #3cc;
 }
 
 
@@ -97,34 +98,30 @@ body {
     font-family: sans-serif;
 }
 
+#header {
+    width: 100%;
+    z-index: 100;
+    opacity: .97;
+    box-shadow: 0px 10px 24px 0px rgba(0, 0, 0, 0.25);
+    background-color: var(--red);
+    color: #fff;
+}
+
+
 td.no {
     color: var(--textlo);
-}
-
-nav.tabs a,
-nav.tabs {
-    background-color: var(--bg3);
-    color: var(--text3);
-}
-
-nav.tabs {
-    border-bottom: 1px solid var(--texthi);
 }
 
 nav.tabs a {
     padding: 5px 0.5rem;
     float: left;
-    border: 1px solid transparent;
-    border-bottom-color: var(--texthi);
-    margin-bottom: -1px;
 }
 
 nav.tabs a.selected,
 nav.tabs a:hover {
-    background-color: var(--bghi);
-    color: var(--texthi);
+    background-color: var(--bg);
+    color: var(--textlow);
     text-decoration: none;
-    border-color: var(--texthi) var(--texthi) var(--bghi) var(--texthi);
 }
 
 nav.tabs form.base {
@@ -194,9 +191,6 @@ a:active {
     padding: 10px 2rem 10px 2rem;
 }
 
-em {
-    font-weight: 500;
-}
 
 strong,
 .b {
@@ -426,10 +420,10 @@ main {
 
 article.text,
 div.text {
-    width: 50rem;
     padding: 2rem;
     margin-left: auto;
     margin-right: auto;
+    background: var(--bgtext);
 }
 
 #sidebar {
@@ -876,6 +870,20 @@ details {
  * Search results, kwic or snips
  */
 
+article.conc div.bibl {
+    /* doc title with occurrences */
+    margin-top: 1rem;
+    background: #fff;
+    padding: 0.1rem 0.5rem;
+    font-weight: 400;
+    max-width: 50rem;
+}
+
+article.conc div.bibl .year {
+    font-weight: bold;
+}
+
+
 article.kwic header {
     color: var(--textlo);
     border-bottom: 1px solid var(--textlo);
@@ -911,7 +919,6 @@ div.line a {
 }
 
 article.kwic div.line a:hover {
-    text-decoration: none;
 }
 
 article.kwic div.line {
@@ -945,57 +952,6 @@ a.form {
     color: #000;
 }
 
-#ruloccs {
-    position: fixed;
-    z-index: 4;
-    right: 0;
-    background-color: var(--bg);
-    border-left: 1px solid var(--text);
-    top: 0;
-    bottom: 0;
-    width: 2rem;
-}
-
-#ruloccs div {
-    /* ?? */
-    margin-top: 2.2rem;
-    position: relative;
-    height: 100%;
-}
-
-#ruloccs a {
-    /*
-  background-color: var(--redalpha);
-  */
-}
-
-#ruloccs a:hover {
-    background-color: var(--bg2);
-}
-
-#rulhi a,
-#ruloccs a {
-    display: block;
-    text-decoration: none;
-    border-bottom: none;
-    background-color: var(--textlo);
-    width: 2rem;
-    font-size: 1px;
-    height: 6px;
-    margin-top: -3px;
-    border-radius: 5px;
-}
-
-#rulhi a:hover,
-#ruloccs a:hover {
-    z-index: 10;
-    text-decoration: none;
-    background-color: var(--text);
-}
-
-#ruloccs a {
-    position: absolute;
-}
 
 
 /** Chapters */
@@ -1030,231 +986,6 @@ a.form {
 }
 
 
-/**
- * Word cloud
- */
-
-body.cloud {
-    padding: 25px;
-}
-
-body.cloud #filter {
-    top: 0;
-    right: 0;
-    z-index: 10;
-    position: absolute;
-}
-
-svg.d3cloud {
-    background: #888;
-}
-
-svg.d3cloud text {
-    font-family: sans-serif;
-    text-anchor: middle;
-    font-weight: 500;
-    fill: #fff;
-}
-
-svg.d3cloud .SUB {
-    fill: #000;
-}
-
-svg.d3cloud .NAME {
-    fill: #f00;
-}
-
-.wcframe {
-    padding: 30px;
-    background: var(--gray);
-}
-
-#wordcloud2 {
-    height: 80vh;
-    font-family: "Fira Sans", "Open Sans", "Roboto", sans-serif;
-}
-
-#wordcloud2 a {
-    color: #000;
-    text-decoration: none;
-    line-height: 0.8em;
-    display: block;
-    position: absolute;
-    line-height: 100%;
-    white-space: nowrap;
-    -ms-transform-origin: 50% 40%;
-    -webkit-transform-origin: 50% 40%;
-    transform-origin: 50% 40%;
-}
-
-#wordcloud2 .SUB {
-    color: #fff;
-}
-
-#wordcloud2 .ADJ {}
-
-#wordcloud2 .VERB {}
-
-#wordcloud2 .ADV {}
-
-#wordcloud2 .NAME {
-    color: var(--bg2);
-}
-
-
-/**
- * Dygraph (chronology)
- */
-
-
-/** Chart in chrono */
-
-#chart {
-    font-family: sans-serif;
-    cursor: pointer;
-}
-
-body.chapters #chart {
-    height: 400px;
-    width: 100%;
-}
-
-#chartframe {
-    background: #eee;
-    padding: 20px;
-}
-
-body.chapters .dygraph-legend {
-    background: rgba(200, 200, 200, 0.5) !important;
-}
-
-body.chrono {
-    overflow: hidden;
-    /*
-  padding-bottom: 1rem;
-  */
-}
-
-body.chrono form {
-    position: absolute;
-    z-index: 20;
-    right: 0;
-}
-
-.dygraph-annotation,
-.dygraph-legend {
-    overflow: hidden
-}
-
-.dygraph-legend {
-    background-color: rgba(255, 255, 255, 0.3);
-    font-weight: normal;
-    position: absolute;
-    pointer-events: none;
-    line-height: 100%;
-    left: 4em !important;
-    top: 0.5rem !important;
-    font-size: 17px;
-    z-index: 10;
-    width: 250px;
-    background: #fff;
-    line-height: normal;
-    text-align: left;
-    padding: 10px;
-    border: 1px solid #fff;
-    border-radius: 10px;
-}
-
-.dygraph-legend-dash,
-.dygraph-legend-line {
-    display: inline-block;
-    position: relative;
-    bottom: .5ex;
-    height: 1px;
-    border-bottom-width: 2px;
-    border-bottom-style: solid
-}
-
-.dygraph-legend-line {
-    padding-left: 1em
-}
-
-.dygraph-annotation,
-.dygraph-roller {
-    position: absolute;
-    z-index: 10
-}
-
-.dygraph-default-annotation {
-    border: 1px solid #000;
-    background-color: #fff;
-    text-align: center
-}
-
-.dygraph-axis-label {
-    z-index: 10;
-    line-height: normal;
-    overflow: hidden;
-    color: #000
-}
-
-.dygraph-axis-label-x {
-    font-size: 12pt;
-}
-
-.dygraph-label {
-    color: #000;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.dygraph-title {
-    color: #000;
-    padding-top: 3px;
-    font-weight: bold;
-    z-index: 10;
-    text-align: center;
-    font-size: 18px;
-}
-
-.dygraph-xlabel {
-    text-align: center
-}
-
-.dygraph-label-rotate-left {
-    text-align: center;
-    transform: rotate(90deg);
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg)
-}
-
-.dygraph-label-rotate-right {
-    text-align: center;
-    transform: rotate(-90deg);
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg)
-}
-
-
-
-
-/*
-form .line {
-  display: flex;
-  align-items: center;
-}
-
-form .line .elastic {
-  flex-grow: 4;
-}
-form .line .elastic input {
-  width: 100%;
-}
-*/
 
 input.nb {
     text-align: right;
@@ -1285,6 +1016,12 @@ input.nb {
   -webkit-appearance: none;
   -moz-appearance: none;
   */
+}
+
+#camera {
+    stroke: rgba(47, 72, 88, 0.5);
+    fill: rgba(47, 72, 88, 0.5);
+    stroke-width: 24;
 }
 
 #totop {
@@ -1381,12 +1118,12 @@ article.kwic:target {
 }
 
 .kwic_results {
-    padding-left: 3rem;
     font-size: 14px;
 }
 
 div.body {
     position: relative;
+    padding-bottom: 5rem;
 }
 
 #kwic_nav {
@@ -1402,8 +1139,8 @@ div.body {
     border-style: solid solid solid none;
 }
 
-main {
-    padding-left: 3rem;
+body > main {
+    padding-left: 5rem;
 }
 
 #kwic_nav a {
@@ -1428,18 +1165,188 @@ main {
     box-shadow: none;
 }
 
+article.conc a {
+    color: var(--red);
+}
+
 article.kwic.conc {
     margin-top: 1rem;
 }
 
-article.kwic a.bibl {
-    text-indent: -3rem;
-    margin-left: var(--indent);
-    display: block;
-    padding: 0.2rem;
-}
-article.kwic.conc a.bibl {
-    font-weight: bold;
-    border-bottom: 1px solid var(--bgeven);
+
+/** doc.jsp */
+.reader {
+    padding-top: 0rem;
+    justify-content: center;
+    display: flex;
 }
 
+.reader > #main {
+    max-width: 50rem;
+}
+
+
+
+aside.toc::-webkit-scrollbar-thumb { /* Foreground */
+  background: var(--bgodd);
+}
+
+aside.toc::-webkit-scrollbar-track { /* Background */
+  background: var(--bgtext);
+}
+
+aside.toc::-webkit-scrollbar {
+  width: 10px; /* Mostly for vertical scrollbars */
+  height: 10px; /* Mostly for horizontal scrollbars */
+}
+
+.reader > aside.toc,
+.reader > aside.notes {
+    position: sticky;
+    font-size: 14px;
+    padding: 2rem 0 3rem 1rem;
+    min-width: 15rem;
+    height: 100vh;
+    top: 0;
+    overflow-y: auto;
+    scrollbar-color: var(--bgodd) var(--bgtext);  /* Foreground, Background */
+    scrollbar-width: thin;
+    width: 20vw;
+    
+}
+
+aside > header.bibl {
+    top: 0;
+    padding: 0 0.5rem 1rem 0.5rem;
+    font-weight:400;
+    color: var(--red);
+}
+
+.reader > aside.notes {
+    padding-right: 2rem;
+}
+
+mark {
+    background-color: var(--bg);
+    font-weight: 400;
+}
+
+mark:target {
+    background: transparent;
+    color: var(--red);
+    border: 0.5px solid #888;
+}
+
+/** doc.jsp, toc */
+
+.toclocal {
+    font-weight: 100;
+    font-size: 100%;
+}
+
+.toclocal a:hover {
+    text-decoration: none;
+    background-color: var(--bgtext);
+}
+
+.toclocal .here a:hover {
+    color: var(--red);
+}
+
+.toclocal ul,
+.toclocal ol {
+    display: block; /* bootstrap wants it as flex */
+}
+
+.toclocal ol,
+.toclocal ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toclocal ol ol,
+.toclocal ul ul {
+    padding-left: 1rem;
+}
+
+.toclocal ol.nav,
+.toclocal ul.nav {
+    margin-bottom: 3rem;
+}
+
+.toclocal header a,
+.toclocal li>span,
+.toclocal li>div,
+.toclocal li>a {
+    display: block;
+    padding: 10px 15px 10px 15px;
+    line-height: 1.1;
+    border-top: 1px solid var(--bgtext);
+}
+
+.toclocal li {
+    border-left: 1px solid var(--bgtext);
+}
+
+.toclocal li.here,
+.toclocal li.here li,
+.toclocal li.here div,
+.toclocal li.here a {
+    border-color: var(--bgeven);
+}
+
+.toclocal li.here {
+    background-color: var(--bgodd);
+    color: #cf1308;
+    border-color: var(--bgeven);
+}
+
+.toclocal li.here ol,
+.toclocal li.here ul {
+    border-color: transparent;
+}
+
+.toclocal>ol>li,
+.toclocal>ul>li {
+    /* padding-left: 0.5rem; */
+}
+
+
+.toclocal a.collection {
+    text-align: right;
+}
+
+/** doc.jsp, règle */
+nav.ruloccs {
+    z-index: 12;
+    width : 1rem;
+    height: 100vh;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+}
+
+.ruloccs a.occ {
+    border-radius: 0.2rem 0% 0% 0.2rem;
+    border: 1px solid var(--tonic);
+    opacity: 0.5;
+    background-color: var(--tonic);
+    display: block;
+    width : 1rem;
+    font-size: 0.4rem;
+    line-height: 0.4rem;
+    height: 0.4rem;
+    position: absolute;
+    text-decoration: none;
+    
+}
+
+.ruloccs a.occ:hover {
+    opacity: 1;
+}
+
+.watermark {
+    display: none;
+}

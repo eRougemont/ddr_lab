@@ -60,9 +60,7 @@ if (docId >= 0) {
     </head>
     <body class="document">
         <header id="header" class="header">
-            <div> </div>
-            <%@ include file="inc/tabs.jsp" %>
-            <div> </div>
+            <%@ include file="local/tabs.jsp" %>
         </header>
         <div class="reader">
             <aside id="toc" class="toc">
@@ -151,9 +149,10 @@ else {
     out.print(text);
 }
         %>
-                </div>
+                    </div>
+                <%=ruloccs%>
                 </main>
-                    <div id="seealso">
+                <div id="seealso">
             <%
 Query mlt = null;
 first = true;
@@ -255,7 +254,6 @@ if (mlt != null) {
             <aside class="notes">
                 <header class="bibl"><%= bibl %></header>
             </aside>
-            <%=ruloccs%>
         </div>
         <%@include file="local/footer.jsp" %>
         <% out.println("<!-- time\" : \"" + (System.nanoTime() - timeStart) / 1000000.0 + "ms\" -->"); %>

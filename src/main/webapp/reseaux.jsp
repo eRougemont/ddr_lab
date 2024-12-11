@@ -38,7 +38,7 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
         <title>Réseau, Rougemont</title>
     </head>
     <body class="labo">
-        <header>
+        <header id="header">
             <jsp:include page="local/tabs.jsp"/>
         </header>
         <main>
@@ -118,9 +118,16 @@ if (info != null) {
                 </div>
             </div>
         </main>
-        
-        <%@include file="inc/jsbottom.jsp" %>
         <%@include file="local/footer.jsp" %>
+<script src="<%=hrefHome%>lib/sigma/sigma.min.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.plugins.dragNodes.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.exporters.image.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.plugins.animate.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.layout.fruchtermanReingold.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.layout.forceAtlas2.js">//</script>
+<script src="<%=hrefHome%>lib/sigma/sigma.layout.noverlap.js">//</script>
+<script src="<%=hrefHome%>lib/sigmot.js">//</script>
+<script src="<%=hrefHome%>lib/suggest.js">//</script>
         <script>
 suggest(document.getElementById("sugg"), ["tag", "year"]);
         </script>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context reloadable="true" privileged="true" docBase="/srv/proj/rougemont/ddr_lab.war" path="/rougemont">
+  <Parameter name="alix.lucenedir" value="/srv/proj/rougemont/rougemont" override="true"/>
+</Context>

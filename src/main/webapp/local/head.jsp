@@ -9,7 +9,6 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com/" crossorigin=""/>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
     <link rel="dns-prefetch" href="https://fonts.gstatic.com/" crossorigin=""/>
-    <!-- 
     <link
       rel="preload" 
       as="style" 
@@ -27,8 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&family=Fira+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
     />
     </noscript>
-     -->
-    <link href="<%=hrefHome %>lib/sortable.css" rel="stylesheet"/>
+    <link href="<%=hrefHome %>lib/teinte.sortable.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>static/alix.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>local/ddr.css" rel="stylesheet"/>
     <link rel="icon" sizes="32x32"    href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon32.png">

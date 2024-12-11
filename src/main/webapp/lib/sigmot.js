@@ -318,7 +318,7 @@
                 labelSizeRatio: 1,
                 labelAlignment: 'center', // specific
                 labelColor: "node",
-                font: '"thesans", sans-serif', // after fontSize
+                font: '"Fira Sans", "thesans", sans-serif', // after fontSize
                 fontStyle: '100', // before fontSize
 
                 minNodeSize: 10,

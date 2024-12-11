@@ -7,7 +7,9 @@
 
 static public enum Tab {
   index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{}) { },
-  reseau("Réseaux", "reseaux", "Mots fréquents en réseau", new String[]{"q"}) { },
+  reseaux("Réseaux", "reseaux", "Mots fréquents en réseau", new String[]{"q"}) { },
+  chronologies("Chronologies", "chronologies", "Évolution chronologiques", new String[]{}) { },
+  expressions("Expressions", "expressions", "Expressions fréquentes", new String[]{"q"}) { },
   // cooc("Co-occurrents", "cooc.jsp", "Co-occurrents en réseau", new String[]{"nodes", "f", "cat", "order", "book", "q", "right", "left"}) { },
   // freqs("Table", "table.jsp", "Fréquences par mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },
   // cloud("Nuage", "nuage.jsp", "Nuage de mots", new String[]{"f", "cat", "order", "book", "q", "right", "left"}) { },

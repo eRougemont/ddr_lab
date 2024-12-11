@@ -185,6 +185,6 @@ for (Edge edge: dic) {
 %>
        </table>
     </main>
-    <script src="<%= hrefHome %>lib/sortable.js">//</script>
+    <script src="<%= hrefHome %>lib/teinte.sortable.js">//</script>
   </body>
 </html>
