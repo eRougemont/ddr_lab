@@ -117,11 +117,12 @@ nav.tabs a {
     float: left;
 }
 
-nav.tabs a.selected,
+nav.tabs a.here,
 nav.tabs a:hover {
     background-color: var(--bg);
-    color: var(--textlow);
+    color: var(--text);
     text-decoration: none;
+    text-shadow: 0.1ex 0 0px var(--text);
 }
 
 nav.tabs form.base {
@@ -439,6 +440,9 @@ div.text {
 nav.terms,
 nav.seealso {
     font-size: 16px;
+}
+
+nav.terms {
     width: 20rem;
     padding: 0 2rem 2rem 1rem;
 }
@@ -898,6 +902,31 @@ article.kwic header a {
     color: var(--textlo);
 }
 
+a.id,
+a.mark {
+    border-bottom: none;
+    color: var(--red);
+    padding-right: 1rem;
+    background-color: transparent;
+    background-size: 0.7rem auto;
+    background-position: right;
+    background-repeat: no-repeat;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(190,22,34,0.3)"><path d="M9 8H3v13h13v-6l3-3v12H0V5h12zm0-5h9L7 14c-1 1 2 4 3 3L21 6v9l3-3V0H12z"/></svg>');
+}
+
+a.id:hover,
+a.mark:hover {
+    background-color: rgba(190,22,34,0.1);
+    color: #000;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(190,22,34,1)"><path d="M9 8H3v13h13v-6l3-3v12H0V5h12zm0-5h9L7 14c-1 1 2 4 3 3L21 6v9l3-3V0H12z"/></svg>');
+}
+
+a.id {
+    font-size: 80%;
+    font-weight: 500;
+}
+
+
 article.kwic header b,
 article.kwic header small {
     float: left;
@@ -918,8 +947,6 @@ div.line a {
     color: var(--link);
 }
 
-article.kwic div.line a:hover {
-}
 
 article.kwic div.line {
     white-space: nowrap;
@@ -1350,3 +1377,188 @@ nav.ruloccs {
 .watermark {
     display: none;
 }
+
+/** Chronologies */
+
+.chrono main {
+    width: 100%;
+}
+
+.chrono .row {
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+.chrono aside.form {
+  width: 25rem;
+}
+
+/* SVG chart */
+#tempolex {
+    background-color: #fff;
+}
+
+ul.lines {
+    margin: 0;
+    padding: 0;
+}
+li.q {
+    position: relative;
+    display: flex;
+    user-select: none;
+    list-style: none;
+    padding: 2px 0 2px 0;
+    align-items: stretch;
+    /*
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"><style>*{stroke:rgba(0,0,0,1);fill:none;stroke-linecap:round;stroke-width:3; stroke-linejoin:round}</style><path d="M 17,27 18,9 m -7,11 c 1,4 1,6 -1,10 2,3 5,11 8,11 h 14 c 0,0 6,-7 5,-11 L 35,16 M 24,21 V 7 m 6,15 V 11"/></svg>') -24 -24, grab;
+    */
+}
+
+
+
+li.q:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+    /*
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"><style>*{stroke:rgba(0,0,0,1);fill:none;stroke-linecap:round;stroke-width:3; stroke-linejoin:round}</style><path d="m 17,31 1,-15 m -1,7 c -2,3 -4,4 -7,7 2,3 9,11 12,11 h 10 c 0,0 6,-7 5,-11 L 35,20 m -11,1 v -7 m 6,8 v -6"/></svg>') 16 16, grabbing;
+    */
+}
+
+li.q .handle,
+button.add,
+.remove {
+    width: 28px;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.remove {
+    cursor: pointer;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><style>*{stroke:rgba(0,0,0,.3);fill:none;stroke-width:4;}</style><circle cx="24" cy="24" r="20"/><path d="M 11,24 H 37"/></svg>');
+}
+
+button.add {
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><style>*{stroke:rgba(0,0,0,0.3);fill:none;stroke-width:4;}</style><circle cx="24" cy="24" r="20"/><path d="M 11,24 H 37"/><path d="M 24,11 V 37"/></svg>');
+}
+
+li.q .handle {
+    background-image: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 10H19M14 19L12 21L10 19M14 5L12 3L10 5M5 14H19" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    cursor: move;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+li.grabbing {
+    border: 1px #fff solid;
+    background-image: none;
+}
+li.grabbing input {
+    background-color: transparent;
+    border: transparent;
+}
+
+li.q {
+    border-bottom: 2px solid;
+}
+li.q:nth-child(1) {
+    border-color: var(--col1);
+}
+li.q:nth-child(2) {
+    border-color: var(--col2);
+}
+li.q:nth-child(3) {
+    border-color: var(--col3);
+}
+li.q:nth-child(4) {
+    border-color: var(--col4);
+}
+li.q:nth-child(5) {
+    border-color: var(--col5);
+}
+li.q:nth-child(6) {
+    border-color: var(--col6);
+}
+
+textarea.q {
+    border: 0;
+    outline: 0;
+    width: 100%;
+    resize: vertical;
+}
+
+/** SVG D3 curves */
+
+.scale.right .tick {
+    color:hsl(36,21%,70%)
+}
+
+.occs {
+    fill: rgba(192, 192, 192, 0.3);
+}
+
+text.dot {
+    dominant-baseline: middle;
+    text-anchor: middle;
+    font-size: 10px;
+    stroke-width: 0.1px;
+    font-family: Arial, Helvetica, sans-serif;
+    opacity: 1;
+}
+
+.curve {
+    fill: none;
+    stroke-width: 3px;
+    stroke-opacity: 0.4;
+    stroke: #000;
+}
+.curve1 {
+    stroke: var(--col1);
+}
+.curve2 {
+    stroke: var(--col2);
+}
+.curve3 {
+    stroke: var(--col3);
+}
+.curve4 {
+    stroke: var(--col4);
+}
+.curve5 {
+    stroke: var(--col5);
+}
+.curve6 {
+    stroke: var(--col6);
+}
+
+.dots1 {
+    fill: var(--col1);
+}
+.dots2 {
+    fill: var(--col2);
+}
+.dots3 {
+    fill: var(--col3);
+}
+.dots4 {
+    fill: var(--col4);
+}
+.dots5 {
+    fill: var(--col5);
+}
+.dots6 {
+    fill: var(--col6);
+}
+
+

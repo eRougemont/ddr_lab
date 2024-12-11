@@ -29,7 +29,7 @@ FieldRail frail = alix.fieldRail(fieldName);
     <title>Expressions</title>
   </head>
   <body>
-     <header>
+     <header id="header">
       <%@ include file="local/tabs.jsp"%>
       <!-- 
       <form class="search">
@@ -183,8 +183,9 @@ for (Edge edge: dic) {
     if (no >= max) break;
 }
 %>
-       </table>
-    </main>
-    <script src="<%= hrefHome %>lib/teinte.sortable.js">//</script>
-  </body>
+           </table>
+        </main>
+        <%@include file="local/footer.jsp" %>
+        <script src="<%= hrefHome %>lib/teinte.sortable.js">//</script>
+    </body>
 </html>

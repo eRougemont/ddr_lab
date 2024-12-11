@@ -6,7 +6,7 @@
 <%!
 
 static public enum Tab {
-  index("<strong>Rougemont, labo</strong>", "index.jsp", "Présentation", new String[]{}) { },
+  index("Rougemont, labo", "index.jsp", "Présentation", new String[]{}) { },
   reseaux("Réseaux", "reseaux", "Mots fréquents en réseau", new String[]{"q"}) { },
   chronologies("Chronologies", "chronologies", "Évolution chronologiques", new String[]{}) { },
   expressions("Expressions", "expressions", "Expressions fréquentes", new String[]{"q"}) { },

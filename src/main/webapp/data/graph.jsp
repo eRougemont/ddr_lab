@@ -26,9 +26,7 @@ final int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
 // count of edges
 double edgeCoef = 2;
 //context width where to capture co-occurency
-final int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
-final int left = (int)(winsize / 2);
-final int right = (int)(winsize / 2);
+int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
 
 
 if (q == null) {
@@ -99,6 +97,7 @@ int[] nodeIds = null;
 Set<Integer> pivotLookup = new HashSet<>();
 EdgeMatrix matrix = null;
 if (q != null) {
+    winsize = 20;
     //context width where to capture co-occurency
     // let’s try to find pivots words for coocs
     String[] forms = alix.tokenize(q, fname);
@@ -133,8 +132,8 @@ if (q != null) {
     for (int i = 0; i < pivotLen; i++) {
         FormEnum formEnum = frail.coocs(
             pivots,
-            left, 
-            right, 
+            (int)(winsize / 2),
+            (int)(winsize / 2),
             docFilter
         )
         .filter(tagFilter)
@@ -192,19 +191,32 @@ if (q != null) {
     }
     nodes.sort(FormIterator.Order.INSERTION, Math.min(nodeLimit, nodes.size()));
     nodeIds = nodes.sorter();
-    matrix = frail.edges(pivots, left, right, nodeIds, docFilter);
+    matrix = frail.edges(
+        pivots, 
+        (int)(winsize / 2),
+        (int)(winsize / 2),
+        nodeIds,
+        docFilter
+    );
     matrix.mi(MI.JACCARD);
     nodeEnum = nodes;
 }
 // no query, get words from corpus
 else {
+    winsize = 100;
     edgeCoef = 2;
     // G score seems the best to get most significant words of a corpus
     nodeEnum = ftext.formEnum(docFilter, TagFilter.NOSTOP, Distrib.G);
     nodeEnum.sort(order, nodeLimit);
     nodeIds = nodeEnum.sorter();
     // nodeLimit = nodeEnum.limit(); // if less than requested
-    matrix = frail.edges(nodeIds, left, right, nodeIds, docFilter);
+    matrix = frail.edges(
+        nodeIds,
+        (int)(winsize / 2),
+        (int)(winsize / 2),
+        nodeIds,
+        docFilter
+    );
     matrix.mi(MI.G);
 }
 

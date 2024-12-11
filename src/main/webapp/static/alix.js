@@ -308,7 +308,7 @@ const alix = function()
         window.history.pushState({}, '', url);
 
         
-        const graphUrl = "data/graph.json?win=100&nodes=50&" + search.toString();
+        const graphUrl = "data/graph.json?nodes=70&" + search.toString();
         fetchGraph(graphUrl);
         const biblioUrl = "data/kwicdate?" + search.toString();
         biblioLoad(biblioUrl);
