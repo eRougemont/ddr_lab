@@ -26,6 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&family=Fira+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
     />
     </noscript>
+    <link href="<%=hrefHome %>lib/teinte.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>lib/teinte.sortable.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>static/alix.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>local/ddr.css" rel="stylesheet"/>

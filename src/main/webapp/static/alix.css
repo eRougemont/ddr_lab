@@ -96,6 +96,7 @@ body {
     background-color: var(--bg);
     color: var(--text);
     font-family: sans-serif;
+    min-height: 100vh;
 }
 
 #header {
@@ -419,11 +420,16 @@ main {
     justify-content: center;
 }
 
+#seealso,
 article.text,
 div.text {
     padding: 2rem;
     margin-left: auto;
     margin-right: auto;
+}
+
+article.text,
+div.text {
     background: var(--bgtext);
 }
 
@@ -873,6 +879,11 @@ details {
 /**
  * Search results, kwic or snips
  */
+
+article div.bibl {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 
 article.conc div.bibl {
     /* doc title with occurrences */
