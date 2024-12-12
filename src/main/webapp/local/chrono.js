@@ -151,6 +151,8 @@ d3.timeFormatDefaultLocale({
  */
 function rolling(values, left = 0, right = 0)
 {
+    if (left < 0) left = 0;
+    if (right < 0) right = 0;
     if (values == null) return null;
     const len = values.length;
     if (len < 2) return values;
@@ -164,7 +166,7 @@ function rolling(values, left = 0, right = 0)
         let sum = 0;
         let from = Math.max(0, i - left);
         let to = Math.min(i+right, len - 1);
-        for (let pos = from; pos < to; pos++) {
+        for (let pos = from; pos <= to; pos++) {
             if (isNaN(values[pos])) continue;
             card++;
             sum += values[pos];
@@ -199,7 +201,7 @@ const chart = function(data) {
     // Declare the x (horizontal position) scale.
     const x = d3.scaleUtc()
         .domain([new Date("" + yearMin), new Date("" + yearMax)])
-        .range([margin.left, width - margin.right - margin.left]);
+        .range([margin.left, width - margin.right ]);
 
     // Add the x-axis and label.
     svg.append("g")
@@ -273,12 +275,22 @@ const chart = function(data) {
         return svg.node();
     }
 
+    const left = 3;
+    const right = 3;
+    const occs = rolling(data.series[0].points, left, right);
+    console.log(occs);
+
     // prepare rolling data, get max fro curves
     const points = [];
     let max = 0;
     for (let i = 1; i < data.series.length; i++) {
         if (!data.series[i].points) continue; // empty q
-        points[i-1] =  rolling(data.series[i].points, 3, 3);
+        const series = rolling(data.series[i].points, left, right);
+        // proportion
+        for (let p = 0; p < series.length; p++) {
+            series[p] = series[p] / occs[p];
+        }
+        points[i-1] = series;
         max = Math.max(max, d3.max(points[i-1]));
     }
 
@@ -292,6 +304,7 @@ const chart = function(data) {
         .x( (d, i) => x(new Date("" + (yearMin + i))))
         .y(d => y(d))
         .curve(d3.curveBasis)
+        // .curve(d3.curveBumpX)
     ;
 
     // Add the y-axis with grid lines, after occs

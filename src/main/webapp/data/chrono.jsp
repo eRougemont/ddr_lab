@@ -28,9 +28,19 @@ final int yearMax = fint.max();
 final String fname = TEXT_CLOUD;
 final FieldText ftext = alix.fieldText(fname);
 
+
+//filter documents 
+BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
+// default chrono filter, articles 
+// queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
+queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+
+BitSet filterDocs = null;
+BooleanQuery filterQuery = queryBuild.build();
+BitsCollectorManager qbits = new BitsCollectorManager(reader.maxDoc());
+filterDocs = searcher.search(filterQuery, qbits);
+
 // Build a json object
-
-
 do {
     JSONObject desc = new JSONObject();
     json.put("desc", desc);
@@ -41,6 +51,8 @@ do {
     final int[] points = new int[yearMax - yearMin + 1];
     // global count of occs by year
     for (int docId = 0; docId < reader.maxDoc(); docId++) {
+        if (!filterDocs.get(docId)) continue;
+
         final int year = fint.docId4value(docId);
         if (year == Integer.MIN_VALUE) continue; // no year for this doc
         final int occs = ftext.occsByDoc(docId);
@@ -63,6 +75,9 @@ do {
     
     int freqMin = Integer.MAX_VALUE;
     int freqMax = Integer.MIN_VALUE;
+    
+    
+    
     for (final String q: request.getParameterValues(Q)) {
         JSONObject qJson = new JSONObject();
         json.append("series", qJson);
@@ -83,11 +98,13 @@ do {
         TopDocs results = searcher.search(query, 5000, Sort.INDEXORDER);
         ScoreDoc[] hits = results.scoreDocs;
         final int hitsLength = hits.length;
+        
         // get docs as a filter
-        java.util.BitSet docFilter = new java.util.BitSet(reader.maxDoc());
+        java.util.BitSet docs = new java.util.BitSet(reader.maxDoc());
         for (int i = 0; i < hitsLength; i++) {
             final int docId = hits[i].doc;
-            docFilter.set(docId);
+            if (!filterDocs.get(docId)) continue;
+            docs.set(docId);
         }
         // low level but efficient
         PostingsEnum docsEnum = null; // reuse
@@ -107,7 +124,7 @@ do {
                 int docLeaf;
                 while ((docLeaf = docsEnum.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                     final int docId = docBase + docLeaf;
-                    if (!docFilter.get(docId)) continue; // document not in the filter
+                    if (!docs.get(docId)) continue; // document not in the filter
                     final int year = fint.docId4value(docId);
                     if (year == Integer.MIN_VALUE) continue; // no year for this doc
                     final int freq = docsEnum.freq();
