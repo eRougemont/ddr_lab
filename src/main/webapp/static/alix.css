@@ -235,11 +235,6 @@ dt strong {
  * Forms
  */
 
-form.search {
-    background: var(--bghi);
-    color: var(--textlo);
-    padding: 10px 2rem 10px 2rem;
-}
 
 .button,
 input,
@@ -262,16 +257,9 @@ form.search .button,
 form.search input,
 form.search button,
 form.search select {
-    background: var(--bghi);
+    background-color: var(--bghi);
     color: var(--texthi);
     border-color: var(--bg);
-}
-
-input.q {
-    font-weight: bold;
-    font-size: 120%;
-    padding: 2px 1em;
-    margin: 1px 0 1px 0;
 }
 
 label {
@@ -326,6 +314,13 @@ select {
   */
 }
 
+input.q {
+    font-weight: bold;
+    font-size: 120%;
+    padding: 2px 1em;
+    margin: 1px 0 1px 0;
+}
+
 input[type=text]:focus,
 textarea:focus {
     box-shadow: 0 0 5px rgba(42, 45, 84, 0.7);
@@ -336,7 +331,9 @@ input.start {
 }
 
 input.year {
-    width: 10ex;
+    font-weight: bold;
+    font-size: 120%;
+    width: 5ex;
 }
 
 input.num1 {
@@ -887,6 +884,7 @@ article div.bibl {
 
 article.conc div.bibl {
     /* doc title with occurrences */
+    text-indent: 0;
     margin-top: 1rem;
     background: #fff;
     padding: 0.1rem 0.5rem;
@@ -1156,7 +1154,9 @@ article.kwic:target {
 }
 
 .kwic_results {
+    padding-left: 5rem;
     font-size: 14px;
+    position: relative;
 }
 
 div.body {
@@ -1175,6 +1175,10 @@ div.body {
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0.5);
     border-style: solid solid solid none;
+}
+
+form.search {
+    /* put form over kwic_nav */
 }
 
 body > main {
@@ -1391,14 +1395,15 @@ nav.ruloccs {
 
 /** Chronologies */
 
+.chrono .row {
+    padding-left: 4rem;
+    padding-top: 2rem;
+}
+
 .chrono main {
     width: 100%;
 }
 
-.chrono .row {
-    padding: 1rem;
-    min-height: 100vh;
-}
 
 .chrono aside.form {
   width: 25rem;
@@ -1530,8 +1535,8 @@ text.dot {
 
 .curve {
     fill: none;
-    stroke-width: 3px;
-    stroke-opacity: 0.4;
+    stroke-width: 15px;
+    stroke-opacity: 0.05;
     stroke: #000;
 }
 .curve1 {

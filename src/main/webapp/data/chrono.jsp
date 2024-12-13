@@ -32,8 +32,8 @@ final FieldText ftext = alix.fieldText(fname);
 //filter documents 
 BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
 // default chrono filter, articles 
-// queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
-queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
+// queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
 
 BitSet filterDocs = null;
 BooleanQuery filterQuery = queryBuild.build();

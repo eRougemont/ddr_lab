@@ -83,8 +83,11 @@ static String formatScore(double real) {
     return frdec2.format(real);
 }
 
-//parse text
-static Query qText(Analyzer analyzer, String qField, String q) throws IOException {
+/** 
+    parse a free query
+*/
+static Query qText(Analyzer analyzer, String qField, String q) throws IOException
+{
     if (q == null || q.trim().isEmpty()) return null;
     BooleanQuery.Builder qBuild = new BooleanQuery.Builder();
     TokenStream ts = analyzer.tokenStream(qField, q);

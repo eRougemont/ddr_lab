@@ -275,10 +275,9 @@ const chart = function(data) {
         return svg.node();
     }
 
-    const left = 3;
-    const right = 3;
+    const left = 0;
+    const right = 0;
     const occs = rolling(data.series[0].points, left, right);
-    console.log(occs);
 
     // prepare rolling data, get max fro curves
     const points = [];
@@ -287,9 +286,11 @@ const chart = function(data) {
         if (!data.series[i].points) continue; // empty q
         const series = rolling(data.series[i].points, left, right);
         // proportion
+        /*
         for (let p = 0; p < series.length; p++) {
             series[p] = series[p] / occs[p];
         }
+        */
         points[i-1] = series;
         max = Math.max(max, d3.max(points[i-1]));
     }
@@ -303,8 +304,8 @@ const chart = function(data) {
     const line = d3.line()
         .x( (d, i) => x(new Date("" + (yearMin + i))))
         .y(d => y(d))
-        .curve(d3.curveBasis)
-        // .curve(d3.curveBumpX)
+        // .curve(d3.curveBasis)
+        .curve(d3.curveBumpX)
     ;
 
     // Add the y-axis with grid lines, after occs
@@ -333,21 +334,20 @@ const chart = function(data) {
             // .attr("d", line( data.series[i].points ))
             .attr("d", line(points[i]))
         ;
-        /*
         // Append the dots.
-        const symbolsI = (i-1) % symbols.length;
+        // const symbolsI = (i-1) % symbols.length;
+        const symb = '●';
         const dots = svg.append("g")
             .attr("fill", "none")
-            .attr("class", "dots dots" + i)
+            .attr("class", "dots dots" + (i + 1))
             .selectAll("text")
-            .data(data.series[i].points)
+            .data(points[i])
             .join("text")
             .attr("class", "dot")
             .attr("x", (d, i) => x(new Date("" + (yearMin + i))))
             .attr("y", d => y(d))
-            .text(symbols[symbolsI])
+            .text(symb)
         ;
-        */
     }
     
     return svg.node();
@@ -364,7 +364,10 @@ form.draw = function(history = true) {
         url.search = alix.pars(form);
         window.history.pushState({}, '', url);
     }
-    const url = new URL("data/chrono", window.location);
+    let url = new URL("data/kwicdate", window.location);
+    url.search = alix.pars(form);
+    alix.kwicLoad(url);
+    url = new URL("data/chrono", window.location);
     url.search = alix.pars(form);
     d3.json(url).then(data => {
         tempolex.innerText = '';

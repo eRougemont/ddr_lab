@@ -788,10 +788,6 @@ input::-moz-focus-inner {
     padding: 0;
 }
 
-button:hover,
-html input[type="button"]:hover,
-input[type="reset"]:hover,
-input[type="submit"]:hover,
 .button:hover {
     background-color: #FFFFFF;
 }
@@ -954,7 +950,8 @@ blockquote .bibl {
     margin-right: 15%;
 }
 
-.byline {
+p.byline,
+div.byline {
     text-align: right;
     margin-left: 2rem;
     margin-top: 2rem;

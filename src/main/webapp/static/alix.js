@@ -20,8 +20,49 @@ const alix = function()
         }
         return new URLSearchParams(formData);
     }
+        // update biblio
+    const kwicDiv = document.getElementById('kwic');
+    const kwicXhr = new XMLHttpRequest();
+    function kwicLoad(url) {
+        // if (!kwicDiv) CRY
+        kwicDiv.textContent = "";
+        kwicXhr.open('GET', url);
+        kwicXhr.responseType = 'text';
+        let start = 0;
+        const sep = "<article";
+        kwicXhr.onprogress = function() {
+            // loop on separator
+            const end = kwicXhr.response.lastIndexOf(sep);
+            if (end < 1) {
+                kwicDiv.insertAdjacentHTML('beforeend', kwicXhr.response.slice(start));
+                start = kwicXhr.response.length;
+            }
+            else {
+                kwicDiv.insertAdjacentHTML('beforeend', kwicXhr.response.slice(start, end));
+                start = end;
+            }
+            /*
+            while ((end = xhr.response.indexOf(sep, start)) >= 0) {
+                callback(xhr.response.slice(start, end));
+                start = end + sep.length;
+            }
+            */
+        };
+        
+        kwicXhr.onload = function() {
+            kwicDiv.insertAdjacentHTML('beforeend', kwicXhr.response.slice(start));
+            // kwicDiv.innerHTML = kwicXhr.response;
+        };
+        kwicXhr.onerror = function() {
+            console.error(kwicXhr.status + ": " + url);
+        };
+        kwicXhr.send();
+    };
+
+    
     return{
         pars:pars,
+        kwicLoad:kwicLoad,
     }
 }();
 
@@ -198,7 +239,7 @@ const alix = function()
     async function fetchGraph(url) {
         const response = await fetch(url);
         if (!response.ok) {
-            console.error(url + " fetch error:", error);
+            console.error(url + " fetch error:"+ response.status + " " + response.statusText);
         }
         const data = await response.json();
         if (graph) {
@@ -207,44 +248,6 @@ const alix = function()
         graph = new sigmot('graph', data);
     }
 
-    // update biblio
-    const biblioDiv = document.getElementById('biblio');
-    const biblioXhr = new XMLHttpRequest();
-    const biblioLoad = function (url) {
-        // if (!biblioDiv) CRY
-        biblioDiv.textContent = "";
-        biblioXhr.open('GET', url);
-        biblioXhr.responseType = 'text';
-        let start = 0;
-        const sep = "<article";
-        biblioXhr.onprogress = function() {
-            // loop on separator
-            const end = biblioXhr.response.lastIndexOf(sep);
-            if (end < 1) {
-                biblioDiv.insertAdjacentHTML('beforeend', biblioXhr.response.slice(start));
-                start = biblioXhr.response.length;
-            }
-            else {
-                biblioDiv.insertAdjacentHTML('beforeend', biblioXhr.response.slice(start, end));
-                start = end;
-            }
-            /*
-            while ((end = xhr.response.indexOf(sep, start)) >= 0) {
-                callback(xhr.response.slice(start, end));
-                start = end + sep.length;
-            }
-            */
-        };
-        
-        biblioXhr.onload = function() {
-            biblioDiv.insertAdjacentHTML('beforeend', biblioXhr.response.slice(start));
-            // biblioDiv.innerHTML = biblioXhr.response;
-        };
-        biblioXhr.onerror = function() {
-            console.error(biblioXhr.status + ": " + url);
-        };
-        biblioXhr.send();
-    };
 
     const facetsXhr = new XMLHttpRequest();
     const facetsLoad = function (url) {
@@ -310,8 +313,8 @@ const alix = function()
         
         const graphUrl = "data/graph.json?nodes=70&" + search.toString();
         fetchGraph(graphUrl);
-        const biblioUrl = "data/kwicdate?" + search.toString();
-        biblioLoad(biblioUrl);
+        const kwicUrl = "data/kwicdate?" + search.toString();
+        alix.kwicLoad(kwicUrl);
         const facetsUrl = "data/facets?" + search.toString();
         facetsLoad(facetsUrl);
         if (lastLabel) {
@@ -325,7 +328,7 @@ const alix = function()
     }
     const controls = form.elements;
     for (let i = 0, control; control = controls[i++];) {
-        if (control.type != 'checkbox' && control.type != 'radio') continue;
+        // if (control.type != 'checkbox' && control.type != 'radio') continue;
         control.addEventListener("change", form.update);
     }
     // load as bottom script

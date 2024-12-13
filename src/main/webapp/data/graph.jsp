@@ -37,8 +37,7 @@ TagFilter wordFilter = TagFilter.ALL;
 // get words by score
 final Order order = FormEnum.Order.SCORE;
 // a kind of doc filter
-final String bookId = tools.getString("book", null);
-
+final String bookid = tools.getString("book", null);
 
 // Where to search in
 final String fname = TEXT_CLOUD;
@@ -50,12 +49,12 @@ boolean first;
 BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
 int clauses = 0;
 
-if (bookId != null) {
+if (bookid != null) {
     clauses++;
-    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookId)), BooleanClause.Occur.FILTER);
+    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookid)), BooleanClause.Occur.MUST);
 }
 
-if (bookId != null || dates == null || dates.length == 0) {
+if (bookid != null || dates == null || dates.length == 0) {
     // if book, no dates
 }
 else if (dates.length == 1) {
@@ -67,7 +66,7 @@ else if (dates.length == 2) {
     queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
 }
 
-if (bookId != null || tags == null || tags.length == 0) {
+if (bookid != null || tags == null || tags.length == 0) {
     // if book, no tags
 }
 else if (tags.length == 1) {
@@ -85,7 +84,7 @@ else if (tags.length > 1) {
 
 BitSet docFilter = null;
 if (clauses > 0) {
-    queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+    // queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
     BooleanQuery query = queryBuild.build();
     BitsCollectorManager qbits = new BitsCollectorManager(reader.maxDoc());
     docFilter = searcher.search(query, qbits);

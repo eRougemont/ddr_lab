@@ -57,8 +57,10 @@ if (mime != null) {
 
 
 // search parameters
-final String q = tools.getString("q", null);
+final String[] q = tools.getStringSet("q");
 final String qField = tools.getString("qfield", TEXT_CLOUD, Set.of(TEXT_CLOUD, TEXT));
+final String bookid = tools.getString("book", null);
+
 final FieldText fieldText = alix.fieldText(qField);
 final String[] tags = tools.getStringSet(TAG);
 FieldInt fint = alix.fieldInt(YEAR);
@@ -83,13 +85,13 @@ final int[] dates = tools.getIntRange(YEAR, new int[]{yearMin, yearMax});
 BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
 int clauses = 0;
 
-Query qText = qText(alix.analyzer(), qField, q);
-if (qText != null) {
-    queryBuild.add(qText, BooleanClause.Occur.MUST);
+if (bookid != null) {
+    clauses++;
+    queryBuild.add(new TermQuery(new Term("bookid", bookid)), BooleanClause.Occur.FILTER);
 }
 
-if (dates == null) {
-    
+if (bookid != null || dates == null) {
+    // no date search on books
 }
 else if (dates.length == 1) {
     clauses++;
@@ -99,6 +101,8 @@ else if (dates.length == 2) {
     clauses++;
     queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
 }
+
+// tags
 if (tags.length == 1) {
     clauses++;
     queryBuild.add(new TermQuery(new Term(TAG, tags[0])), BooleanClause.Occur.FILTER);
@@ -112,23 +116,47 @@ else if (tags.length > 1) {
     queryBuild.add(tagBuild.build(), BooleanClause.Occur.FILTER);
 }
 
+BooleanQuery.Builder wordBuild = new BooleanQuery.Builder();
+for (String word: q) {
+    Query wordQuery = qText(alix.analyzer(), qField, word);
+    if (wordQuery == null) continue;
+    wordBuild.add(wordQuery, BooleanClause.Occur.SHOULD);
+}
+Query wordQuery = wordBuild.build();
+
+// build global query
 Query query = null;
-// should be OK
-if (qText != null) {
+// at least on word query
+if (((BooleanQuery)wordQuery).clauses().size() == 1) {
+    wordQuery = ((BooleanQuery)wordQuery).clauses().getFirst().query();
+    queryBuild.add(wordQuery, BooleanClause.Occur.MUST);
+    query = queryBuild.build();
+}
+// more than one word query
+else if (((BooleanQuery)wordQuery).clauses().size() > 1) {
+    queryBuild.add(wordQuery, BooleanClause.Occur.MUST);
     query = queryBuild.build();
 }
 //for tags and search dates, secure search by a filter on docs with text
 else if (clauses > 0) {
+    wordQuery = null; // nullify wordQuery for further
     queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
     query = queryBuild.build();
 }
 // if no clauses, ensure to count texts
 else {
+    wordQuery = null; // nullify wordQuery for further
     query = new TermQuery(new Term(ALIX_TYPE, TEXT));
 }
 
+
 // sort by date (not by id)
-final Sort sort = new Sort(new SortField(ALIX_ID, SortField.Type.STRING));
+final Sort sort = new Sort( 
+    new SortField[] {
+        IntField.newSortField(YEAR, false, SortedNumericSelector.Type.MIN), // if more than one year, take first
+        new SortField(ALIX_ID, SortField.Type.STRING)
+    }
+);
 TopDocs results = searcher.search(query, 5000, sort, false);
 ScoreDoc[] hits = results.scoreDocs;
 // total count of texts in corpus
@@ -138,7 +166,7 @@ final int hitsLength = hits.length;
 
 
 FieldQuery fieldQuery = null;
-if (qText != null) {
+if (wordQuery != null) {
     fieldQuery = new FieldQuery(query, reader, true, true);
 }
 StoredFields storedFields = searcher.storedFields();
@@ -159,7 +187,13 @@ for (int i = 0; i < hitsLength; i++) {
         if (yearId[(int)year - yearMin] == null) yearId[(int)year - yearMin] = id;
     } while (false);
     String href = id;
-    if (q != null && !"".equals(q.trim())) href += "?qtype=cloud&amp;q=" + JspTools.escape(q);
+    // Concat query string and resend
+    final StringBuilder qConcat = new StringBuilder();
+    for (final String word: q) {
+        qConcat.append(word + " ");
+    }
+    final String qPar = qConcat.toString().trim();
+    if (qPar.length() > 0) href += "?qtype=cloud&amp;q=" + JspTools.escape(qPar);
     String cert = document.get("cert");
     cert = (cert == null)?"":" cert-" + cert;
     final String text = document.get(TEXT);
@@ -170,7 +204,7 @@ for (int i = 0; i < hitsLength; i++) {
     out.print("<a  href=\""+ href + "\" class=\"id\">[" + id + "]</a> ");
     out.print(title);
     out.println ("</div>");
-    if (qText == null) {
+    if (wordQuery == null) {
         if (year != null) {
             yearCount[(int)year - yearMin] += fieldText.occsByDoc(docId);
         }

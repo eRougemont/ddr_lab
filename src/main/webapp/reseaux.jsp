@@ -57,6 +57,69 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
                     <input class="year" name="year" value="<%=to%>" />
                 </label>
                 <label>
+                    <select name="book">
+                        <option></option>
+<%
+final String[] books = new String[]{
+"ddr19290300mip",
+"ddr19320900paysan",
+"ddr19341025polpers",
+"ddr19361100pm",
+"ddr19370600jic",
+"ddr19381012ja",
+"ddr19390600ao",
+"ddr19390815nf",
+"ddr19400430mds",
+"ddr19400800lg",
+"ddr19421200partdia",
+"ddr19441100partdia",
+"ddr19441210persdram",
+"ddr19460615lba1",
+"ddr19460701lba2",
+"ddr19460900polpers",
+"ddr19461206jdm",
+"ddr19470307va",
+"ddr19470703df",
+"ddr19480401sn",
+"ddr19480630ej",
+"ddr19500813lde",
+"ddr19510300lpp",
+"ddr19531215ch",
+"ddr19560200ao",
+"ddr19570200aoh",
+"ddr19581200dver",
+"ddr19590300oe",
+"ddr19610400ctm",
+"ddr19611200vhse",
+"ddr19620830ce",
+"ddr19650600shph",
+"ddr19651030fc",
+"ddr19680314jde",
+"ddr19700900loe",
+"ddr19701000cde",
+"ddr19701005udce",
+"ddr19720400dfso",
+"ddr19720600pm",
+"ddr19721000mip",
+"ddr19721100ao",
+"ddr19730100resea",
+"ddr19740600jdef",
+"ddr19750200cernfec",
+"ddr19770721aena",
+"ddr19790423rpe",
+"ddr19820500partdia",
+"ddr19820900paysan",
+"ddr19880300in"};
+final String book = tools.getString("book", null);
+for (final String value: books ) {
+    String selected = "";
+    if (value.equals(book)) {
+        selected = " selected";
+    }
+    out.println("<option" + selected + ">" + value + "</option>");
+}
+%>
+                    </select>
                 </label>
 <%
 final String tagReq = tools.getString("tag", null);
@@ -114,7 +177,7 @@ if (info != null) {
                             -->
                         </div>
                     </div>
-                    <div id="biblio" class="kwic_results"> </div>
+                    <div id="kwic" class="kwic_results"> </div>
                 </div>
             </div>
         </main>

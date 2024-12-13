@@ -24,7 +24,7 @@ final int yearMax = fint.max();
         </header>
         <div class="row">
             <aside id="aside" class="form">
-                <form name="search">
+                <form class="search" name="search">
                     <ul id="lines" class="lines">
                     </ul>
                 </form>
@@ -33,7 +33,7 @@ final int yearMax = fint.max();
                 <div id="tempolex"></div>
             </main>
         </div>
-        
+        <div id="kwic" class="kwic_results"> </div>
         <%@include file="local/footer.jsp" %>
         <script type="module" src="<%=hrefHome%>local/chrono.js">//</script>
     </body>
