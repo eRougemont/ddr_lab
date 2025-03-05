@@ -22,7 +22,8 @@ final FieldInt fint = alix.fieldInt(YEAR);
 final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
 // parameters
 // count of nodes to collect
-final int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
+// final int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
+final int nodeLimit = 50;
 // count of edges
 double edgeCoef = 2;
 //context width where to capture co-occurency
@@ -202,7 +203,7 @@ if (q != null) {
 }
 // no query, get words from corpus
 else {
-    winsize = 100;
+    winsize = 10;
     edgeCoef = 2;
     // G score seems the best to get most significant words of a corpus
     nodeEnum = ftext.formEnum(docFilter, TagFilter.NOSTOP, Distrib.G);
