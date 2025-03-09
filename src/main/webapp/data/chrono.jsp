@@ -47,15 +47,17 @@ do {
     desc.append("yearRange", yearMin);
     desc.append("yearRange", yearMax);
     
+    int occsTotal = 0;
     // use same collector for points to ensure same size
     final int[] points = new int[yearMax - yearMin + 1];
     // global count of occs by year
     for (int docId = 0; docId < reader.maxDoc(); docId++) {
+        final int occs = ftext.occsByDoc(docId);
+        occsTotal += occs;
         if (!filterDocs.get(docId)) continue;
 
         final int year = fint.docId4value(docId);
         if (year == Integer.MIN_VALUE) continue; // no year for this doc
-        final int occs = ftext.occsByDoc(docId);
         points[year - yearMin] += occs;
     }
     JSONObject occsJson = new JSONObject();
@@ -70,6 +72,7 @@ do {
     }
     desc.append("occsRange", occsMin);
     desc.append("occsRange", occsMax);
+    desc.put("occsTotal", occsTotal);
     // if no query, exit
     if (request.getParameter(Q) == null) break;
     

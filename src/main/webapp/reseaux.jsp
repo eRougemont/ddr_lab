@@ -60,6 +60,7 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
                     <select name="book">
                         <option></option>
 <%
+// select a book
 final String[] books = new String[]{
 "ddr19290300mip",
 "ddr19320900paysan",
