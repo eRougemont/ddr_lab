@@ -193,3 +193,8 @@ article.kwic .surname {
     font-size: inherit;
     font-weight: inherit;
 }
+
+input,
+select {
+    background: #fff;
+}

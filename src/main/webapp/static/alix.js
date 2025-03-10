@@ -231,7 +231,7 @@ const alix = function()
 (function() {
     const fnum = new Intl.NumberFormat('fr-FR');
     // a form with tags also needed
-    const form = document.forms['filter'];
+    const form = document.forms['formfilter'];
     if (!form) return;
     // server side checked radio button
     form.reset();

@@ -17,31 +17,43 @@ if (mime != null) {
 //word to query
 // list titles without paging in id order
 final String q = tools.getString(Q, null);
+final int left = tools.getInt("left", new int[]{0, 100}, 5);
+final int right = tools.getInt("right", new int[]{0, 100}, 5);
+
+TagFilter formFilter = new TagFilter().set(Tag.ADJ).set(Tag.SUB).set(Tag.UNKNOWN).setGroup(Tag.NAME).set(Tag.NULL).set(Tag.NOSTOP);
+
 final String[] tags = tools.getStringSet(TAG);
 final FieldInt fint = alix.fieldInt(YEAR);
 final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
 // parameters
 // count of nodes to collect
-// final int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
-final int nodeLimit = 50;
+int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
 // count of edges
-double edgeCoef = 2;
+double edgeCoef = 1.7;
 //context width where to capture co-occurency
-int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
+final int winsize =  tools.getInt("win", new int[]{1, 100}, 20);
 
-
+int edgeLimit = tools.getInt("edges", (int) (nodeLimit * edgeCoef));
 if (q == null) {
+    nodeLimit = 50;
     edgeCoef = 2.5;
+    edgeLimit =  (int) (nodeLimit * edgeCoef);
 }
 //what kind of word to filter ?
 TagFilter wordFilter = TagFilter.ALL;
 // get words by score
 final Order order = FormEnum.Order.SCORE;
 // a kind of doc filter
-final String bookid = tools.getString("book", null);
+final String bookId = tools.getString("book", null);
+
 
 // Where to search in
-final String fname = TEXT_CLOUD;
+String fname = TEXT_CLOUD;
+/*
+if (q != null) {
+    fname = TEXT_ORTH;
+}
+*/
 final FieldText ftext = alix.fieldText(fname);
 final FieldRail frail = alix.fieldRail(fname);
 boolean first;
@@ -50,12 +62,12 @@ boolean first;
 BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
 int clauses = 0;
 
-if (bookid != null) {
+if (bookId != null) {
     clauses++;
-    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookid)), BooleanClause.Occur.MUST);
+    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookId)), BooleanClause.Occur.FILTER);
 }
 
-if (bookid != null || dates == null || dates.length == 0) {
+if (bookId != null || dates == null || dates.length == 0) {
     // if book, no dates
 }
 else if (dates.length == 1) {
@@ -67,7 +79,7 @@ else if (dates.length == 2) {
     queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
 }
 
-if (bookid != null || tags == null || tags.length == 0) {
+if (bookId != null || tags == null || tags.length == 0) {
     // if book, no tags
 }
 else if (tags.length == 1) {
@@ -85,7 +97,7 @@ else if (tags.length > 1) {
 
 BitSet docFilter = null;
 if (clauses > 0) {
-    // queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+    queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
     BooleanQuery query = queryBuild.build();
     BitsCollectorManager qbits = new BitsCollectorManager(reader.maxDoc());
     docFilter = searcher.search(query, qbits);
@@ -96,18 +108,15 @@ FormIterator nodeEnum = null;
 int[] nodeIds = null;
 Set<Integer> pivotLookup = new HashSet<>();
 EdgeMatrix matrix = null;
+long freqMax = Long.MIN_VALUE;
 if (q != null) {
-    winsize = 20;
     //context width where to capture co-occurency
     // let’s try to find pivots words for coocs
-    String[] forms = alix.tokenize(q, fname);
+    String[] forms = alix.tokenize(q.replace("\"", ""), fname);
     if (forms == null || forms.length < 1) {
         out.println("{\"error\": \"Aucun mot dans la requête (" + q + ").\"}");
         return;
     }
-    // 
-    
-    
     int[] pivots = ftext.formIds(forms, docFilter);
     if (pivots == null) {
         if (forms.length == 1) {
@@ -122,22 +131,17 @@ if (q != null) {
     // if 2+ pivots, coocs should be colected separately, because freqs may be very different,
     // so that scoring may show coocs from one pivot only.
     FormEnum[] pivotCoocs = new FormEnum[pivotLen];
-    
-    TagFilter tagFilter = TagFilter.NOSTOP;
-    if (pivotLen > 1 || Tag.parent(ftext.tag(pivots[0])) == Tag.NAME ) {
-        tagFilter = new TagFilter().setGroup(Tag.NAME).set(Tag.SUB).set(Tag.ADJ);
-        edgeCoef = 1.7;
-    }
-    
+    // formFilter = TagFilter.NOSTOP;
     for (int i = 0; i < pivotLen; i++) {
         FormEnum formEnum = frail.coocs(
             pivots,
-            (int)(winsize / 2),
-            (int)(winsize / 2),
+            left, 
+            right, 
             docFilter
         )
-        .filter(tagFilter)
-        .score(MI.JACCARD, pivots) // Jaccard or Dice are also quite good
+        .filter(formFilter)
+        // .score(MI.G, pivots) // Jaccard or Dice are also quite good
+        .score(MI.OCCS, pivots)
         .sort(FormIterator.Order.SCORE);
         pivotCoocs[i] = formEnum;
         
@@ -176,6 +180,7 @@ if (q != null) {
             // new node
             else if (!nodes.contains(formId)) {
                 final long freq = pivotCoocs[i].freq();
+                if (freq > freqMax) freqMax = freq;
                 nodes.put(formId, freq, pivotCoocs[i].score());
                 continue;
             }
@@ -185,47 +190,34 @@ if (q != null) {
                 final long freq = stats.freq + pivotCoocs[i].freq();
                 stats.freq = freq;
                 // what to do with scores ? Are they additive ?
+                if (freq > freqMax) freqMax = freq;
             }
         }
         if (pivotRemain < 1) break;
     }
     nodes.sort(FormIterator.Order.INSERTION, Math.min(nodeLimit, nodes.size()));
     nodeIds = nodes.sorter();
-    matrix = frail.edges(
-        pivots, 
-        (int)(winsize / 2),
-        (int)(winsize / 2),
-        nodeIds,
-        docFilter
-    );
-    matrix.mi(MI.JACCARD);
+    // build edges from larger context
+    matrix = frail.edges(pivots, 20, 20, nodeIds, docFilter);
+    // matrix.mi(MI.OCCS);
+    matrix.mi(MI.OCCS);
     nodeEnum = nodes;
 }
 // no query, get words from corpus
 else {
-    winsize = 10;
-    edgeCoef = 2;
     // G score seems the best to get most significant words of a corpus
-    nodeEnum = ftext.formEnum(docFilter, TagFilter.NOSTOP, Distrib.G);
+    nodeEnum = ftext.formEnum(docFilter, formFilter, Distrib.G);
     nodeEnum.sort(order, nodeLimit);
     nodeIds = nodeEnum.sorter();
     // nodeLimit = nodeEnum.limit(); // if less than requested
-    matrix = frail.edges(
-        nodeIds,
-        (int)(winsize / 2),
-        (int)(winsize / 2),
-        nodeIds,
-        docFilter
-    );
-    matrix.mi(MI.G);
+    matrix = frail.edges(nodeIds, left, right, nodeIds, docFilter);
+    matrix.mi(MI.OCCS);
 }
 
 // Collect the formIds in score order
 int nodeIdMax = -1;
 double nodeScoreMin = Double.MAX_VALUE;
 double nodeScoreMax = Double.MIN_VALUE;
-long freqMax = Long.MIN_VALUE;
-long freqMin = Long.MAX_VALUE;
 nodeEnum.reset();
 while (nodeEnum.hasNext()) {
     nodeEnum.next();
@@ -233,13 +225,6 @@ while (nodeEnum.hasNext()) {
     final double score = nodeEnum.score();
     nodeScoreMax = Math.max(score, nodeScoreMax);
     nodeScoreMin = Math.min(score, nodeScoreMin);
-    if (pivotLookup.contains(nodeEnum.formId())) {
-        // do not keep freqMax of pivots
-        continue;
-    }
-    final long freq = nodeEnum.freq();
-    if (freq > freqMax) freqMax = freq;
-    if (freq < freqMin) freqMin = freq;
 }
 //collect edges first, to hide orphan nodes
 BitSet bros = new SparseFixedBitSet(nodeIdMax + 1);
@@ -250,7 +235,6 @@ out.println("{");
 out.println("  \"edges\": [");
 first = true;
 int edgeCount = 0;
-int edgeLimit = tools.getInt("edges", new int[]{20, 400}, (int)(nodeLimit * edgeCoef));
 for (Edge edge : matrix) {
     if (edge.sourceId == edge.targetId) {
         continue;
@@ -264,7 +248,7 @@ for (Edge edge : matrix) {
     }
     // reduce size of radial edges
     if (pivotLookup.contains(sourceId) || pivotLookup.contains(targetId)) {
-        // score = 1;
+        score = 1;
     }
     bros.set(edge.sourceId);
     bros.set(edge.targetId);
@@ -278,10 +262,10 @@ for (Edge edge : matrix) {
     + ", \"t\":\"" + ftext.form(targetId).replace("\"", "\\\"") + "\""
     + ", \"source\":\"n" + sourceId + "\""
     + ", \"target\":\"n" + targetId + "\""
-    // + ", \"color\":\"rgba(255, 255, 255, 0.3    )\""
+    + ", \"color\":\"rgba(255, 255, 255, 0.7)\""
     // for debug
-    // + ", \"sourceOccs\":" + ftext.occs(sourceId) 
-    // + ", \"targetOccs\":" + ftext.occs(targetId) 
+    + ", \"sourceOccs\":" + ftext.occs(sourceId) 
+    + ", \"targetOccs\":" + ftext.occs(targetId) 
     // + ", freq:" + freqList.freq()
     + "}");
     if (++edgeCount >= edgeLimit) {
@@ -323,35 +307,31 @@ while (nodeEnum.hasNext()) {
     String type = Tag.name(tag);
     
     // score for size is not intuitive, freq() is better
-    // but log is better
-    double size = Math.sqrt(1 + nodeEnum.freq() - freqMin);
-    if (q != null) size = nodeEnum.freq();
+    double size = nodeEnum.freq();
     // double alpha = 
     
     String color = "rgba(255, 255, 255, 1)";
     if (pivotLookup.contains(formId)) {
         size = freqMax;
+        color = "#080";
         type = "pivot";
-        
     }
-    
-    
-    if (Tag.NAME.sameParent(tag)) {
-        color = "#cf1408"; // ddr_red
+    else if (Tag.NAME.sameParent(tag)) {
+        color = "#be1622";
     }
-    else if (Tag.SUB.flag() == tag) {
+    else if (Tag.SUB.sameParent(tag)) {
         color = "#000";
-    }
-    else if (Tag.ADJ.flag() == tag) {
-        color = "#008";
     }
     /*
     else if (Tag.VERB.sameParent(tag)) {
         color = "rgba(0, 0, 0, 0.7)";
     }
+    else if (Tag.ADJ.sameParent(tag)) {
+        color = "rgba(160, 160, 160, 0.7)";
+    }
     */
     else  {
-        color = "#888";
+        color = "#008";
     }
     // if (node.type() == STAR) color = "rgba(255, 0, 0, 0.9)";
     // else if (Tag.isVerb(tag)) color = "rgba(0, 0, 0, 1)";

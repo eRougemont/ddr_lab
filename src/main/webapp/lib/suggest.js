@@ -39,6 +39,7 @@
     }
     
     function load(event) {
+
         const input = this;
         const value = input.value.trim();
         const suggDiv = input.suggDiv;
@@ -191,3 +192,4 @@
 
     return suggest;
 }));
+

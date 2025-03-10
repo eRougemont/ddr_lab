@@ -23,7 +23,7 @@ public enum OptionCat implements Option {
     ),
     NAME(
         "Noms propres",
-        new TagFilter().set(Tag.NAME).set(Tag.NAMEevent).set(Tag.NAMEgod).set(Tag.NAMEorg).set(Tag.NAMEpeople)
+        new TagFilter().setGroup(Tag.NAME)
     ),
     VERB(
         "Verbes", 

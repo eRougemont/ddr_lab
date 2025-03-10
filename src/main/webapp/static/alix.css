@@ -262,6 +262,11 @@ form.search select {
     border-color: var(--bg);
 }
 
+form.search input,
+form.search select {
+    background-color: var(--bgtext);
+}
+
 label {
     padding-left: 0px;
     padding-right: 0px;
@@ -506,13 +511,26 @@ article.snip mark {
  * Suggest
  */
 
-.suggest .bibl {
-    cursor: pointer;
+div.suggestions {
+    text-align: left;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0 24px 1rem 24px;
+    border: 1px solid var(--bg);
+    border-top: none;
+    width: 100%;
+    z-index: 2;
+    margin-top : 2rem;
 }
 
-.suggest .bibl:hover {
-    background: var(--bghi);
+.suggestions .option {
+    position: relative;
 }
+
+.suggestions .option.focus {
+    background: var(--bg);
+}
+
 
 .suggest {
     /*
@@ -1098,12 +1116,14 @@ div.graphcont {
     background-color: #DDD;
 }
 
-.graphbuts {
+.butbar {
     text-align: right;
     padding: 0.5rem 1rem 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
 }
 
-.graphbuts button {
+.butbar button {
     cursor: pointer;
     display: inline-block;
     border: none;

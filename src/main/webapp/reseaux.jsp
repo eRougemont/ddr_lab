@@ -42,14 +42,16 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
             <jsp:include page="local/tabs.jsp"/>
         </header>
         <main>
-            <form  id="filter" class="tags">
-                <button type="submit" class="icon magnify">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-                </button>
-                <input form="filter" type="text" value="<%= tools.escape(tools.getString("q", "")) %>" class="q" name="q" id="sugg" src="data/suggest?q="/>
-                <a href="?" class="icon cross">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
-                </a>
+            <form  id="formfilter" class="tags">
+                <div>
+                    <button type="submit" class="icon magnify">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                    </button>
+                    <input type="text" value="<%= tools.escape(tools.getString("q", "")) %>" class="q" name="q" id="sugg" src="data/suggest?q="/>
+                    <a href="?" class="icon cross">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                    </a>
+                </div>
                 <label>Entre 
                     <input class="year" name="year" value="<%=from%>" />
                 </label>
@@ -157,25 +159,35 @@ if (info != null) {
                     <div class="graphcont">
                         <div id="graph" class="sigma" oncontextmenu="return false">
                         </div>
-                        <div class="graphbuts">
-                            <button class="turnright but" type="button" title="Rotation vers la droite">↻</button>
-                            <button class="turnleft but" type="button" title="Rotation vers la gauche">↺</button>
-                            <button class="noverlap but" type="button" title="Écarter les étiquettes">↭</button>
-                            <button class="zoomout but" type="button" title="Diminuer">−</button>
-                            <button class="zoomin but" type="button" title="Grossir">+</button>
-                            <button class="fontdown but" type="button" title="Diminuer le texte">S↓</button>
-                            <button class="fontup but" type="button" title="Grossir le texte">S↑</button>
-                            <button class="shot but" type="button" title="Prendre une photo"><svg width="24" viewbox="0 0 240 176" version="1.1" id="camera" xmlns="http://www.w3.org/2000/svg"><circle cx="120" cy="90" id="obj" r="40" style="fill:none"/><circle cx="48" cy="56" r="16" style="stroke:none;"/><path d="M168 24h32c32 0 32 32 32 32v80s0 32-32 32H40c-32 0-32-32-32-32V56s0-32 32-32h32c16-14 48-16 48-16s32 0 48 16z" id="box" style="fill:none"/></svg></button>
-                             <!--
-                            <button class="colors but" type="button" title="Gris ou couleurs">◐</button>
-                            <button class="but restore" type="button" title="Recharger">O</button>
-                            <button class="FR but" type="button" title="Spacialisation Fruchterman Reingold">☆</button>
-                            -->
-                            <button class="mix but" type="button" title="Mélanger le graphe">♻</button>
-                            <button class="atlas2 but" type="button" title="Démarrer ou arrêter la gravité atlas 2">▶</button>
-                            <!--
-                            <span class="resize interface" style="cursor: se-resize; font-size: 1.3em; " title="Redimensionner la feuille">⬊</span>
-                            -->
+                        <div class="butbar">
+                            <div class="pars">
+                            <%
+final int left = tools.getInt("left", new int[]{0, 100}, 5, "left");
+final int right = tools.getInt("right", new int[]{0, 100}, 5, "right");
+                            %>
+                                <input title="Nombre de co-occurents à gauche" form="formfilter" name="left" value="<%=left%>" type="number" min="0" max="100" step="1"/>
+                                <input title="Nombre de co-occurents à droite" form="formfilter" name="right" value="<%=right%>" type="number" min="0" max="100" step="1"/>
+                            </div>
+                            <div class="buts">
+                                <button class="turnright but" type="button" title="Rotation vers la droite">↻</button>
+                                <button class="turnleft but" type="button" title="Rotation vers la gauche">↺</button>
+                                <button class="noverlap but" type="button" title="Écarter les étiquettes">↭</button>
+                                <button class="zoomout but" type="button" title="Diminuer">−</button>
+                                <button class="zoomin but" type="button" title="Grossir">+</button>
+                                <button class="fontdown but" type="button" title="Diminuer le texte">S↓</button>
+                                <button class="fontup but" type="button" title="Grossir le texte">S↑</button>
+                                <button class="shot but" type="button" title="Prendre une photo"><svg width="24" viewbox="0 0 240 176" version="1.1" id="camera" xmlns="http://www.w3.org/2000/svg"><circle cx="120" cy="90" id="obj" r="40" style="fill:none"/><circle cx="48" cy="56" r="16" style="stroke:none;"/><path d="M168 24h32c32 0 32 32 32 32v80s0 32-32 32H40c-32 0-32-32-32-32V56s0-32 32-32h32c16-14 48-16 48-16s32 0 48 16z" id="box" style="fill:none"/></svg></button>
+                                 <!--
+                                <button class="colors but" type="button" title="Gris ou couleurs">◐</button>
+                                <button class="but restore" type="button" title="Recharger">O</button>
+                                <button class="FR but" type="button" title="Spacialisation Fruchterman Reingold">☆</button>
+                                -->
+                                <button class="mix but" type="button" title="Mélanger le graphe">♻</button>
+                                <button class="atlas2 but" type="button" title="Démarrer ou arrêter la gravité atlas 2">▶</button>
+                                <!--
+                                <span class="resize interface" style="cursor: se-resize; font-size: 1.3em; " title="Redimensionner la feuille">⬊</span>
+                                -->
+                            </div>
                         </div>
                     </div>
                     <div id="kwic" class="kwic_results"> </div>
