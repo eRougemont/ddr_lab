@@ -10,6 +10,7 @@
 
 # These files are text and should be normalized (Convert crlf => lf)
 *.css           text diff=css
+*.csv           text
 *.scss          text diff=css
 *.sass          text
 *.df            text
@@ -23,9 +24,10 @@
 *.jspx          text
 *.properties    text
 *.rng           text
-*.tld           text
 *.tag           text
 *.tagx          text
+*.tld           text
+*.tsv           text
 *.xml           text
 
 # These files are binary and should be left untouched

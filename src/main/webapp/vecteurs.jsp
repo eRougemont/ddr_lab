@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="java.io.File"%>
-<%@ page import="com.github.oeuvres.jword2vec.util.Edge"%>
+<%@ page import="com.github.oeuvres.alix.util.Edge"%>
 <%@ page import="com.github.oeuvres.jword2vec.VecSearch"%>
 <%@ page import="com.github.oeuvres.jword2vec.VecModel"%>
 <%!
@@ -54,7 +54,7 @@ for (int i = 0; i < tokens.length; i++) {
 String[] words = wordList.toArray(new String[wordList.size()]);
 if (ok) {
     Edge[] edges = vecSearch.sims(words, 20);
-    out.println(((System.nanoTime() - timeStart) / 1000000) + "ms");
+    out.println(((System.nanoTime() - timeStart) / 1000000.0) + "ms");
     out.println("<table>");
     out.println("<tr>");
     out.println("<th>Mot</th>");
