@@ -176,8 +176,7 @@ public void jspInit()
         BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResourceAsStream(dicPath), StandardCharsets.UTF_8));
         FrDics.load(dicPath, reader, true);
     } catch (Exception e) {
-        System.out.println(e);
-        // silently forget
+        // silently forget, there will be a data race here
         // throw new AssertionError("Resource not available in WAR file", e);
     }
 }

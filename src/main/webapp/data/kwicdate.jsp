@@ -6,7 +6,7 @@
 <%@ page import="com.github.oeuvres.alix.lucene.analysis.TokenizerML"%>
 <%!
 static final HashSet<String> STORED_REC = new HashSet<String>(
-    Arrays.asList(new String[] { ALIX_BOOKID, ALIX_ID, "cert", BIBL, TEXT, YEAR })
+    Arrays.asList(new String[] { ALIX_BOOKID, ALIX_ID, "cert", BIBL, TEXT, YEAR, "tag", "hashtag" })
 );
 
 static final DecimalFormat frdec2 = new DecimalFormat("###,###,###,##0.00", frsyms);
@@ -58,11 +58,9 @@ if (mime != null) {
 
 // search parameters
 final String[] q = tools.getStringSet("q");
-final String qField = tools.getString("qfield", TEXT_CLOUD, Set.of(TEXT_CLOUD, TEXT));
 final String bookid = tools.getString("book", null);
-
+final String qField = tools.getString("qfield", TEXT_CLOUD, Set.of(TEXT_CLOUD, TEXT));
 final FieldText fieldText = alix.fieldText(qField);
-final String[] tags = tools.getStringSet(TAG);
 FieldInt fint = alix.fieldInt(YEAR);
 final int yearMin = fint.min();
 final int yearMax = fint.max();
@@ -87,33 +85,7 @@ int clauses = 0;
 
 if (bookid != null) {
     clauses++;
-    queryBuild.add(new TermQuery(new Term("bookid", bookid)), BooleanClause.Occur.FILTER);
-}
-
-if (bookid != null || dates == null) {
-    // no date search on books
-}
-else if (dates.length == 1) {
-    clauses++;
-    queryBuild.add(IntField.newExactQuery(YEAR, dates[0]), BooleanClause.Occur.FILTER);
-}
-else if (dates.length == 2) {
-    clauses++;
-    queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
-}
-
-// tags
-if (tags.length == 1) {
-    clauses++;
-    queryBuild.add(new TermQuery(new Term(TAG, tags[0])), BooleanClause.Occur.FILTER);
-}
-else if (tags.length > 1) {
-    BooleanQuery.Builder tagBuild = new BooleanQuery.Builder();
-    for (final String tag: tags) {
-        tagBuild.add(new TermQuery(new Term(TAG, tag)), BooleanClause.Occur.SHOULD);
-    }
-    clauses++;
-    queryBuild.add(tagBuild.build(), BooleanClause.Occur.FILTER);
+    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookid)), BooleanClause.Occur.FILTER);
 }
 
 BooleanQuery.Builder wordBuild = new BooleanQuery.Builder();
@@ -124,15 +96,43 @@ for (String word: q) {
 }
 Query wordQuery = wordBuild.build();
 
-// build global query
+if (dates == null || bookid != null) {
+    
+}
+else if (dates.length == 1) {
+    clauses++;
+    queryBuild.add(IntField.newExactQuery(YEAR, dates[0]), BooleanClause.Occur.FILTER);
+}
+else if (dates.length == 2) {
+    clauses++;
+    queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
+}
+
+for (final String field: new String[]{"tag", "hashtag"}) {
+    final String[] values = tools.getStringSet(field);
+    if (values.length == 1) {
+        clauses++;
+        queryBuild.add(new TermQuery(new Term(field, values[0])), BooleanClause.Occur.FILTER);
+    }
+    else if (values.length > 1) {
+        BooleanQuery.Builder tagBuild = new BooleanQuery.Builder();
+        for (final String value: values) {
+            tagBuild.add(new TermQuery(new Term(field, value)), BooleanClause.Occur.SHOULD);
+        }
+        clauses++;
+        queryBuild.add(tagBuild.build(), BooleanClause.Occur.FILTER);
+    }
+}
+
+//build global query
 Query query = null;
-// at least on word query
+//at least one word query
 if (((BooleanQuery)wordQuery).clauses().size() == 1) {
     wordQuery = ((BooleanQuery)wordQuery).clauses().getFirst().query();
     queryBuild.add(wordQuery, BooleanClause.Occur.MUST);
     query = queryBuild.build();
 }
-// more than one word query
+//more than one word query
 else if (((BooleanQuery)wordQuery).clauses().size() > 1) {
     queryBuild.add(wordQuery, BooleanClause.Occur.MUST);
     query = queryBuild.build();
@@ -143,20 +143,14 @@ else if (clauses > 0) {
     queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
     query = queryBuild.build();
 }
-// if no clauses, ensure to count texts
+//if no clauses, ensure to count texts
 else {
     wordQuery = null; // nullify wordQuery for further
     query = new TermQuery(new Term(ALIX_TYPE, TEXT));
 }
 
 
-// sort by date (not by id)
-final Sort sort = new Sort( 
-    new SortField[] {
-        IntField.newSortField(YEAR, false, SortedNumericSelector.Type.MIN), // if more than one year, take first
-        new SortField(ALIX_ID, SortField.Type.STRING)
-    }
-);
+final Sort sort = new Sort(new SortField(ALIX_ID, SortField.Type.STRING));
 TopDocs results = searcher.search(query, 5000, sort, false);
 ScoreDoc[] hits = results.scoreDocs;
 // total count of texts in corpus
@@ -164,11 +158,12 @@ int docsAll = reader.getDocCount(TEXT);
 // found texts, exact is needed, hope for cache from lucene
 final int hitsLength = hits.length;
 
-
+// for the highlighter
 FieldQuery fieldQuery = null;
 if (wordQuery != null) {
     fieldQuery = new FieldQuery(query, reader, true, true);
 }
+
 StoredFields storedFields = searcher.storedFields();
 int occsAll = 0;
 // no div container for onprogress insertion
@@ -176,7 +171,8 @@ int occsAll = 0;
 for (int i = 0; i < hitsLength; i++) {
     final int docId = hits[i].doc;
     final Document document = storedFields.document(docId, STORED_REC);
-    final String title = document.get("bibl");
+    // replace links in link
+    final String title = document.get("bibl").replaceAll("<a [^>]+>", "").replaceAll("</a>", "");
     final String id = document.get(ALIX_ID);
     Number year = null;
     do {
@@ -194,16 +190,21 @@ for (int i = 0; i < hitsLength; i++) {
     }
     final String qPar = qConcat.toString().trim();
     if (qPar.length() > 0) href += "?qtype=cloud&amp;q=" + JspTools.escape(qPar);
+
+    String css = "";
     String cert = document.get("cert");
-    cert = (cert == null)?"":" cert-" + cert;
-    final String text = document.get(TEXT);
-    String conc = (q== null)?"":" conc";
-    out.println ("<article id=\"kwic_" + id + "\" class=\"kwic" + cert + conc + "\">");
-    out.println ("<div class=\"bibl\">");
-    if (q== null) out.print("<small class=\"num\">" + (i+1) + ".</small> ");
-    out.print("<a  href=\""+ href + "\" class=\"id\">[" + id + "]</a> ");
+    css += (cert == null)?"":" cert-" + cert;
+    css += (wordQuery == null)?"":" conc";
+    // hashtag #sous-droits
+    if (Arrays.asList( document.getValues("hashtag")).contains("#sous-droits")) css += " copylock";
+    // out.println(Arrays.toString(document.getValues("hashtag")));
+    
+    out.println ("<article id=\"kwic_" + id + "\" class=\"kwic" + css + "\">");
+    out.println ("<a class=\"bibl\" href=\""+ href + "\">");
+    if (wordQuery == null) out.print("<small class=\"num\">" + (i+1) + ".</small> ");
+    // out.print("<ahref=\""+ href + "\" class=\"id\">[" + id + "]</a> ");
     out.print(title);
-    out.println ("</div>");
+    out.println ("</a>");
     if (wordQuery == null) {
         if (year != null) {
             yearCount[(int)year - yearMin] += fieldText.occsByDoc(docId);
@@ -212,6 +213,7 @@ for (int i = 0; i < hitsLength; i++) {
         continue;
     }
     // conc
+    final String text = document.get(TEXT);
     if (text == null) {
         // ??
         out.println ("</article>");
@@ -232,23 +234,20 @@ for (int i = 0; i < hitsLength; i++) {
         final FieldTermStack.TermInfo tinfo = phrase.getTermsInfos().get(0);
         final int position = tinfo.getPosition();
         final String form = text.substring(start, end);
-        final String idPos = "pos" + position;
         
         occsAll++;
         occIndex++;
-        out.print("<div class=\"line\">");
-        out.print("<small>" + (occsAll) + ".</small> ");
+        
+        final String format = "<a href=\"%s\" class=\"line\"><small>%d</small>. %s</a>";
+        final String lineHref = href + "#pos" + position;
         line.reset();
         ML.prependChars(text, start-1, line, 50);
-        // id ?
-        line.append("<a class=\"mark\" href=\""+ href + "#" + idPos + "\" id=\"" + id + "\"" + ">");
-        
+        line.append("<mark>");
         line.append(ML.detag(form));
-        line.append("</a>");
+        line.append("</mark>");
         ML.appendChars(text, end, line, 50);
-        out.print(line);
-        out.println("</div>");
         pointer = end;
+        out.println(String.format(format, lineHref, occsAll, line));
     }
     out.println ("</article>");
     if (year != null) {

@@ -46,7 +46,7 @@ if (docId < 0) {
 }
 if (docId >= 0) {
     document = storedFields.document(docId, DOC_FIELDS);
-    bibl = document.get(BIBL);
+    bibl = document.get(BIBL).replaceAll("<a [^>]+>", "").replaceAll("</a>", "");
     title = ML.detag(bibl);
     toc = document.get(TOC); // get a local toc even for chapter
 }
@@ -214,8 +214,10 @@ if (mlt != null) {
     for (ScoreDoc hit: hits) {
         if (hit.doc == docId) continue;
         Document docsee = storedFields.document(hit.doc, SHORT_FIELDS);
-        out.print("<a class=\"rec\" href=\"" + docsee.get(ALIX_ID) +"\">");
-        out.print("<h4>" + docsee.get(BIBL) + "</h4>");
+        final String seeBibl = docsee.get("bibl").replaceAll("<a [^>]+>", "").replaceAll("</a>", "");
+
+        out.print("<a class=\"seealso\" href=\"" + docsee.get(ALIX_ID) +"\">");
+        out.print("<h4>" + seeBibl + "</h4>");
         
         String[] fragments = fvh.getBestFragments(
             fieldQuery,
@@ -253,6 +255,7 @@ if (mlt != null) {
             </div>
             <aside class="notes">
                 <header class="bibl"><%= bibl %></header>
+                <a href="#seealso">Textes similaires</a>
             </aside>
         </div>
         <%@include file="local/footer.jsp" %>

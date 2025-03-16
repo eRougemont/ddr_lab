@@ -8,6 +8,9 @@
     --bgtext: #fff;
     --red: #f00;
     
+    --indent: 3rem;
+    --indent2: 6rem;
+    
 
     --col1: #800; 
     --col2: #008; 
@@ -459,6 +462,25 @@ nav.terms {
     width: 13rem;
 }
 
+a.seealso {
+    display: block;
+    padding: 1rem;
+}
+
+a.seealso h4 {
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+a.seealso p {
+    margin: 0;
+}
+
+
+a.seealso:hover {
+    text-decoration: none;
+    background-color: var(--bgtext);
+}
+
 nav.seealso div.bibl {
     text-align: left;
     line-height: 120%;
@@ -507,6 +529,7 @@ article.snip mark {
 }
 
 
+
 /**
  * Suggest
  */
@@ -551,14 +574,16 @@ div.suggestions {
     overflow-y: auto;
     z-index: 100;
     background: rgba(255, 255, 255, 0.9);
-    padding: 0 24px 1rem 24px;
+    padding: 0 24px 0 36px;
     border: 1px solid var(--bg);
     border-top: none;
-    margin-top : 2rem;
+    margin-top : 2.4rem;
 }
 
 .suggestions .option {
     position: relative;
+    cursor: pointer;
+    padding: 0 1rem;
 }
 
 .suggestions .option.focus {
@@ -963,6 +988,17 @@ article.kwic header a {
     color: var(--textlo);
 }
 
+article.kwic.conc a.bibl {
+    font-weight: 500;
+    color: var(--text);
+}
+
+article.kwic a.line:hover,
+article.kwic a.bibl:hover {
+    color: var(--text);
+    background-color: var(--bgtext);
+}
+
 a.id,
 a.mark {
     border-bottom: none;
@@ -1182,10 +1218,6 @@ div.graphcont {
 a.line {
     display: block;
     padding: 0 1rem;
-    cursor: auto;
-    -webkit-user-select: text;
-    -moz-select: text;
-    -ms-select: text;
     user-select: text;
 }
 
@@ -1261,14 +1293,21 @@ body > main {
     box-shadow: none;
 }
 
-article.conc a {
-    color: var(--red);
-}
 
 article.kwic.conc {
     margin-top: 1rem;
 }
 
+article.kwic > a.bibl {
+    padding: 0.2rem;
+    text-indent: -1.8rem;
+    padding-left: var(--indent);
+    display: block;
+    border: 1px solid transparent;
+    background-size: 1em;
+    background-repeat: no-repeat;
+    background-position: 0.1em 0.3em;
+}
 
 /** doc.jsp */
 .reader {
@@ -1324,7 +1363,7 @@ aside > header.bibl {
 
 mark {
     background-color: var(--bg);
-    font-weight: 400;
+    font-weight: 500;
 }
 
 mark:target {
