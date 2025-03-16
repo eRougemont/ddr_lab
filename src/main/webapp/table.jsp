@@ -124,19 +124,20 @@ else {
 
                        */
                 %>
-                <label for="q"
-                    title="Mots fréquents autour d’un ou plusieurs mots">Co-occurrents
-                    de</label> <input name="q" class="q" onclick="this.select()"
-                    type="text" value="<%=tools.escape(q)%>" size="40" />
-                <button type="submit">▶</button>
-                
-                
+                <label for="q" title="Mots fréquents autour d’un ou plusieurs mots">Co-occurrents</label>
                 <input onchange="this.form.submit()" title="Nombre de co-occurents à gauche" name="left" value="<%=left%>" type="number" min="0" max="100" step="1"/>
                 <label for="left" title="Nombre de mots à capturer à gauche">à gauche</label>
                 <input onchange="this.form.submit()" title="Nombre de co-occurents à droite" name="right" value="<%=right%>" type="number" min="0" max="100" step="1"/>
                 <label for="right" title="Nombre de mots à capturer à droite">à droite</label>
+                    <div class="searchfield">
+                        <button type="submit" class="icon magnify"><svg><use href="static/icons.svg#magnify" /></svg></button>
+                        <input type="text" value="<%=tools.escape(q)%>" class="q" name="q" id="sugg" src="data/suggest?field=text_cloud&amp;q="/>
+                        <a href="?" class="icon cross"><svg><use href="static/icons.svg#cross" /></svg></a>
+                    </div>
+                
+                
             </form>
-                <table class="sortable" width="100%">
+                <table class="sortable">
                     <caption>
                         <%
                     /*       
@@ -181,8 +182,6 @@ else {
                             <th
                                 title="Score de pertinence selon l’algorithme"
                                 class="num"> Score</th>
-                            <th width="100%" />
-                            <th />
                         </tr>
                     </thead>
                     <tbody>
@@ -201,11 +200,11 @@ if (formEnum != null) {
         String term = formEnum.form();
         final int flag = ftext.tag(formId);
         String css = "word";
-        if (flag == Tag.SUB.flag)
+        if (flag == Tag.SUB.no())
             css = "SUB";
-        else if (flag == Tag.ADJ.flag)
+        else if (flag == Tag.ADJ.no())
             css = "ADJ";
-        else if (flag == Tag.VERB.flag)
+        else if (flag == Tag.VERB.no())
             css = "VERB";
         else if (Tag.NAME.sameParent(flag))
             css = "NAME";
@@ -249,9 +248,6 @@ if (formEnum != null) {
         out.print(formatScore(formEnum.score()));
         out.println("</td>");
     
-        out.println("    <td></td>");
-        out.println("    <td class=\"no right\">" + no + "</td>");
-        out.println("  </tr>");
     }
 }
 %>
@@ -308,7 +304,7 @@ for (int i = 0; i < 256; i++) {
         indent = "    ";
     if ((i % 16) == 0 && i != 0)
         html.append("  </dl></dd>\n");
-    html.append(indent + "<dt>" + String.format("%02X", tag.flag()) + ". <strong>" + tag.label() + "</strong> <small>("
+    html.append(indent + "<dt>" + String.format("%02X", tag.no()) + ". <strong>" + tag.label() + "</strong> <small>("
     + tag.name() + ")</small></dt>\n");
     html.append(indent + "<dd><em>" + tag.desc() + "</em></dd>\n");
     if ((i % 16) == 0)
@@ -323,9 +319,11 @@ out.println(html);
                 </article>
                 <p> </p>
             </main>
-            </div>
-            <a id="totop" href="#top">△</a>
-            <script src="<%=hrefHome%>lib/teinte.sortable.js">//</script>
-</body>
-<!--((System.nanoTime() - timeStart) / 1000000.0).0) %> ms  -->
+        </div>
+        <%@include file="local/footer.jsp" %>
+        <script>
+suggest(document.getElementById("sugg"));
+        </script>
+        <script src="https://oeuvres.github.io/teinte_theme/teinte.sortable.js">//</script>
+    </body>
 </html>

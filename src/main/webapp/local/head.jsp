@@ -26,8 +26,9 @@
       href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&family=Fira+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
     />
     </noscript>
-    <link href="<%=hrefHome %>lib/teinte.css" rel="stylesheet"/>
-    <link href="<%=hrefHome %>lib/teinte.sortable.css" rel="stylesheet"/>
+    <link href="https://oeuvres.github.io/teinte_theme/teinte.css" rel="stylesheet" type="text/css"/>
+    <link href="https://oeuvres.github.io/teinte_theme/teinte.tree.css" rel="stylesheet" type="text/css"/>
+    <link href="https://oeuvres.github.io/teinte_theme/teinte.sortable.css" rel="stylesheet" type="text/css"/>
     <link href="<%=hrefHome %>static/alix.css" rel="stylesheet"/>
     <link href="<%=hrefHome %>local/ddr.css" rel="stylesheet"/>
     <link rel="icon" sizes="32x32"    href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon32.png">
@@ -40,4 +41,4 @@
     <link rel="icon" sizes="180x180"  href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon180.png">
     <link rel="icon" sizes="192x192"  href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon192.png">
     <link rel="icon" sizes="228x228"  href="https://www.unige.ch/rougemont/packages/rougemont/themes/rougemont/img/favicon228.png">
-    
+    <script src="<%=hrefHome%>lib/suggest.js">//</script>

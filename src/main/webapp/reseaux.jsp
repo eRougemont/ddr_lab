@@ -169,7 +169,6 @@ final int right = tools.getInt("right", new int[]{0, 100}, 5, "right");
 <script src="<%=hrefHome%>lib/sigma/sigma.layout.forceAtlas2.js">//</script>
 <script src="<%=hrefHome%>lib/sigma/sigma.layout.noverlap.js">//</script>
 <script src="<%=hrefHome%>lib/sigmot.js">//</script>
-<script src="<%=hrefHome%>lib/suggest.js">//</script>
         <script>
 suggest(document.getElementById("sugg"), ["tag", "year", "book"]);
         </script>

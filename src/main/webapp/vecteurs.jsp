@@ -15,9 +15,12 @@ if (vecSearch == null) {
     VecModel model = VecModel.fromBinFile(modelFile);
     vecSearch =  model.forSearch();   
 }
+String fieldName = TEXT_CLOUD; // inflected forms
 String q = tools.getString("q", "personne");
-FieldText ftext = alix.fieldText(TEXT_CLOUD);
+FieldText ftext = alix.fieldText(fieldName);
 final DecimalFormat frdec = new DecimalFormat("###,###,###,##0.00000", frsyms);
+
+final int limit = 50;
 %>
 <!DOCTYPE html>
 <html>
@@ -36,11 +39,16 @@ final DecimalFormat frdec = new DecimalFormat("###,###,###,##0.00000", frsyms);
                 <form action="" style="padding: 5px 1rem; background-color: #ccc;">
                     <label>Chercher des mots similaires à un ou plusieurs mots</label>
                     <br/>
-                    <input name="q" type="text" value="<%=q.replace('_', ' ')%>" style="width: 100%; "/>
+                    <div class="searchfield">
+                        <button type="submit" class="icon magnify"><svg><use href="static/icons.svg#magnify" /></svg></button>
+                        <input type="text" value="<%= tools.escape(q.replace('_', ' ')) %>" class="q" name="q" id="sugg" src="data/suggest?field=text_cloud&amp;q="/>
+                        <a href="?" class="icon cross"><svg><use href="static/icons.svg#cross" /></svg></a>
+                    </div>
+
                 </form>
 <%
 boolean ok = false;
-String[] tokens = alix.tokenize(q, TEXT_CLOUD);
+String[] tokens = alix.tokenize(q, fieldName);
 List<String> wordList = new ArrayList<String>();
 for (int i = 0; i < tokens.length; i++) {
     String word = tokens[i].replace(' ', '_');
@@ -53,7 +61,7 @@ for (int i = 0; i < tokens.length; i++) {
 }
 String[] words = wordList.toArray(new String[wordList.size()]);
 if (ok) {
-    Edge[] edges = vecSearch.sims(words, 20);
+    Edge[] edges = vecSearch.sims(words, limit);
     out.println(((System.nanoTime() - timeStart) / 1000000.0) + "ms");
     out.println("<table>");
     out.println("<tr>");
@@ -79,5 +87,8 @@ if (ok) {
             </main>
         </div>
         <%@include file="local/footer.jsp" %>
+        <script>
+suggest(document.getElementById("sugg"));
+        </script>
     </body>
 </html>
