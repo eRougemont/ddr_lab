@@ -54,11 +54,11 @@
         */
         // ensure visibility if input was cleared
         suggDiv.style.display = "";
-        // test if no change ?
-        
+        // indentation prefix is a very bad idea
         const pos = Math.max(value.lastIndexOf(' '), value.lastIndexOf('"'));
         const prefix = (pos >= 0)?(value.substring(0, pos + 1)):'';
         const prefixIndent = "\u00a0\u00a0".repeat(prefix.length); // \u202f
+        
         let q = (pos >= 0)?value.substring(pos + 1):value;
         let url = input.src + q;
         if (input.include) {
@@ -89,7 +89,7 @@
                 option.classList.add("suggest");
                 option.classList.add("option");
                 option.dataset.word = prefix + row.form;
-                option.innerHTML = prefixIndent + row.marked + ' <small>(' + row.freq + ', ' + row.hits + ' <span class="document"></span>)</small>';
+                option.innerHTML = row.marked + ' <small>(' + row.freq + ', ' + row.hits + ' <span class="document"></span>)</small>';
                 suggDiv.appendChild(option);
                 input.suggArray[i] = option;
             }

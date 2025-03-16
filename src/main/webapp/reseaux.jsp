@@ -18,7 +18,33 @@ static final HashSet<String> TEXT_FIELDS = new HashSet<String>(
     Arrays.asList(new String[] { ALIX_ID, ALIX_BOOKID, BIBL})
 );
 
-
+String bookOptions;
+String bookOptions(Alix alix) throws IOException {
+    int titleLength = 50;
+    if (bookOptions != null) return bookOptions;
+    final HashSet<String> FIELDS = new HashSet<String>(
+        Arrays.asList(new String[] { ALIX_ID, ALIX_BOOKID, BIBL, TITLE, YEAR})
+    );
+    StoredFields storedFields = alix.searcher().storedFields();
+    Sort sort = new Sort(
+        IntField.newSortField(YEAR, false, SortedNumericSelector.Type.MIN),
+        new SortField("ALIX_ID", SortField.Type.STRING)
+    );
+    int[] bookIds = alix.books(sort);
+    StringBuilder sb =  new StringBuilder();
+    for (int docId: bookIds) {
+        final Document document = storedFields.document(docId, FIELDS);
+        final String format = "<option value=\"%s\" title=\"[%s] %s\">%s, %s</option>\n";
+        String id = document.get(ALIX_ID);
+        String idBook = document.get(ALIX_BOOKID);
+        String year = document.get(YEAR);
+        String title = document.get(TITLE);
+        if (title.length() > titleLength) title = title.substring(0, titleLength);
+        String bibl = JspTools.escape(ML.detag(document.get(BIBL)));
+        sb.append(String.format(format, id, id, bibl, year, title));
+    }
+    return sb.toString();
+}
 
 %>
 <%
@@ -43,7 +69,7 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
         </header>
         <main>
             <form  id="formfilter" class="tags">
-                <div>
+                <div class="searchfield">
                     <button type="submit" class="icon magnify">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
                     </button>
@@ -61,67 +87,7 @@ String to = ""+ ((dates==null || datePar==null || datePar.length < 2 || datePar[
                 <label>
                     <select name="book">
                         <option></option>
-<%
-// select a book
-final String[] books = new String[]{
-"ddr19290300mip",
-"ddr19320900paysan",
-"ddr19341025polpers",
-"ddr19361100pm",
-"ddr19370600jic",
-"ddr19381012ja",
-"ddr19390600ao",
-"ddr19390815nf",
-"ddr19400430mds",
-"ddr19400800lg",
-"ddr19421200partdia",
-"ddr19441100partdia",
-"ddr19441210persdram",
-"ddr19460615lba1",
-"ddr19460701lba2",
-"ddr19460900polpers",
-"ddr19461206jdm",
-"ddr19470307va",
-"ddr19470703df",
-"ddr19480401sn",
-"ddr19480630ej",
-"ddr19500813lde",
-"ddr19510300lpp",
-"ddr19531215ch",
-"ddr19560200ao",
-"ddr19570200aoh",
-"ddr19581200dver",
-"ddr19590300oe",
-"ddr19610400ctm",
-"ddr19611200vhse",
-"ddr19620830ce",
-"ddr19650600shph",
-"ddr19651030fc",
-"ddr19680314jde",
-"ddr19700900loe",
-"ddr19701000cde",
-"ddr19701005udce",
-"ddr19720400dfso",
-"ddr19720600pm",
-"ddr19721000mip",
-"ddr19721100ao",
-"ddr19730100resea",
-"ddr19740600jdef",
-"ddr19750200cernfec",
-"ddr19770721aena",
-"ddr19790423rpe",
-"ddr19820500partdia",
-"ddr19820900paysan",
-"ddr19880300in"};
-final String book = tools.getString("book", null);
-for (final String value: books ) {
-    String selected = "";
-    if (value.equals(book)) {
-        selected = " selected";
-    }
-    out.println("<option" + selected + ">" + value + "</option>");
-}
-%>
+                        <%= bookOptions(alix) %>
                     </select>
                 </label>
 <%
@@ -205,7 +171,7 @@ final int right = tools.getInt("right", new int[]{0, 100}, 5, "right");
 <script src="<%=hrefHome%>lib/sigmot.js">//</script>
 <script src="<%=hrefHome%>lib/suggest.js">//</script>
         <script>
-suggest(document.getElementById("sugg"), ["tag", "year"]);
+suggest(document.getElementById("sugg"), ["tag", "year", "book"]);
         </script>
     </body>
 </html>

@@ -5,10 +5,8 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.StringReader"%>
 <%@ page import="java.lang.StringBuilder"%>
-<%@ page import="java.net.URL"%>
-<%@ page import="java.net.MalformedURLException"%>
-<%@ page import="java.nio.file.Path"%>
 <%@ page import="java.nio.charset.StandardCharsets"%>
+<%@ page import="java.nio.file.Path"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.text.DecimalFormatSymbols"%>
 <%@ page import="java.util.*"%>
@@ -173,19 +171,14 @@ static void qPhrase(String qField, BooleanQuery.Builder qBuild, ArrayList<String
 public void jspInit()
 {
     ServletContext context = getServletContext();
-    // init local dictionary
-    final String key = "alix.init";
-    String value = context.getInitParameter(key);
-    if (value == null) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResourceAsStream("/ddr-dic.csv"), StandardCharsets.UTF_8));
-            FrDics.load(reader, true);
-        // context.setInitParameter(key, "DONE");
-        } catch (Exception e) {
-            System.out.println(e);
-            // silently forget ?
-            // throw new AssertionError("Resource not available in WAR file", e);
-        }
+    String dicPath = "/piaget-dic.csv";
+    try {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResourceAsStream(dicPath), StandardCharsets.UTF_8));
+        FrDics.load(dicPath, reader, true);
+    } catch (Exception e) {
+        System.out.println(e);
+        // silently forget
+        // throw new AssertionError("Resource not available in WAR file", e);
     }
 }
 %>

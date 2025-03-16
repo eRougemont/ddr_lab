@@ -27,7 +27,7 @@ final FieldInt fint = alix.fieldInt(YEAR);
 final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
 // parameters
 // count of nodes to collect
-int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 70);
+int nodeLimit = tools.getInt("nodes", new int[]{10, 200}, 50);
 // count of edges
 double edgeCoef = 1.7;
 //context width where to capture co-occurency
@@ -236,11 +236,11 @@ out.println("  \"edges\": [");
 first = true;
 int edgeCount = 0;
 for (Edge edge : matrix) {
-    if (edge.sourceId == edge.targetId) {
+    if (edge.sourceId() == edge.targetId()) {
         continue;
     }
-    final int sourceId = edge.sourceId;
-    final int targetId = edge.targetId;
+    final int sourceId = edge.sourceId();
+    final int targetId = edge.targetId();
     double score = edge.count();
     if (Double.isNaN(score)) {
         // should be fixed
@@ -250,8 +250,8 @@ for (Edge edge : matrix) {
     if (pivotLookup.contains(sourceId) || pivotLookup.contains(targetId)) {
         score = 1;
     }
-    bros.set(edge.sourceId);
-    bros.set(edge.targetId);
+    bros.set(edge.sourceId());
+    bros.set(edge.targetId());
     if (first)
         first = false;
     else
