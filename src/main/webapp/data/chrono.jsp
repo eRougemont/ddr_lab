@@ -22,23 +22,56 @@ if (mime != null) {
 JSONObject json = new JSONObject();
 
 // Build the filter
-FieldInt fint = alix.fieldInt(YEAR);
-final int yearMin = fint.min();
-final int yearMax = fint.max();
 final String fname = TEXT_CLOUD;
 final FieldText ftext = alix.fieldText(fname);
 
 
-//filter documents 
-BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
-// default chrono filter, articles 
-queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
-// queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+final String[] tags = tools.getStringSet(TAG);
+final FieldInt fint = alix.fieldInt(YEAR);
+final int yearMin = fint.min();
+final int yearMax = fint.max();
+final int[] dates = tools.getIntRange(YEAR, new int[]{yearMin, yearMax});
 
-BitSet filterDocs = null;
-BooleanQuery filterQuery = queryBuild.build();
+//filter documents on query
+BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
+int clauses = 0;
+if (dates == null || dates.length == 0) {
+    // no dates
+}
+else if (dates.length == 1) {
+    clauses++;
+    queryBuild.add(IntField.newExactQuery(YEAR, dates[0]), BooleanClause.Occur.FILTER);
+}
+else if (dates.length == 2) {
+    clauses++;
+    queryBuild.add(IntField.newRangeQuery(YEAR, dates[0], dates[1]), BooleanClause.Occur.FILTER);
+}
+if (tags == null || tags.length == 0) {
+    // no tags
+}
+else if (tags.length == 1) {
+    clauses++;
+    queryBuild.add(new TermQuery(new Term(TAG, tags[0])), BooleanClause.Occur.FILTER);
+}
+else if (tags.length > 1) {
+    BooleanQuery.Builder tagBuild = new BooleanQuery.Builder();
+    for (final String tag: tags) {
+        tagBuild.add(new TermQuery(new Term(TAG, tag)), BooleanClause.Occur.SHOULD);
+    }
+    clauses++;
+    queryBuild.add(tagBuild.build(), BooleanClause.Occur.FILTER);
+}
+
+// get docs as a filter
+
+/*
+*/
 BitsCollectorManager qbits = new BitsCollectorManager(reader.maxDoc());
-filterDocs = searcher.search(filterQuery, qbits);
+BitSet docAll = searcher.search(new TermQuery(new Term("type", "article")), qbits);
+// heere filter by article or book
+queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
+BooleanQuery filterQuery = queryBuild.build();
+BitSet docFilter = searcher.search(filterQuery, qbits);
 
 // Build a json object
 do {
@@ -47,40 +80,45 @@ do {
     desc.append("yearRange", yearMin);
     desc.append("yearRange", yearMax);
     
-    int occsTotal = 0;
     // use same collector for points to ensure same size
-    final int[] points = new int[yearMax - yearMin + 1];
     // global count of occs by year
+    final int[] occs = new int[yearMax - yearMin + 1];
+    final int[] freqs = new int[yearMax - yearMin + 1];
     for (int docId = 0; docId < reader.maxDoc(); docId++) {
-        final int occs = ftext.occsByDoc(docId);
-        occsTotal += occs;
-        if (!filterDocs.get(docId)) continue;
-
         final int year = fint.docId4value(docId);
         if (year == Integer.MIN_VALUE) continue; // no year for this doc
-        points[year - yearMin] += occs;
+        final int occsDoc = ftext.occsByDoc(docId);
+        if (!docAll.get(docId)) continue;
+        occs[year - yearMin] += occsDoc;
+        if (!docFilter.get(docId)) continue;
+        freqs[year - yearMin] += occsDoc;
     }
     JSONObject occsJson = new JSONObject();
     json.append("series", occsJson);
-    occsJson.put("points", new JSONArray(points));
+    occsJson.put("freqs", new JSONArray(freqs));
+    occsJson.put("occs", new JSONArray(occs));
     
     int occsMin = Integer.MAX_VALUE;
     int occsMax = Integer.MIN_VALUE;
-    for (final int occs: points) {
-        if (occs < occsMin) occsMin = occs;
-        if (occs > occsMax) occsMax = occs;
+    long occsAll = alix.fieldText(TEXT).occsAll();
+    for (final int o: occs) {
+        if (o < occsMin) occsMin = o;
+        if (o > occsMax) occsMax = o;
     }
     desc.append("occsRange", occsMin);
     desc.append("occsRange", occsMax);
-    desc.put("occsTotal", occsTotal);
+    desc.put("occsAll", occsAll);
     // if no query, exit
     if (request.getParameter(Q) == null) break;
-    
+
+    // series
+    final double[] freqrels = new double[yearMax - yearMin + 1];
+
+    int series = 0;
     int freqMin = Integer.MAX_VALUE;
     int freqMax = Integer.MIN_VALUE;
-    
-    
-    
+    double freqrelMin = Double.MAX_VALUE;
+    double freqrelMax = Double.MIN_VALUE;
     for (final String q: request.getParameterValues(Q)) {
         JSONObject qJson = new JSONObject();
         json.append("series", qJson);
@@ -97,18 +135,13 @@ do {
         // get occs by date, loop on all docs
         BytesRef[] formsBytes = ftext.bytesSorted(forms);
         if (formsBytes == null) continue;
-        Arrays.fill(points, 0);
+        series++;
+        
+        Arrays.fill(freqs, 0);
+        Arrays.fill(freqrels, 0.0);
         TopDocs results = searcher.search(query, 5000, Sort.INDEXORDER);
         ScoreDoc[] hits = results.scoreDocs;
         final int hitsLength = hits.length;
-        
-        // get docs as a filter
-        java.util.BitSet docs = new java.util.BitSet(reader.maxDoc());
-        for (int i = 0; i < hitsLength; i++) {
-            final int docId = hits[i].doc;
-            if (!filterDocs.get(docId)) continue;
-            docs.set(docId);
-        }
         // low level but efficient
         PostingsEnum docsEnum = null; // reuse
         for (LeafReaderContext context : reader.leaves()) {
@@ -127,23 +160,34 @@ do {
                 int docLeaf;
                 while ((docLeaf = docsEnum.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                     final int docId = docBase + docLeaf;
-                    if (!docs.get(docId)) continue; // document not in the filter
+                    if (!docFilter.get(docId)) continue; // document not in the filter
                     final int year = fint.docId4value(docId);
                     if (year == Integer.MIN_VALUE) continue; // no year for this doc
                     final int freq = docsEnum.freq();
-                    points[year - yearMin] += freq;
+                    freqs[year - yearMin] += freq;
                 }
             }
         }
         // get min - max
-        for (final int freq: points) {
+        for (int i= 0; i < freqs.length; i++) {
+            final int freq = freqs[i];
             if (freq < freqMin) freqMin = freq;
             if (freq > freqMax) freqMax = freq;
+            double freqrel = 100.0 * freq / occs[i];
+            if (occs[i] == 0) freqrel = 0;
+            freqrels[i] = freqrel;
+            if (freqrel < freqrelMin) freqrelMin = freqrel;
+            if (freqrel > freqrelMax) freqrelMax = freqrel;
         }
-        qJson.put("points", new JSONArray(points));
+        qJson.put("freqs", new JSONArray(freqs));
+        qJson.put("freqrels", new JSONArray(freqrels));
     }
-    desc.append("freqRange", freqMin);
-    desc.append("freqRange", freqMax);
+    if (series > 0) {
+        desc.append("freqRange", freqMin);
+        desc.append("freqRange", freqMax);
+        desc.append("freqrelRange", freqrelMin);
+        desc.append("freqrelRange", freqrelMax);
+    }
 } while(false);
 json.put("time", ((System.nanoTime() - timeStart) / 1000000) + "ms");
 out.println(json.toString(2));

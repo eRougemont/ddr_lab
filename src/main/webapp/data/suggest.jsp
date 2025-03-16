@@ -17,6 +17,18 @@ public String json(final String form, final long freq, final int hits, final Str
 %>
 
 <%
+// params
+final String fieldName = TEXT_CLOUD;
+//words to suggest
+final int limit = 20;
+//list titles without paging in id order
+final String q = tools.getString(Q, null);
+final String[] tags = tools.getStringSet(TAG);
+final FieldInt fint = alix.fieldInt(YEAR);
+final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
+//a kind of doc filter
+final String bookId = tools.getString("book", null);
+
 // set response header according to extension requested
 response.setHeader("Access-Control-Allow-Origin", "*"); // cross domain fo browsers
 String ext = tools.getString("ext", ".json", Set.of(".json", ".js", ".txt"), null);
@@ -25,22 +37,12 @@ if (mime != null) {
     response.setContentType(mime);
 }
 
-// words to suggest
-final int limit = 20;
 
-// list titles without paging in id order
-final String q = tools.getString(Q, null);
-
-
-final String[] tags = tools.getStringSet(TAG);
-final FieldInt fint = alix.fieldInt(YEAR);
-final int[] dates = tools.getIntRange(YEAR, new int[]{fint.min(), fint.max()});
 
 //what kind of word to filter ?
 final TagFilter wordFilter = TagFilter.NOSTOP;
 
 // Where to search in
-final String fieldName = TEXT_CLOUD;
 SuggestForm suggester = alix.suggestForm(fieldName);
 
 boolean first;
@@ -48,7 +50,13 @@ boolean first;
 // filter documents on query
 BooleanQuery.Builder queryBuild = new BooleanQuery.Builder();
 int clauses = 0;
-if (dates == null) {
+
+if (bookId != null) {
+    clauses++;
+    queryBuild.add(new TermQuery(new Term(ALIX_BOOKID, bookId)), BooleanClause.Occur.FILTER);
+}
+
+if (dates == null || bookId != null) {
 }
 else if (dates.length == 1) {
     clauses++;

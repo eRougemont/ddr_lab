@@ -129,11 +129,11 @@ else {
                 <label for="left" title="Nombre de mots à capturer à gauche">à gauche</label>
                 <input onchange="this.form.submit()" title="Nombre de co-occurents à droite" name="right" value="<%=right%>" type="number" min="0" max="100" step="1"/>
                 <label for="right" title="Nombre de mots à capturer à droite">à droite</label>
-                    <div class="searchfield">
-                        <button type="submit" class="icon magnify"><svg><use href="static/icons.svg#magnify" /></svg></button>
-                        <input type="text" value="<%=tools.escape(q)%>" class="q" name="q" id="sugg" src="data/suggest?field=text_cloud&amp;q="/>
-                        <a href="?" class="icon cross"><svg><use href="static/icons.svg#cross" /></svg></a>
-                    </div>
+                <div class="searchfield">
+                    <button type="submit" class="icon magnify"><svg><use href="static/icons.svg#magnify" /></svg></button>
+                    <input type="text" value="<%=tools.escape(q)%>" class="q" name="q" id="sugg" src="data/suggest?field=text_cloud&amp;q="/>
+                    <a href="?" class="icon cross"><svg><use href="static/icons.svg#cross" /></svg></a>
+                </div>
                 
                 
             </form>
