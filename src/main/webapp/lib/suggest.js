@@ -17,6 +17,7 @@
 
     function hide(event, input) {
         if (!input) input = this;
+        input.parentNode.classList.remove("suggest");
         input.suggDiv.style.display = "none";
     }
 
@@ -39,8 +40,9 @@
     }
     
     function load(event) {
-
         const input = this;
+        // class input parent
+        input.parentNode.classList.add("suggest");
         const value = input.value.trim();
         const suggDiv = input.suggDiv;
         /* no value, get list
@@ -54,11 +56,11 @@
         */
         // ensure visibility if input was cleared
         suggDiv.style.display = "";
-        // indentation prefix is a very bad idea
+        // test if no change ?
+        
         const pos = Math.max(value.lastIndexOf(' '), value.lastIndexOf('"'));
         const prefix = (pos >= 0)?(value.substring(0, pos + 1)):'';
         const prefixIndent = "\u00a0\u00a0".repeat(prefix.length); // \u202f
-        
         let q = (pos >= 0)?value.substring(pos + 1):value;
         let url = input.src + q;
         if (input.include) {
@@ -130,7 +132,7 @@
         input.value = option.dataset.word;
         event.preventDefault();
         hide(event, input);
-        input.form.submit();
+        input.form.update();
     }
     
     function key(event)
@@ -192,4 +194,3 @@
 
     return suggest;
 }));
-

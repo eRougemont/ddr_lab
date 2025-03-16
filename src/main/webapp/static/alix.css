@@ -521,6 +521,12 @@ div.searchfield {
     box-shadow: 0px 2px 8px 0px rgba(60, 64, 67, 0.25);
 }
 
+div.searchfield.suggest {
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: none;
+    border-bottom: none;
+}
+
 div.searchfield input.q {
     width: 100%;
 }
