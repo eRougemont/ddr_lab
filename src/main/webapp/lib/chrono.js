@@ -197,7 +197,6 @@ const chart = function(data) {
 
     const rollingLeft = (rollingInput)?Number(rollingInput.value):0;
     const rollingRight = rollingLeft;
-    console.log(rollingLeft + " " + rollingRight);
 
 
     // Create the SVG container.
@@ -258,7 +257,7 @@ const chart = function(data) {
             .attr("d", area(freqs))
         ;
 
-        let label = "Rougemont, articles, nombre de mots publiés par an";
+        let label = "Nombre de mots publiés par an";
         const roll = 1 + rollingLeft + rollingRight;
         if (roll > 1) {
             label += ", avec moyenne glissante sur " + roll + " ans (-" + rollingLeft + ", +" + rollingRight +")";
@@ -289,11 +288,11 @@ const chart = function(data) {
 
     // get the max of series
 
-    let label = "Rougement, articles, occurrences, fréquence par an";
+    let label = "Occurrences, fréquence par an";
 
     let key = "freqs";
     if (freqrel) {
-        label = "Rougement, articles, fréquence relative aux mot publiés (%)";
+        label = "Fréquence relative aux mot publiés (%)";
         key = "freqrels";
     }
     
@@ -410,7 +409,7 @@ form.draw = function(history = true) {
     }
     const kwicUrl = "data/kwicdate?" + search.toString();
     alix.kwicLoad(kwicUrl);
-
+    console.log(kwicUrl);
 }
 
 const freqrel = document.getElementById('freqrel');
@@ -424,8 +423,14 @@ if (freqrel) {
 
 const controls = form.elements;
 for (let i = 0, control; control = controls[i++];) {
-    console.log(control);
-    if (control.type != 'checkbox' && control.type != 'radio'  && control.type != 'number') continue;
+    // do not add on change on control without changing value
+    if (
+        control.type != 'checkbox' 
+        && control.type != 'radio'  
+        && control.type != 'number' 
+        && control.type != 'select'
+        && control.type != 'select-one'
+    ) continue;
     control.addEventListener("change", form.draw);
 }
 

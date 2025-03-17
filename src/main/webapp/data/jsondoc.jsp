@@ -92,7 +92,6 @@ if (Alix.pool.size() < 1) {
     response.setStatus(500);
     return;
 }
-Alix alix = Alix.instance("rougemont", lucenepath);
 String baseName = request.getParameter("base");
 if (alix == null && baseName != null) {
     out.println("  \"errors\": [");
@@ -106,8 +105,6 @@ if (alix == null && baseName != null) {
     response.setStatus(404);
     return;
 }
-baseName = (String) Alix.pool.keySet().toArray()[0];
-alix = Alix.pool.get(baseName);
 // send error if base not available instead of default ? 
 
 // get document

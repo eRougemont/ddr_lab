@@ -124,6 +124,12 @@ for (final String field: new String[]{"tag", "hashtag"}) {
     }
 }
 
+final String type = tools.getString("type", "", Set.of("article", "chapter", ""));
+if (type != null && !"".equals(type)) {
+    clauses++;
+    queryBuild.add(new TermQuery(new Term("type", type)), BooleanClause.Occur.FILTER);
+}
+
 //build global query
 Query query = null;
 //at least one word query

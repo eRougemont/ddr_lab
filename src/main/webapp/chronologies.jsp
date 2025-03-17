@@ -23,17 +23,23 @@ final int rolling = tools.getInt("rolling", new int[]{0, 10}, 3, "rolling");
             <%@ include file="local/tabs.jsp" %>
         </header>
         <main>
-            <label>
-                Moyenne glissante
-                <input title="Moyenne glissante" form="formchrono" name="rolling" id="rolling" value="<%=rolling%>" type="number" min="0" max="10" step="1"/>
-            </label>
+            <form class="search" name="chrono" id="formchrono">
+                <label>Type de textes
+                    <select name="type">
+                        <option>tout</option>
+                        <option value="article">articles</option>
+                        <option value="chapter">livres</option>
+                    </select>
+                </label>
+                <label>Moyenne glissante
+                    <input title="Moyenne glissante" form="formchrono" name="rolling" id="rolling" value="<%=rolling%>" type="number" min="0" max="10" step="1"/>
+                </label>
             <label class="toggle">
                 <span class="toggleslide"></span>Fréquence relative
                 <input id="freqrel" form="formchrono" type="checkbox"/>
             </label>
 
             <div id="tempolex"></div>
-            <form class="search" name="chrono" id="formchrono">
                 <ul id="lines" class="lines">
                 </ul>
             </form>

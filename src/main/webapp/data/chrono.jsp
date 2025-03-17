@@ -18,6 +18,8 @@ String mime = pageContext.getServletContext().getMimeType("a" + ext);
 if (mime != null) {
     response.setContentType(mime);
 }
+final String type = tools.getString("type", "", Set.of("article", "chapter", ""));
+
 
 JSONObject json = new JSONObject();
 
@@ -63,13 +65,17 @@ else if (tags.length > 1) {
 }
 
 // get docs as a filter
-
-/*
-*/
+BitSet docAll;
 BitsCollectorManager qbits = new BitsCollectorManager(reader.maxDoc());
-BitSet docAll = searcher.search(new TermQuery(new Term("type", "article")), qbits);
+if (type == null || "".equals(type)) {
+    docAll = searcher.search(new TermQuery(new Term(ALIX_TYPE, TEXT)), qbits);
+    queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+}
+else {
+    docAll = searcher.search(new TermQuery(new Term("type", type)), qbits);
+    queryBuild.add(new TermQuery(new Term("type", type)), BooleanClause.Occur.FILTER);
+}
 // heere filter by article or book
-queryBuild.add(new TermQuery(new Term("type", "article")), BooleanClause.Occur.FILTER);
 BooleanQuery filterQuery = queryBuild.build();
 BitSet docFilter = searcher.search(filterQuery, qbits);
 
