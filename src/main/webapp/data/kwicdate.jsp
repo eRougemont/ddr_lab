@@ -89,12 +89,33 @@ if (bookid != null) {
 }
 
 BooleanQuery.Builder wordBuild = new BooleanQuery.Builder();
+
+// desired result 
 for (String word: q) {
-    Query wordQuery = qText(alix.analyzer(), qField, word);
+    Query wordQuery = qText(alix.analyzer(), qField, word, BooleanClause.Occur.MUST);
     if (wordQuery == null) continue;
     wordBuild.add(wordQuery, BooleanClause.Occur.SHOULD);
 }
 Query wordQuery = wordBuild.build();
+if (((BooleanQuery)wordQuery).clauses().size() == 0) {
+    wordQuery = null;
+}
+else if (((BooleanQuery)wordQuery).clauses().size() == 1) {
+    wordQuery = ((BooleanQuery)wordQuery).clauses().getFirst().query();
+}
+//more than one word query
+else if (((BooleanQuery)wordQuery).clauses().size() > 1) {
+    queryBuild.add(wordQuery, BooleanClause.Occur.MUST);
+    query = queryBuild.build();
+}
+//for tags and search dates, secure search by a filter on docs with text
+else if (clauses > 0) {
+    wordQuery = null; // nullify wordQuery for further
+    queryBuild.add(new TermQuery(new Term(ALIX_TYPE, TEXT)), BooleanClause.Occur.FILTER);
+    query = queryBuild.build();
+}
+
+
 
 if (dates == null || bookid != null) {
     
@@ -229,6 +250,10 @@ for (int i = 0; i < hitsLength; i++) {
     FieldTermStack fieldTermStack = new FieldTermStack(alix.reader(), docId, TEXT_CLOUD, fieldQuery);
     // merge them as phrases
     FieldPhraseList phrases = new FieldPhraseList(fieldTermStack, fieldQuery, 100);
+    
+    // get bigger snippets
+    if (())
+    
     int pointer = 0;
     final int length = text.length();
     Chain line = new Chain();
@@ -239,6 +264,9 @@ for (int i = 0; i < hitsLength; i++) {
         final int end = phrase.getEndOffset();
         final FieldTermStack.TermInfo tinfo = phrase.getTermsInfos().get(0);
         final int position = tinfo.getPosition();
+        
+        
+        
         final String form = text.substring(start, end);
         
         occsAll++;

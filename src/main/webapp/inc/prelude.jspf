@@ -90,7 +90,7 @@ static String formatScore(double real) {
 /** 
     parse a free query
 */
-static Query qText(Analyzer analyzer, String qField, String q) throws IOException
+static Query qText(Analyzer analyzer, String qField, String q, BooleanClause.Occur op) throws IOException
 {
     if (q == null || q.trim().isEmpty()) return null;
     BooleanQuery.Builder qBuild = new BooleanQuery.Builder();
@@ -110,7 +110,7 @@ static Query qText(Analyzer analyzer, String qField, String q) throws IOExceptio
                 // finish possible phrase query (")
                 quote = false;
                 qPhrase(qField, qBuild, phrase);
-                qBuild.add(new WildcardQuery(new Term(qField, word)), BooleanClause.Occur.SHOULD);
+                qBuild.add(new WildcardQuery(new Term(qField, word)), op);
                 continue;
             }
             // start or end a phrase query
@@ -129,7 +129,7 @@ static Query qText(Analyzer analyzer, String qField, String q) throws IOExceptio
                 continue;
             }
             else {
-                qBuild.add(new TermQuery(new Term(qField, word)), BooleanClause.Occur.SHOULD);
+                qBuild.add(new TermQuery(new Term(qField, word)), op);
             }
         }
         ts.end();
