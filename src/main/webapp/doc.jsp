@@ -101,7 +101,7 @@ else if (q != null && WILD.equals(qtype)) {
     query = bqText.build();
 }
 else if (q != null) {
-    query = qText(alix.analyzer(), fieldName, q);
+    query = qText(alix.analyzer(), fieldName, q, BooleanClause.Occur.SHOULD);
 }
 
 

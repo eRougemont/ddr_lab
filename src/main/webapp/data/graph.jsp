@@ -112,7 +112,9 @@ long freqMax = Long.MIN_VALUE;
 if (q != null) {
     //context width where to capture co-occurency
     // let’s try to find pivots words for coocs
-    String[] forms = alix.tokenize(q.replace("\"", ""), fname);
+    // TODO better tokenizaiton
+    // String[] forms = alix.tokenize(q.replace("\"", ""), fname);
+    String[] forms = q.split("\\s+");
     if (forms == null || forms.length < 1) {
         out.println("{\"error\": \"Aucun mot dans la requête (" + q + ").\"}");
         return;
@@ -206,7 +208,7 @@ if (q != null) {
 // no query, get words from corpus
 else {
     // G score seems the best to get most significant words of a corpus
-    nodeEnum = ftext.formEnum(docFilter, formFilter, Distrib.G);
+    nodeEnum = ftext.formEnum(docFilter, formFilter, Distrib.BM25);
     nodeEnum.sort(order, nodeLimit);
     nodeIds = nodeEnum.sorter();
     // nodeLimit = nodeEnum.limit(); // if less than requested
